@@ -130,12 +130,15 @@ module Buckaruby
         params.merge!(
           brq_service_sepadirectdebit_action: Action::PAY,
           brq_service_sepadirectdebit_customeriban: options[:account_iban],
-          brq_service_sepadirectdebit_customeraccountname: options[:account_name],
-          brq_service_sepadirectdebit_collectdate: (Date.today + 5).strftime("%Y-%m-%d")
+          brq_service_sepadirectdebit_customeraccountname: options[:account_name]
         )
 
         if options[:account_bic]
           params[:brq_service_sepadirectdebit_customerbic] = options[:account_bic]
+        end
+
+        if options[:collect_date]
+          params[:brq_service_sepadirectdebit_collectdate] = options[:collect_date].strftime("%Y-%m-%d")
         end
 
         if options[:mandate_reference]
