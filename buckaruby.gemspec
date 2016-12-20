@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["support@kentaa.nl"]
   spec.summary       = "Ruby library for communicating with the Buckaroo Payment Engine 3.0."
   spec.description   = "The Buckaruby gem provides a Ruby library for communicating with the Buckaroo Payment Engine 3.0."
-  spec.homepage      = "http://www.buckaroo.nl/"
+  spec.homepage      = "https://github.com/KentaaNL/buckaruby"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
