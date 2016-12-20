@@ -112,10 +112,6 @@ module Buckaruby
 
   # Request for a creating a new transaction.
   class SetupTransactionRequest < TransactionRequest
-    def execute(options)
-      super(options.merge(action: Action::PAY))
-    end
-
     def build_transaction_request_params(options)
       params = {}
 
@@ -158,10 +154,6 @@ module Buckaruby
 
   # Request for a creating a recurrent transaction.
   class RecurrentTransactionRequest < TransactionRequest
-    def execute(options)
-      super(options.merge(action: Action::PAY_RECURRENT))
-    end
-
     def build_transaction_request_params(options)
       params = {}
 
