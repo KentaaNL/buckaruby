@@ -126,7 +126,7 @@ module Buckaruby
         TransactionStatus::FAILED
       when '690'
         TransactionStatus::REJECTED
-      when '790', '791'
+      when '790', '791', '792', '793'
         TransactionStatus::PENDING
       when '890', '891'
         TransactionStatus::CANCELLED
