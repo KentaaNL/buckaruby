@@ -38,10 +38,7 @@ module Buckaruby
 
       normalize_account_iban!(options) if options[:payment_method] == PaymentMethod::SEPA_DIRECT_DEBIT
 
-      request = build_request(:setup_transaction)
-      response = request.execute(options)
-
-      return SetupTransactionResponse.new(response, @options)
+      execute_request(:setup_transaction, options)
     end
 
     # Setup a recurrent transaction.
@@ -50,10 +47,7 @@ module Buckaruby
 
       validate_recurrent_transaction_params!(options)
 
-      request = build_request(:recurrent_transaction)
-      response = request.execute(options)
-
-      return RecurrentTransactionResponse.new(response, @options)
+      execute_request(:recurrent_transaction, options)
     end
 
     # Get transaction status.
@@ -62,10 +56,7 @@ module Buckaruby
 
       validate_status_params!(options)
 
-      request = build_request(:status)
-      response = request.execute(options)
-
-      return StatusResponse.new(response, @options)
+      execute_request(:status, options)
     end
 
     # Verify the response / callback.
@@ -187,6 +178,21 @@ module Buckaruby
       end
 
       options[:hash_method] = hash_method
+    end
+
+    # Build and execute a request.
+    def execute_request(request_type, options)
+      request = build_request(request_type)
+      response = request.execute(options)
+
+      case request_type
+      when :setup_transaction
+        SetupTransactionResponse.new(response, @options)
+      when :recurrent_transaction
+        RecurrentTransactionResponse.new(response, @options)
+      when :status
+        StatusResponse.new(response, @options)
+      end
     end
 
     # Factory method for constructing a request.
