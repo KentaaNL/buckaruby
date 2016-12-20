@@ -28,7 +28,7 @@ module Buckaruby
 
       def convert_key(key)
         string = key.is_a?(Symbol) ? key.to_s : key
-        return string.downcase
+        string.downcase
       end
     end
   end

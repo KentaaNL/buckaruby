@@ -27,7 +27,7 @@ module Buckaruby
         raise ArgumentError, "Invalid payment method, only #{PaymentMethod::IDEAL} is supported."
       end
 
-      return Ideal::ISSUERS
+      Ideal::ISSUERS
     end
 
     # Setup a new transaction.
@@ -65,7 +65,7 @@ module Buckaruby
         raise ArgumentError, "No callback parameters found"
       end
 
-      return CallbackResponse.new(response, @options)
+      CallbackResponse.new(response, @options)
     end
 
     private

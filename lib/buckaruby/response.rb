@@ -30,72 +30,72 @@ module Buckaruby
     def account_bic
       case payment_method
       when PaymentMethod::IDEAL
-        return params[:brq_service_ideal_consumerbic]
+        params[:brq_service_ideal_consumerbic]
       when PaymentMethod::SEPA_DIRECT_DEBIT
-        return params[:brq_service_sepadirectdebit_customerbic]
+        params[:brq_service_sepadirectdebit_customerbic]
       end
     end
 
     def account_iban
       case payment_method
       when PaymentMethod::IDEAL
-        return params[:brq_service_ideal_consumeriban]
+        params[:brq_service_ideal_consumeriban]
       when PaymentMethod::SEPA_DIRECT_DEBIT
-        return params[:brq_service_sepadirectdebit_customeriban]
+        params[:brq_service_sepadirectdebit_customeriban]
       end
     end
 
     def account_name
       case payment_method
       when PaymentMethod::IDEAL
-        return params[:brq_service_ideal_consumername] || params[:brq_customer_name]
+        params[:brq_service_ideal_consumername] || params[:brq_customer_name]
       when PaymentMethod::SEPA_DIRECT_DEBIT
-        return params[:brq_service_sepadirectdebit_customername] || params[:brq_customer_name]
+        params[:brq_service_sepadirectdebit_customername] || params[:brq_customer_name]
       end
     end
 
     def collect_date
       if payment_method == PaymentMethod::SEPA_DIRECT_DEBIT
-        return parse_date(params[:brq_service_sepadirectdebit_collectdate])
+        parse_date(params[:brq_service_sepadirectdebit_collectdate])
       end
     end
 
     def invoicenumber
-      return params[:brq_invoicenumber]
+      params[:brq_invoicenumber]
     end
 
     def mandate_reference
       if payment_method == PaymentMethod::SEPA_DIRECT_DEBIT
-        return params[:brq_service_sepadirectdebit_mandatereference]
+        params[:brq_service_sepadirectdebit_mandatereference]
       end
     end
 
     def payment_id
-      return params[:brq_payment]
+      params[:brq_payment]
     end
 
     def payment_method
-      return parse_payment_method(params[:brq_payment_method] || params[:brq_transaction_method])
+      parse_payment_method(params[:brq_payment_method] || params[:brq_transaction_method])
     end
 
     def redirect_url
-      return params[:brq_redirecturl]
+      params[:brq_redirecturl]
     end
 
     def refund_transaction_id
-      return params[:brq_relatedtransaction_refund]
+      params[:brq_relatedtransaction_refund]
     end
 
     def reversal_transaction_id
-      return params[:brq_relatedtransaction_reversal]
+      params[:brq_relatedtransaction_reversal]
     end
 
     def timestamp
-      return parse_time(params[:brq_timestamp])
+      parse_time(params[:brq_timestamp])
     end
 
     def transaction_id
-      return params[:brq_transactions]
+      params[:brq_transactions]
     end
 
     def transaction_type
@@ -103,17 +103,17 @@ module Buckaruby
         # See http://support.buckaroo.nl/index.php/Transactietypes
         case params[:brq_transaction_type]
         when 'C001', 'C002', 'C004', 'C021', 'C043', 'C044', 'C046', 'C090', 'V001', 'V002', 'V010', 'V021', 'V090'
-          return TransactionType::PAYMENT
+          TransactionType::PAYMENT
         when 'C005', 'V014', 'V031', 'V032', 'V034', 'V043', 'V044', 'V046', 'V094'
-          return TransactionType::PAYMENT_RECURRENT
+          TransactionType::PAYMENT_RECURRENT
         when 'C079', 'C080', 'C082', 'C092', 'C101', 'C102', 'C121', 'C500', 'V067', 'V068', 'V070', 'V079', 'V080', 'V082', 'V092', 'V101', 'V102', 'V110'
-          return TransactionType::REFUND
+          TransactionType::REFUND
         when 'C501', 'C502', 'C562', 'V111', 'V131', 'V132', 'V134', 'V143', 'V144', 'V146'
-          return TransactionType::REVERSAL
+          TransactionType::REVERSAL
         end
       else
         # Fallback when transaction type is not known (cancelling credit card)
-        return TransactionType::PAYMENT
+        TransactionType::PAYMENT
       end
     end
 
@@ -121,15 +121,15 @@ module Buckaruby
       # See http://support.buckaroo.nl/index.php/Statuscodes
       case params[:brq_statuscode]
       when '190'
-        return TransactionStatus::SUCCESS
+        TransactionStatus::SUCCESS
       when '490', '491', '492'
-        return TransactionStatus::FAILED
+        TransactionStatus::FAILED
       when '690'
-        return TransactionStatus::REJECTED
+        TransactionStatus::REJECTED
       when '790', '791'
-        return TransactionStatus::PENDING
+        TransactionStatus::PENDING
       when '890', '891'
-        return TransactionStatus::CANCELLED
+        TransactionStatus::CANCELLED
       end
     end
 
@@ -151,21 +151,21 @@ module Buckaruby
         transaction_status: transaction_status
       }.reject { |_key, value| value.nil? }
 
-      return hash
+      hash
     end
 
     private
 
     def parse_date(date)
-      return date ? Date.strptime(date, '%Y-%m-%d') : nil
+      date ? Date.strptime(date, '%Y-%m-%d') : nil
     end
 
     def parse_time(time)
-      return time ? Time.strptime(time, '%Y-%m-%d %H:%M:%S') : nil
+      time ? Time.strptime(time, '%Y-%m-%d %H:%M:%S') : nil
     end
 
     def parse_payment_method(method)
-      return method ? method.downcase : nil
+      method ? method.downcase : nil
     end
   end
 

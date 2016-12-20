@@ -24,7 +24,7 @@ module Buckaruby
 
       @logger.debug("[execute] response: #{response.inspect}")
 
-      return response
+      response
     end
 
     def build_request_params(_options)
@@ -59,25 +59,25 @@ module Buckaruby
       # Sign the data with our secret key.
       params[:brq_signature] = Signature.generate_signature(params, @options)
 
-      return params
+      params
     end
 
     def post_data(params)
-      return params.map { |key, value| "#{key}=#{CGI.escape(value.to_s)}" }.join("&")
+      params.map { |key, value| "#{key}=#{CGI.escape(value.to_s)}" }.join("&")
     end
 
     def parse_response(body)
       query = CGI.parse(body)
       query.each { |key, value| query[key] = value.first }
-      return query
+      query
     end
 
     def test?
-      return @options[:mode] == :test
+      @options[:mode] == :test
     end
 
     def api_url
-      return test? ? Urls::TEST_URL : Urls::PRODUCTION_URL
+      test? ? Urls::TEST_URL : Urls::PRODUCTION_URL
     end
   end
 
@@ -102,7 +102,7 @@ module Buckaruby
       params[:brq_description] = options[:description] if options[:description]
       params[:brq_return] = options[:return_url] if options[:return_url]
 
-      return params
+      params
     end
 
     def build_transaction_request_params(_options)
@@ -148,7 +148,7 @@ module Buckaruby
 
       params[:brq_startrecurrent] = options[:recurring] if options[:recurring]
 
-      return params
+      params
     end
   end
 
@@ -166,7 +166,7 @@ module Buckaruby
 
       params[:brq_originaltransaction] = options[:transaction_id]
 
-      return params
+      params
     end
   end
 
@@ -182,7 +182,7 @@ module Buckaruby
       params[:brq_transaction] = options[:transaction_id] if options[:transaction_id]
       params[:brq_payment] = options[:payment_id] if options[:payment_id]
 
-      return params
+      params
     end
   end
 end

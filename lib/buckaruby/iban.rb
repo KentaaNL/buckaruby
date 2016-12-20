@@ -19,7 +19,7 @@ module Buckaruby
       all_numbers = country_code_added.gsub(/[A-Z]/) { |p| (p.respond_to?(:ord) ? p.ord : p[0]) - 55 } + '00'
       verification_number = (98 - (all_numbers.to_i % 97)).to_s.rjust(2, '0')
 
-      return country_code + verification_number + account_identification
+      country_code + verification_number + account_identification
     end
   end
 end
