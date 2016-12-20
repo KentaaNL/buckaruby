@@ -1,6 +1,8 @@
 # Buckaruby
 
+[![Gem Version](https://badge.fury.io/rb/buckaruby.svg)](https://badge.fury.io/rb/buckaruby)
 [![Build Status](https://travis-ci.org/KentaaNL/buckaruby.svg?branch=master)](https://travis-ci.org/KentaaNL/buckaruby)
+[![Code Climate](https://codeclimate.com/github/KentaaNL/buckaruby/badges/gpa.svg)](https://codeclimate.com/github/KentaaNL/buckaruby)
 
 The Buckaruby gem provides a Ruby library for communicating with the Buckaroo Payment Engine 3.0.
 
