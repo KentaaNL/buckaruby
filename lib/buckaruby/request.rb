@@ -43,9 +43,9 @@ module Buckaruby
       raw_response = http.post(uri.request_uri, post_data(params))
       return raw_response.body
     # Try to catch some common exceptions Net::HTTP might raise
-    rescue Errno::ETIMEDOUT, Errno::EINVAL, Errno::ECONNRESET, Errno::ECONNREFUSED, EOFError, IOError, SocketError,
-           Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::OpenTimeout, Net::ProtocolError, Net::ReadTimeout,
-           OpenSSL::SSL::SSLError => ex
+    rescue Errno::ETIMEDOUT, Errno::EINVAL, Errno::ECONNRESET, Errno::ECONNREFUSED, Errno::EHOSTUNREACH,
+           EOFError, IOError, SocketError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::OpenTimeout,
+           Net::ProtocolError, Net::ReadTimeout, OpenSSL::SSL::SSLError => ex
       raise ConnectionException, ex
     end
 
