@@ -99,9 +99,8 @@ describe Buckaruby::Gateway do
 
   describe 'initiate transaction' do
     before(:each) do
-      request = Buckaruby::SetupTransactionRequest.new(subject.options)
-      allow(request).to receive(:post_buckaroo).and_return("BRQ_ACTIONREQUIRED=redirect&BRQ_AMOUNT=10.00&BRQ_APIRESULT=ActionRequired&BRQ_CURRENCY=EUR&BRQ_DESCRIPTION=Test&BRQ_INVOICENUMBER=12345&BRQ_PAYMENT=12345&BRQ_PAYMENT_METHOD=ideal&BRQ_REDIRECTURL=https%3A%2F%2Ftestcheckout.buckaroo.nl%2Fhtml%2Fredirect.ashx%3Fr%3D41C48B55FA9164E123CC73B1157459E840BE5D24&BRQ_SERVICE_IDEAL_CONSUMERISSUER=Rabobank&BRQ_STATUSCODE=791&BRQ_STATUSCODE_DETAIL=S002&BRQ_STATUSMESSAGE=An+additional+action+is+required%3A+RedirectToIdeal&BRQ_TEST=true&BRQ_TIMESTAMP=2014-11-05+13%3A10%3A40&BRQ_TRANSACTIONS=41C48B55FA9164E123CC73B1157459E840BE5D24&BRQ_WEBSITEKEY=12345678&BRQ_SIGNATURE=3d6ef7e249d9509d120c7b84f27f081adf06074b")
-      allow(subject).to receive(:build_request).and_return(request)
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest")
+        .to_return(body: "BRQ_ACTIONREQUIRED=redirect&BRQ_AMOUNT=10.00&BRQ_APIRESULT=ActionRequired&BRQ_CURRENCY=EUR&BRQ_DESCRIPTION=Test&BRQ_INVOICENUMBER=12345&BRQ_PAYMENT=12345&BRQ_PAYMENT_METHOD=ideal&BRQ_REDIRECTURL=https%3A%2F%2Ftestcheckout.buckaroo.nl%2Fhtml%2Fredirect.ashx%3Fr%3D41C48B55FA9164E123CC73B1157459E840BE5D24&BRQ_SERVICE_IDEAL_CONSUMERISSUER=Rabobank&BRQ_STATUSCODE=791&BRQ_STATUSCODE_DETAIL=S002&BRQ_STATUSMESSAGE=An+additional+action+is+required%3A+RedirectToIdeal&BRQ_TEST=true&BRQ_TIMESTAMP=2014-11-05+13%3A10%3A40&BRQ_TRANSACTIONS=41C48B55FA9164E123CC73B1157459E840BE5D24&BRQ_WEBSITEKEY=12345678&BRQ_SIGNATURE=3d6ef7e249d9509d120c7b84f27f081adf06074b")
     end
 
     it 'should raise an exception when initiating a transaction with missing parameters' do
@@ -144,10 +143,18 @@ describe Buckaruby::Gateway do
       }.to raise_error(ArgumentError)
     end
 
-    it 'should raise an exception when API result Fail is returned' do
-      request = Buckaruby::SetupTransactionRequest.new(subject.options)
-      allow(request).to receive(:post_buckaroo).and_return("BRQ_APIRESULT=Fail&BRQ_APIERRORMESSAGE=Invalid+request")
-      allow(subject).to receive(:build_request).and_return(request)
+    it 'should raise a ConnectionException when connection the Buckaroo fails' do
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest")
+        .to_raise(Errno::ECONNREFUSED)
+
+      expect {
+        subject.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
+      }.to raise_error(Buckaruby::ConnectionException)
+    end
+
+    it 'should raise an ApiException when API result Fail is returned' do
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest")
+        .to_return(body: "BRQ_APIRESULT=Fail&BRQ_APIERRORMESSAGE=Invalid+request")
 
       expect {
         subject.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
@@ -229,9 +236,9 @@ describe Buckaruby::Gateway do
 
   describe 'initiate recurrent transaction' do
     before(:each) do
-      request = Buckaruby::RecurrentTransactionRequest.new(subject.options)
-      allow(request).to receive(:post_buckaroo).and_return("BRQ_AMOUNT=10.00&BRQ_APIRESULT=Success&BRQ_CURRENCY=EUR&BRQ_CUSTOMER_NAME=Test&BRQ_DESCRIPTION=Test&BRQ_INVOICENUMBER=12345&BRQ_ISSUING_COUNTRY=IE&BRQ_PAYMENT=8EE820309AA9455C91350DD5D3160362&BRQ_PAYMENT_METHOD=visa&BRQ_RECURRING=True&BRQ_SERVICE_VISA_CARDEXPIRATIONDATE=2016-01&BRQ_SERVICE_VISA_CARDNUMBERENDING=0969&BRQ_SERVICE_VISA_MASKEDCARDNUMBER=491611%2A%2A%2A%2A%2A%2A0969&BRQ_STATUSCODE=190&BRQ_STATUSCODE_DETAIL=S001&BRQ_STATUSMESSAGE=Transaction+successfully+processed&BRQ_TEST=true&BRQ_TIMESTAMP=2016-01-19+15%3A13%3A44&BRQ_TRANSACTIONS=41C48B55FA9164E123CC73B1157459E840BE5D24&BRQ_WEBSITEKEY=12345678&BRQ_SIGNATURE=b6a5a54c7e0d731f211c2080519e7aabc9775f47")
-      allow(subject).to receive(:build_request).and_return(request)
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest")
+        .to_return(body:
+"BRQ_AMOUNT=10.00&BRQ_APIRESULT=Success&BRQ_CURRENCY=EUR&BRQ_CUSTOMER_NAME=Test&BRQ_DESCRIPTION=Test&BRQ_INVOICENUMBER=12345&BRQ_ISSUING_COUNTRY=IE&BRQ_PAYMENT=8EE820309AA9455C91350DD5D3160362&BRQ_PAYMENT_METHOD=visa&BRQ_RECURRING=True&BRQ_SERVICE_VISA_CARDEXPIRATIONDATE=2016-01&BRQ_SERVICE_VISA_CARDNUMBERENDING=0969&BRQ_SERVICE_VISA_MASKEDCARDNUMBER=491611%2A%2A%2A%2A%2A%2A0969&BRQ_STATUSCODE=190&BRQ_STATUSCODE_DETAIL=S001&BRQ_STATUSMESSAGE=Transaction+successfully+processed&BRQ_TEST=true&BRQ_TIMESTAMP=2016-01-19+15%3A13%3A44&BRQ_TRANSACTIONS=41C48B55FA9164E123CC73B1157459E840BE5D24&BRQ_WEBSITEKEY=12345678&BRQ_SIGNATURE=b6a5a54c7e0d731f211c2080519e7aabc9775f47")
     end
 
     it 'should raise an exception when initiating a recurrent transaction with missing parameters' do
@@ -268,9 +275,9 @@ describe Buckaruby::Gateway do
 
   describe 'get transaction status' do
     before(:each) do
-      request = Buckaruby::StatusRequest.new(subject.options)
-      allow(request).to receive(:post_buckaroo).and_return("BRQ_AMOUNT=10.00&BRQ_APIRESULT=Success&BRQ_CURRENCY=EUR&BRQ_CUSTOMER_NAME=J.+de+Tester&BRQ_DESCRIPTION=Test&BRQ_INVOICENUMBER=12345&BRQ_MUTATIONTYPE=Collecting&BRQ_PAYER_HASH=e02377112efcd30bb7420bb1b9855a3778864572&BRQ_PAYMENT=E86256B2787EE7FF0C33D0D4C6159CD922227B79&BRQ_SERVICE_IDEAL_CONSUMERBIC=RABONL2U&BRQ_SERVICE_IDEAL_CONSUMERIBAN=NL44RABO0123456789&BRQ_SERVICE_IDEAL_CONSUMERISSUER=ING&BRQ_SERVICE_IDEAL_CONSUMERNAME=J.+de+Tester&BRQ_STATUSCODE=190&BRQ_STATUSCODE_DETAIL=S001&BRQ_STATUSMESSAGE=Transaction+successfully+processed&BRQ_TEST=true&BRQ_TIMESTAMP=2015-02-16+13%3A25%3A58&BRQ_TRANSACTION_CANCELABLE=False&BRQ_TRANSACTION_METHOD=ideal&BRQ_TRANSACTION_TYPE=C021&BRQ_TRANSACTIONS=41C48B55FA9164E123CC73B1157459E840BE5D24&BRQ_WEBSITEKEY=12345678&BRQ_SIGNATURE=b92de342cc863acd0c46ed3c8cb6add87668e22f")
-      allow(subject).to receive(:build_request).and_return(request)
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionStatus")
+        .to_return(body:
+"BRQ_AMOUNT=10.00&BRQ_APIRESULT=Success&BRQ_CURRENCY=EUR&BRQ_CUSTOMER_NAME=J.+de+Tester&BRQ_DESCRIPTION=Test&BRQ_INVOICENUMBER=12345&BRQ_MUTATIONTYPE=Collecting&BRQ_PAYER_HASH=e02377112efcd30bb7420bb1b9855a3778864572&BRQ_PAYMENT=E86256B2787EE7FF0C33D0D4C6159CD922227B79&BRQ_SERVICE_IDEAL_CONSUMERBIC=RABONL2U&BRQ_SERVICE_IDEAL_CONSUMERIBAN=NL44RABO0123456789&BRQ_SERVICE_IDEAL_CONSUMERISSUER=ING&BRQ_SERVICE_IDEAL_CONSUMERNAME=J.+de+Tester&BRQ_STATUSCODE=190&BRQ_STATUSCODE_DETAIL=S001&BRQ_STATUSMESSAGE=Transaction+successfully+processed&BRQ_TEST=true&BRQ_TIMESTAMP=2015-02-16+13%3A25%3A58&BRQ_TRANSACTION_CANCELABLE=False&BRQ_TRANSACTION_METHOD=ideal&BRQ_TRANSACTION_TYPE=C021&BRQ_TRANSACTIONS=41C48B55FA9164E123CC73B1157459E840BE5D24&BRQ_WEBSITEKEY=12345678&BRQ_SIGNATURE=b92de342cc863acd0c46ed3c8cb6add87668e22f")
     end
 
     it 'should raise an exception when initiating a transaction with missing parameters' do
@@ -308,7 +315,7 @@ describe Buckaruby::Gateway do
       }.to raise_error(ArgumentError)
     end
 
-    it 'should raise an exception when signature is invalid' do
+    it 'should raise a SignatureException when the signature is invalid' do
       params = { "brq_amount" => "10.00", "brq_currency" => "EUR", "brq_customer_name" => "J. de Tester", "brq_description" => "Test", "brq_invoicenumber" => "12345", "brq_mutationtype" => "Collecting", "brq_payer_hash" => "e02377112efcd30bb7420bb1b9855a3778864572", "brq_payment" => "E86256B2787EE7FF0C33D0D4C6159CD922227B79", "brq_service_ideal_consumerbic" => "RABONL2U", "brq_service_ideal_consumeriban" => "NL44RABO0123456789", "brq_service_ideal_consumerissuer" => "Rabobank", "brq_service_ideal_consumername" => "J. de Tester", "brq_statuscode" => "190", "brq_statuscode_detail" => "S001", "brq_statusmessage" => "Transaction successfully processed", "brq_test" => "true", "brq_timestamp" => "2014-11-05 13:10:42", "brq_transaction_method" => "ideal", "brq_transaction_type" => "C021", "brq_transactions" => "41C48B55FA9164E123CC73B1157459E840BE5D24", "brq_websitekey" => "12345678", "brq_signature" => "abcdefgh1234567890abcdefgh1234567890" }
 
       expect {
@@ -316,7 +323,7 @@ describe Buckaruby::Gateway do
       }.to raise_error(Buckaruby::SignatureException)
     end
 
-    it 'should return the status when signature is valid' do
+    it 'should return the status when the signature is valid' do
       params = { "brq_amount" => "10.00", "brq_currency" => "EUR", "brq_customer_name" => "J. de Tester", "brq_description" => "Test", "brq_invoicenumber" => "12345", "brq_mutationtype" => "Collecting", "brq_payer_hash" => "e02377112efcd30bb7420bb1b9855a3778864572", "brq_payment" => "E86256B2787EE7FF0C33D0D4C6159CD922227B79", "brq_service_ideal_consumerbic" => "RABONL2U", "brq_service_ideal_consumeriban" => "NL44RABO0123456789", "brq_service_ideal_consumerissuer" => "Rabobank", "brq_service_ideal_consumername" => "J. de Tester", "brq_statuscode" => "190", "brq_statuscode_detail" => "S001", "brq_statusmessage" => "Transaction successfully processed", "brq_test" => "true", "brq_timestamp" => "2014-11-05 13:10:42", "brq_transaction_method" => "ideal", "brq_transaction_type" => "C021", "brq_transactions" => "41C48B55FA9164E123CC73B1157459E840BE5D24", "brq_websitekey" => "12345678", "brq_signature" => "0a74bba15fccd8094f33678c001b44851643876d" }
 
       response = subject.callback(params)
