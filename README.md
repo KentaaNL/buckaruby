@@ -126,9 +126,13 @@ When missing or invalid parameters are passed to any method, an `ArgumentError` 
 
 When a request to Buckaroo fails because of connection problems, a `Buckaruby::ConnectionException` will be raised.
 
+When Buckaroo returns an invalid response (status code is not 2xx), a `Buckaruby::InvalidResponseException` will be raised.
+
 When an API call to Buckaroo results in a "Fail" returned, a `Buckaruby::ApiException` will be raised.
 
 When the signature could not be verified, a `Buckaruby::SignatureException` will be raised.
+
+All Buckaruby exceptions listed here inherit from the class `Buckaruby::BuckarooException`.
 
 ## Contributing
 

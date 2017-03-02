@@ -38,16 +38,31 @@ module Buckaruby
   class ConnectionException < BuckarooException
     def initialize(exception)
       message = "Error connecting to Buckaroo: #{exception.message} (#{exception.class})"
+      super(message)
+    end
+  end
 
+  # Exception raised when the response from Buckaroo was invalid.
+  class InvalidResponseException < BuckarooException
+    attr_reader :response
+
+    def initialize(response)
+      @response = response
+
+      message = "Invalid response received from Buckaroo: #{response.message} (#{response.code})"
       super(message)
     end
   end
 
   # Exception raised when the signature could not be verified.
   class SignatureException < BuckarooException
-    def initialize(sent_signature = "", generated_signature = "")
-      message = "Sent signature (#{sent_signature}) doesn't match generated signature (#{generated_signature})"
+    attr_reader :sent_signature, :generated_signature
 
+    def initialize(sent_signature = "", generated_signature = "")
+      @sent_signature = sent_signature
+      @generated_signature = generated_signature
+
+      message = "Sent signature (#{sent_signature}) doesn't match generated signature (#{generated_signature})"
       super(message)
     end
   end

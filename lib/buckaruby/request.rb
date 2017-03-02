@@ -41,6 +41,11 @@ module Buckaruby
       end
 
       raw_response = http.post(uri.request_uri, post_data(params))
+
+      unless raw_response.is_a?(Net::HTTPSuccess)
+        raise InvalidResponseException, raw_response
+      end
+
       return raw_response.body
     # Try to catch some common exceptions Net::HTTP might raise
     rescue Errno::ETIMEDOUT, Errno::EINVAL, Errno::ECONNRESET, Errno::ECONNREFUSED, Errno::EHOSTUNREACH,

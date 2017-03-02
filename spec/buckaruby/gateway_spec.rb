@@ -152,6 +152,15 @@ describe Buckaruby::Gateway do
       }.to raise_error(Buckaruby::ConnectionException)
     end
 
+    it 'should raise an InvalidResponseException when Buckaroo returns an invalid response' do
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest")
+        .to_return(status: 500)
+
+      expect {
+        subject.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
+      }.to raise_error(Buckaruby::InvalidResponseException)
+    end
+
     it 'should raise an ApiException when API result Fail is returned' do
       stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest")
         .to_return(body: "BRQ_APIRESULT=Fail&BRQ_APIERRORMESSAGE=Invalid+request")
