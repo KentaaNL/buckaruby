@@ -19,7 +19,7 @@ module Buckaruby
         generated_signature = Signature.generate_signature(response, options)
 
         if sent_signature != generated_signature
-          raise SignatureException, sent_signature, generated_signature
+          raise SignatureException.new(sent_signature, generated_signature)
         end
       end
     end

@@ -329,7 +329,7 @@ describe Buckaruby::Gateway do
 
       expect {
         subject.callback(params)
-      }.to raise_error(Buckaruby::SignatureException)
+      }.to raise_error(Buckaruby::SignatureException, "Sent signature (abcdefgh1234567890abcdefgh1234567890) doesn't match generated signature (0a74bba15fccd8094f33678c001b44851643876d)")
     end
 
     it 'should return the status when the signature is valid' do
