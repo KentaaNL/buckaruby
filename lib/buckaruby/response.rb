@@ -102,13 +102,18 @@ module Buckaruby
       if params[:brq_transaction_type] && !params[:brq_transaction_type].empty?
         # See http://support.buckaroo.nl/index.php/Transactietypes
         case params[:brq_transaction_type]
-        when 'C001', 'C002', 'C004', 'C021', 'C043', 'C044', 'C046', 'C090', 'V001', 'V002', 'V010', 'V021', 'V090'
-          TransactionType::PAYMENT
-        when 'C005', 'V014', 'V031', 'V032', 'V034', 'V043', 'V044', 'V046', 'V094'
+        when 'C001', 'C002', 'C004', 'C021', 'C043', 'C044', 'C046', 'C089', 'C090', 'C192', 'C251', 'V001', 'V002', 'V010', 'V021', 'V032', 'V034', 'V043', 'V044', 'V046', 'V089', 'V090', 'V192', 'V245'
+          # Check the recurring flag to detect a normal or recurring transaction.
+          if params[:brq_recurring] && params[:brq_recurring].casecmp("true").zero?
+            TransactionType::PAYMENT_RECURRENT
+          else
+            TransactionType::PAYMENT
+          end
+        when 'C005', 'V014', 'V031', 'V094'
           TransactionType::PAYMENT_RECURRENT
-        when 'C079', 'C080', 'C082', 'C092', 'C101', 'C102', 'C121', 'C500', 'V067', 'V068', 'V070', 'V079', 'V080', 'V082', 'V092', 'V101', 'V102', 'V110'
+        when 'C079', 'C080', 'C082', 'C092', 'C101', 'C102', 'C121', 'C194', 'C197', 'C252', 'C500', 'V067', 'V068', 'V070', 'V079', 'V080', 'V082', 'V092', 'V101', 'V102', 'V110', 'V149', 'V194', 'V197', 'V246'
           TransactionType::REFUND
-        when 'C501', 'C502', 'C562', 'V111', 'V131', 'V132', 'V134', 'V143', 'V144', 'V146'
+        when 'C501', 'C502', 'C546', 'C551', 'C553', 'C554', 'C562', 'C589', 'C593', 'V111', 'V131', 'V132', 'V134', 'V143', 'V144', 'V146', 'V543', 'V544', 'V545', 'V546', 'V589', 'V592'
           TransactionType::REVERSAL
         end
       else

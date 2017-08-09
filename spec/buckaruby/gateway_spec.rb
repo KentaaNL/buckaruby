@@ -463,6 +463,20 @@ describe Buckaruby::Gateway do
     end
 
     context 'payment recurrent response' do
+      it 'should recognize a visa payment recurrent response' do
+        params = { "brq_amount" => "10.00", "brq_currency" => "EUR", "brq_customer_name" => "Test", "brq_description" => "test", "brq_invoicenumber" => "12345", "brq_issuing_country" => "NL", "brq_mutationtype" => "Collecting", "brq_payment" => "E86256B2787EE7FF0C33D0D4C6159CD922227B79", "brq_recurring" => "True", "brq_SERVICE_visa_CardExpirationDate" => "2017-08", "brq_SERVICE_visa_CardNumberEnding" => "0005", "brq_SERVICE_visa_MaskedCreditcardNumber" => "456355******0005", "brq_statuscode" => "190", "brq_statuscode_detail" => "S001", "brq_statusmessage" => "Transaction successfully processed", "brq_test" => "true", "brq_timestamp" => "2017-08-08 15:01:23", "brq_transaction_method" => "visa", "brq_transaction_type" => "C044", "brq_transactions" => "B51118F58785274E117EFE1BF99D4D50CCB96949", "brq_websitekey" => "12345678", "brq_signature" => "2d445ce39320a10e6637b6ace6896559ce040cb3" }
+
+        response = subject.callback(params)
+        expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
+        expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT_RECURRENT)
+        expect(response.payment_method).to eq(Buckaruby::PaymentMethod::VISA)
+        expect(response.transaction_id).to eq("B51118F58785274E117EFE1BF99D4D50CCB96949")
+        expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
+        expect(response.invoicenumber).to eq("12345")
+        expect(response.timestamp).to be_an_instance_of(Time)
+        expect(response.to_h).to be_an_instance_of(Hash)
+      end
+
       it 'should recognize a sepa direct debit payment recurrent response' do
         params = { "brq_amount" => "1.00", "brq_currency" => "EUR", "brq_customer_name" => "J. Tester", "brq_description" => "Recurrent: Test", "brq_invoicenumber" => "12345", "brq_mutationtype" => "Collecting", "brq_payment" => "E86256B2787EE7FF0C33D0D4C6159CD922227B79", "brq_recurring" => "True", "brq_SERVICE_sepadirectdebit_CollectDate" => "2016-09-16", "brq_SERVICE_sepadirectdebit_CustomerIBAN" => "NL13TEST0123456789", "brq_SERVICE_sepadirectdebit_DirectDebitType" => "First", "brq_SERVICE_sepadirectdebit_MandateDate" => "2016-09-07", "brq_SERVICE_sepadirectdebit_MandateReference" => "e1a31b3e461ab74cdbacf16bccd5290f9a284618", "brq_statuscode" => "190", "brq_statusmessage" => "Success", "brq_test" => "false", "brq_timestamp" => "2016-09-16 00:26:03", "brq_transaction_method" => "SepaDirectDebit", "brq_transaction_type" => "C005", "brq_transactions" => "B51118F58785274E117EFE1BF99D4D50CCB96949", "brq_websitekey" => "12345678", "brq_signature" => "851d0eacc314ceb9070abeb83d1853270459d81a" }
 
