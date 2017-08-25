@@ -1,5 +1,11 @@
 # Buckaruby changelog
 
+## 1.0.2 (2017-08-25)
+
+- Recognize credit card transactions via Atos.
+- Fix detection of recurrent payments.
+- Minor improvements to exception handling.
+
 ## 1.0.1 (2017-01-05)
 
 - Recognize status codes 792 & 793 as a pending transaction.
