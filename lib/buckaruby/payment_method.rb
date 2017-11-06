@@ -1,6 +1,8 @@
 module Buckaruby
   module PaymentMethod
-    IDEAL = "ideal"
+    IDEAL = "ideal" # iDEAL collecting
+    IDEAL_PROCESSING = "idealprocessing" # iDEAL processing
+
     SEPA_DIRECT_DEBIT = "sepadirectdebit"
     PAYPAL = "paypal"
     BANCONTACT_MISTER_CASH = "bancontactmrcash"

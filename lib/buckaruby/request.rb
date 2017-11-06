@@ -127,6 +127,12 @@ module Buckaruby
           brq_service_ideal_issuer: options[:payment_issuer],
           brq_service_ideal_version: "2"
         )
+      when PaymentMethod::IDEAL_PROCESSING
+        params.merge!(
+          brq_service_idealprocessing_action: Action::PAY,
+          brq_service_idealprocessing_issuer: options[:payment_issuer],
+          brq_service_idealprocessing_version: "2"
+        )
       when PaymentMethod::SEPA_DIRECT_DEBIT
         params.merge!(
           brq_service_sepadirectdebit_action: Action::PAY,

@@ -31,6 +31,8 @@ module Buckaruby
       case payment_method
       when PaymentMethod::IDEAL
         params[:brq_service_ideal_consumerbic]
+      when PaymentMethod::IDEAL_PROCESSING
+        params[:brq_service_idealprocessing_consumerbic]
       when PaymentMethod::SEPA_DIRECT_DEBIT
         params[:brq_service_sepadirectdebit_customerbic]
       end
@@ -40,6 +42,8 @@ module Buckaruby
       case payment_method
       when PaymentMethod::IDEAL
         params[:brq_service_ideal_consumeriban]
+      when PaymentMethod::IDEAL_PROCESSING
+        params[:brq_service_idealprocessing_consumeriban]
       when PaymentMethod::SEPA_DIRECT_DEBIT
         params[:brq_service_sepadirectdebit_customeriban]
       end
@@ -49,6 +53,8 @@ module Buckaruby
       case payment_method
       when PaymentMethod::IDEAL
         params[:brq_service_ideal_consumername] || params[:brq_customer_name]
+      when PaymentMethod::IDEAL_PROCESSING
+        params[:brq_service_idealprocessing_consumername] || params[:brq_customer_name]
       when PaymentMethod::SEPA_DIRECT_DEBIT
         params[:brq_service_sepadirectdebit_customername] || params[:brq_customer_name]
       end

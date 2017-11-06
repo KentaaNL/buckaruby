@@ -23,8 +23,8 @@ module Buckaruby
 
     # Get a list with payment issuers.
     def issuers(payment_method)
-      if payment_method != PaymentMethod::IDEAL
-        raise ArgumentError, "Invalid payment method, only #{PaymentMethod::IDEAL} is supported."
+      if payment_method != PaymentMethod::IDEAL && payment_method != PaymentMethod::IDEAL_PROCESSING
+        raise ArgumentError, "Invalid payment method, only iDEAL is supported."
       end
 
       Ideal::ISSUERS
@@ -85,7 +85,7 @@ module Buckaruby
       required_params << :return_url if options[:payment_method] != PaymentMethod::SEPA_DIRECT_DEBIT
 
       case options[:payment_method]
-      when PaymentMethod::IDEAL
+      when PaymentMethod::IDEAL, PaymentMethod::IDEAL_PROCESSING
         required_params << :payment_issuer
       when PaymentMethod::SEPA_DIRECT_DEBIT
         required_params << [:account_iban, :account_name]
@@ -96,7 +96,7 @@ module Buckaruby
       validate_amount!(options)
 
       valid_payment_methods = [
-        PaymentMethod::IDEAL, PaymentMethod::VISA, PaymentMethod::MASTER_CARD, PaymentMethod::MAESTRO,
+        PaymentMethod::IDEAL, PaymentMethod::IDEAL_PROCESSING, PaymentMethod::VISA, PaymentMethod::MASTER_CARD, PaymentMethod::MAESTRO,
         PaymentMethod::SEPA_DIRECT_DEBIT, PaymentMethod::PAYPAL, PaymentMethod::BANCONTACT_MISTER_CASH
       ]
       validate_payment_method!(options, valid_payment_methods)
@@ -121,7 +121,7 @@ module Buckaruby
 
     # Validate the payment issuer when iDEAL is selected as payment method.
     def validate_payment_issuer!(options)
-      if options[:payment_method] == PaymentMethod::IDEAL
+      if options[:payment_method] == PaymentMethod::IDEAL || options[:payment_method] == PaymentMethod::IDEAL_PROCESSING
         unless Ideal::ISSUERS.include?(options[:payment_issuer])
           raise ArgumentError, "Invalid payment issuer: #{options[:payment_issuer]}"
         end
