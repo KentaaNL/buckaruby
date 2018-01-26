@@ -13,6 +13,6 @@ module Buckaruby
       "SNSBNL2A" => "SNS Bank",
       "TRIONL2U" => "Triodos Bank",
       "FVLBNL22" => "Van Lanschot"
-    }
+    }.freeze
   end
 end
