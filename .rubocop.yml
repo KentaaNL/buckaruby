@@ -1,7 +1,7 @@
 # Buckaruby RuboCop configuration
 
 AllCops:
-  TargetRubyVersion: 2.2
+  TargetRubyVersion: 2.3
   DisplayCopNames: true
   DisplayStyleGuide: true
 
@@ -43,10 +43,10 @@ Style/GuardClause:
 Style/IfUnlessModifier:
   Enabled: false
 
-Style/MutableConstant:
+Style/StringLiterals:
   Enabled: false
 
-Style/StringLiterals:
+Style/SafeNavigation:
   Enabled: false
 
 Style/SymbolArray:
