@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Buckaruby
   module Urls
     TEST_URL = "https://testcheckout.buckaroo.nl/nvp/"

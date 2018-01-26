@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Buckaruby
   # Helper for calculating the IBAN for a given account number, bank code and country code.
   class Iban

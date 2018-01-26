@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Buckaruby
   module PaymentMethod
     IDEAL = "ideal" # iDEAL collecting

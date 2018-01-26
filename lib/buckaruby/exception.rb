@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Buckaruby
   # Base class for exceptions.
   class BuckarooException < StandardError

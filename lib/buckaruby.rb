@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'buckaruby/support/case_insensitive_hash'
 
 require_relative 'buckaruby/action'

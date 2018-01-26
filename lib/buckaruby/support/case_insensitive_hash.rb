@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Buckaruby
   module Support
     # The case insensitive Hash is a Hash with case insensitive keys that
