@@ -13,6 +13,26 @@ module Buckaruby
       verify_signature!(response, options)
     end
 
+    def status
+      # See http://support.buckaroo.nl/index.php/Statuscodes
+      case params[:brq_statuscode]
+      when '190'
+        TransactionStatus::SUCCESS
+      when '490', '491', '492'
+        TransactionStatus::FAILED
+      when '690'
+        TransactionStatus::REJECTED
+      when '790', '791', '792', '793'
+        TransactionStatus::PENDING
+      when '890', '891'
+        TransactionStatus::CANCELLED
+      end
+    end
+
+    def timestamp
+      parse_time(params[:brq_timestamp])
+    end
+
     private
 
     def verify_signature!(response, options)
@@ -24,6 +44,10 @@ module Buckaruby
           raise SignatureException.new(sent_signature, generated_signature)
         end
       end
+    end
+
+    def parse_time(time)
+      time ? Time.strptime(time, '%Y-%m-%d %H:%M:%S') : nil
     end
   end
 
@@ -98,10 +122,6 @@ module Buckaruby
       params[:brq_relatedtransaction_reversal]
     end
 
-    def timestamp
-      parse_time(params[:brq_timestamp])
-    end
-
     def transaction_id
       params[:brq_transactions]
     end
@@ -131,19 +151,7 @@ module Buckaruby
     end
 
     def transaction_status
-      # See http://support.buckaroo.nl/index.php/Statuscodes
-      case params[:brq_statuscode]
-      when '190'
-        TransactionStatus::SUCCESS
-      when '490', '491', '492'
-        TransactionStatus::FAILED
-      when '690'
-        TransactionStatus::REJECTED
-      when '790', '791', '792', '793'
-        TransactionStatus::PENDING
-      when '890', '891'
-        TransactionStatus::CANCELLED
-      end
+      status
     end
 
     def to_h
@@ -171,10 +179,6 @@ module Buckaruby
 
     def parse_date(date)
       date ? Date.strptime(date, '%Y-%m-%d') : nil
-    end
-
-    def parse_time(time)
-      time ? Time.strptime(time, '%Y-%m-%d %H:%M:%S') : nil
     end
 
     def parse_payment_method(method)
