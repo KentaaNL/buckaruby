@@ -51,8 +51,8 @@ module Buckaruby
     end
   end
 
-  # Base class for a transaction response.
-  class TransactionResponse < Response
+  # Base for a transaction response.
+  module TransactionResponse
     def account_bic
       case payment_method
       when PaymentMethod::IDEAL
@@ -186,8 +186,8 @@ module Buckaruby
     end
   end
 
-  # Base class for a transaction response via the API.
-  class TransactionApiResponse < TransactionResponse
+  # Base class for a response via the API.
+  class ApiResponse < Response
     def initialize(response, options)
       super(response, options)
 
@@ -198,18 +198,22 @@ module Buckaruby
   end
 
   # Response when creating a new transaction.
-  class SetupTransactionResponse < TransactionApiResponse
+  class SetupTransactionResponse < ApiResponse
+    include TransactionResponse
   end
 
   # Response when creating a recurrent transaction.
-  class RecurrentTransactionResponse < TransactionApiResponse
+  class RecurrentTransactionResponse < ApiResponse
+    include TransactionResponse
   end
 
   # Response when getting the status of a transaction.
-  class StatusResponse < TransactionApiResponse
+  class StatusResponse < ApiResponse
+    include TransactionResponse
   end
 
   # Response when verifying the Buckaroo callback.
-  class CallbackResponse < TransactionResponse
+  class CallbackResponse < Response
+    include TransactionResponse
   end
 end
