@@ -1,5 +1,9 @@
 # Buckaruby changelog
 
+## HEAD
+- Refund of a transaction implemented.
+- Payment method iDEAL processing added.
+
 ## 1.0.2 (2017-08-25)
 
 - Recognize credit card transactions via Atos.
