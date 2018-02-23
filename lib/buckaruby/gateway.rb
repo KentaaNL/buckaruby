@@ -52,6 +52,40 @@ module Buckaruby
       execute_request(:recurrent_transaction, options)
     end
 
+    # Checks if a transaction is refundable.
+    def refundable?(options = {})
+      @logger.debug("[refundable?] options=#{options.inspect}")
+
+      validate_required_params!(options, :transaction_id)
+
+      response = execute_request(:refund_info, options)
+      response.refundable?
+    end
+
+    # Refund a transaction.
+    def refund_transaction(options = {})
+      @logger.debug("[refund_transaction] options=#{options.inspect}")
+
+      validate_refund_transaction_params!(options)
+
+      response = execute_request(:refund_info, options)
+      unless response.refundable?
+        raise NonRefundableTransactionException, options[:transaction_id]
+      end
+
+      # Pick maximum refundable amount if amount is not supplied.
+      options[:amount] = response.maximum_amount unless options[:amount]
+
+      # Fill required parameters with data from refund info request.
+      options.merge!(
+        payment_method: response.payment_method,
+        invoicenumber: response.invoicenumber,
+        currency: response.currency
+      )
+
+      execute_request(:refund_transaction, options)
+    end
+
     # Get transaction status.
     def status(options = {})
       @logger.debug("[status] options=#{options.inspect}")
@@ -145,6 +179,17 @@ module Buckaruby
       validate_payment_method!(options, valid_payment_methods)
     end
 
+    # Validate params for refund transaction.
+    def validate_refund_transaction_params!(options)
+      unless options[:transaction_id]
+        raise ArgumentError, "Missing required parameter: transaction_id"
+      end
+
+      if options[:amount]
+        validate_amount!(options)
+      end
+    end
+
     # Validate params for transaction status.
     def validate_status_params!(options)
       if !options[:transaction_id] && !options[:payment_id]
@@ -192,6 +237,10 @@ module Buckaruby
         SetupTransactionResponse.new(response, @options)
       when :recurrent_transaction
         RecurrentTransactionResponse.new(response, @options)
+      when :refund_transaction
+        RefundTransactionResponse.new(response, @options)
+      when :refund_info
+        RefundInfoResponse.new(response, @options)
       when :status
         StatusResponse.new(response, @options)
       end
@@ -204,6 +253,10 @@ module Buckaruby
         SetupTransactionRequest.new(@options)
       when :recurrent_transaction
         RecurrentTransactionRequest.new(@options)
+      when :refund_transaction
+        RefundTransactionRequest.new(@options)
+      when :refund_info
+        RefundInfoRequest.new(@options)
       when :status
         StatusRequest.new(@options)
       end

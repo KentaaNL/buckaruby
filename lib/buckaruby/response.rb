@@ -191,7 +191,7 @@ module Buckaruby
     def initialize(response, options)
       super(response, options)
 
-      if params[:brq_apiresult].nil? || params[:brq_apiresult] == "Fail"
+      if params[:brq_apiresult].nil? || params[:brq_apiresult].casecmp("fail").zero?
         raise ApiException, params
       end
     end
@@ -205,6 +205,34 @@ module Buckaruby
   # Response when creating a recurrent transaction.
   class RecurrentTransactionResponse < ApiResponse
     include TransactionResponse
+  end
+
+  # Response when creating a refund transaction.
+  class RefundTransactionResponse < ApiResponse
+    include TransactionResponse
+  end
+
+  # Response when retrieving the refund information.
+  class RefundInfoResponse < ApiResponse
+    def payment_method
+      params[:brq_refundinfo_1_servicecode]
+    end
+
+    def refundable?
+      !params[:brq_refundinfo_1_isrefundable].nil? && params[:brq_refundinfo_1_isrefundable].casecmp("true").zero?
+    end
+
+    def maximum_amount
+      params[:brq_refundinfo_1_maximumrefundamount]
+    end
+
+    def invoicenumber
+      params[:brq_refundinfo_1_invoice]
+    end
+
+    def currency
+      params[:brq_refundinfo_1_refundcurrency]
+    end
   end
 
   # Response when getting the status of a transaction.

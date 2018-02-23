@@ -68,4 +68,16 @@ module Buckaruby
       super(message)
     end
   end
+
+  # Exception raised when trying to refund a non refundable transaction.
+  class NonRefundableTransactionException < BuckarooException
+    attr_reader :transaction_id
+
+    def initialize(transaction_id)
+      @transaction_id = transaction_id
+
+      message = "Not a refundable transaction: #{transaction_id}"
+      super(message)
+    end
+  end
 end

@@ -65,7 +65,9 @@ options = {
 response = gateway.setup_transaction(options)
 ```
 
-On success this will return a `Buckaruby::SetupTransactionResponse`.
+The response includes a `status` to check if the transaction was successful and a `redirect_url` which you can use to redirect the user to when present.
+
+See `Buckaruby::SetupTransactionResponse` for more details.
 
 ### Recurrent transaction
 
@@ -83,6 +85,8 @@ options = {
 }
 
 response = gateway.setup_transaction(options)
+
+transaction = response.transaction_id  # use this for the recurrent transaction
 ```
 
 The response will include a `transaction_id` which you must use to make a recurrent transaction:
@@ -98,7 +102,31 @@ options = {
 response = gateway.recurrent_transaction(options)
 ```
 
-On success this will return a `Buckaruby::RecurrentTransactionResponse`.
+The response includes a `status` to check if the transaction was successful.
+
+See `Buckaruby::RecurrentTransactionResponse` for more details.
+
+### Refund transaction
+
+For some transactions it's possible to do a refund: Buckaroo creates a new "reverse" transaction based on the original transaction.
+
+First check if the transaction is refundable, with the parameter `transaction_id` set to the original transaction ID:
+
+```ruby
+response = gateway.refundable?(transaction_id: "abcdefg")
+```
+
+If the responsive is positive, you can refund the transaction with:
+
+```ruby
+response = gateway.refund_transaction(transaction_id: "abcdefg")
+```
+
+The response includes a `status` to check if the refund was successful.
+
+If you try to refund a transaction that's not refundable, then a `Buckaruby::NonRefundableTransactionException` will be raised.
+
+See `Buckaruby::RefundTransactionResponse` for more details.
 
 ### Push response
 
@@ -108,7 +136,7 @@ Buckaroo can be configured to send push notifications for transactions. You can 
 response = gateway.callback(params)
 ```
 
-On success this will return a `Buckaruby::CallbackResponse`.
+See `Buckaruby::CallbackResponse` for more details.
 
 ### Get status
 
@@ -118,7 +146,7 @@ To query the status of any transaction, use the method `status` with either the 
 response = gateway.status(transaction_id: 12345)
 ```
 
-On success this will return a `Buckaruby::StatusResponse`.
+See `Buckaruby::StatusResponse` for more details.
 
 ### Error handling
 

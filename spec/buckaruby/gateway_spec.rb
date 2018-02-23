@@ -75,7 +75,7 @@ describe Buckaruby::Gateway do
 
   it { expect(subject).to be_an_instance_of(Buckaruby::Gateway) }
 
-  describe 'get issuers' do
+  describe '#issuers' do
     context 'when no or false parameters are passed' do
       it 'should raise an ArgumentError' do
         expect { subject.issuers }.to raise_error(ArgumentError)
@@ -99,10 +99,9 @@ describe Buckaruby::Gateway do
     end
   end
 
-  describe 'initiate transaction' do
+  describe '#setup_transaction' do
     before(:each) do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest")
-        .to_return(body: "BRQ_ACTIONREQUIRED=redirect&BRQ_AMOUNT=10.00&BRQ_APIRESULT=ActionRequired&BRQ_CURRENCY=EUR&BRQ_DESCRIPTION=Test&BRQ_INVOICENUMBER=12345&BRQ_PAYMENT=12345&BRQ_PAYMENT_METHOD=ideal&BRQ_REDIRECTURL=https%3A%2F%2Ftestcheckout.buckaroo.nl%2Fhtml%2Fredirect.ashx%3Fr%3D41C48B55FA9164E123CC73B1157459E840BE5D24&BRQ_SERVICE_IDEAL_CONSUMERISSUER=Rabobank&BRQ_STATUSCODE=791&BRQ_STATUSCODE_DETAIL=S002&BRQ_STATUSMESSAGE=An+additional+action+is+required%3A+RedirectToIdeal&BRQ_TEST=true&BRQ_TIMESTAMP=2014-11-05+13%3A10%3A40&BRQ_TRANSACTIONS=41C48B55FA9164E123CC73B1157459E840BE5D24&BRQ_WEBSITEKEY=12345678&BRQ_SIGNATURE=3d6ef7e249d9509d120c7b84f27f081adf06074b")
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: File.read("spec/fixtures/responses/setup_transaction_success.txt"))
     end
 
     it 'should raise an exception when initiating a transaction with missing parameters' do
@@ -146,8 +145,7 @@ describe Buckaruby::Gateway do
     end
 
     it 'should raise a ConnectionException when connection the Buckaroo fails' do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest")
-        .to_raise(Errno::ECONNREFUSED)
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest").to_raise(Errno::ECONNREFUSED)
 
       expect {
         subject.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
@@ -155,8 +153,7 @@ describe Buckaruby::Gateway do
     end
 
     it 'should raise an InvalidResponseException when Buckaroo returns an invalid response' do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest")
-        .to_return(status: 500)
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(status: 500)
 
       expect {
         subject.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
@@ -164,8 +161,7 @@ describe Buckaruby::Gateway do
     end
 
     it 'should raise an ApiException when API result Fail is returned' do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest")
-        .to_return(body: "BRQ_APIRESULT=Fail&BRQ_APIERRORMESSAGE=Invalid+request")
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: "BRQ_APIRESULT=Fail&BRQ_APIERRORMESSAGE=Invalid+request")
 
       expect {
         subject.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
@@ -245,11 +241,9 @@ describe Buckaruby::Gateway do
     end
   end
 
-  describe 'initiate recurrent transaction' do
+  describe '#recurrent_transaction' do
     before(:each) do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest")
-        .to_return(body:
-"BRQ_AMOUNT=10.00&BRQ_APIRESULT=Success&BRQ_CURRENCY=EUR&BRQ_CUSTOMER_NAME=Test&BRQ_DESCRIPTION=Test&BRQ_INVOICENUMBER=12345&BRQ_ISSUING_COUNTRY=IE&BRQ_PAYMENT=8EE820309AA9455C91350DD5D3160362&BRQ_PAYMENT_METHOD=visa&BRQ_RECURRING=True&BRQ_SERVICE_VISA_CARDEXPIRATIONDATE=2016-01&BRQ_SERVICE_VISA_CARDNUMBERENDING=0969&BRQ_SERVICE_VISA_MASKEDCARDNUMBER=491611%2A%2A%2A%2A%2A%2A0969&BRQ_STATUSCODE=190&BRQ_STATUSCODE_DETAIL=S001&BRQ_STATUSMESSAGE=Transaction+successfully+processed&BRQ_TEST=true&BRQ_TIMESTAMP=2016-01-19+15%3A13%3A44&BRQ_TRANSACTIONS=41C48B55FA9164E123CC73B1157459E840BE5D24&BRQ_WEBSITEKEY=12345678&BRQ_SIGNATURE=b6a5a54c7e0d731f211c2080519e7aabc9775f47")
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: File.read("spec/fixtures/responses/recurrent_transaction_success.txt"))
     end
 
     it 'should raise an exception when initiating a recurrent transaction with missing parameters' do
@@ -284,14 +278,70 @@ describe Buckaruby::Gateway do
     end
   end
 
-  describe 'get transaction status' do
+  describe '#refundable?' do
     before(:each) do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionStatus")
-        .to_return(body:
-"BRQ_AMOUNT=10.00&BRQ_APIRESULT=Success&BRQ_CURRENCY=EUR&BRQ_CUSTOMER_NAME=J.+de+Tester&BRQ_DESCRIPTION=Test&BRQ_INVOICENUMBER=12345&BRQ_MUTATIONTYPE=Collecting&BRQ_PAYER_HASH=e02377112efcd30bb7420bb1b9855a3778864572&BRQ_PAYMENT=E86256B2787EE7FF0C33D0D4C6159CD922227B79&BRQ_SERVICE_IDEAL_CONSUMERBIC=RABONL2U&BRQ_SERVICE_IDEAL_CONSUMERIBAN=NL44RABO0123456789&BRQ_SERVICE_IDEAL_CONSUMERISSUER=ING&BRQ_SERVICE_IDEAL_CONSUMERNAME=J.+de+Tester&BRQ_STATUSCODE=190&BRQ_STATUSCODE_DETAIL=S001&BRQ_STATUSMESSAGE=Transaction+successfully+processed&BRQ_TEST=true&BRQ_TIMESTAMP=2015-02-16+13%3A25%3A58&BRQ_TRANSACTION_CANCELABLE=False&BRQ_TRANSACTION_METHOD=ideal&BRQ_TRANSACTION_TYPE=C021&BRQ_TRANSACTIONS=41C48B55FA9164E123CC73B1157459E840BE5D24&BRQ_WEBSITEKEY=12345678&BRQ_SIGNATURE=b92de342cc863acd0c46ed3c8cb6add87668e22f")
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_success.txt"))
     end
 
-    it 'should raise an exception when initiating a transaction with missing parameters' do
+    it 'should raise an exception when required parameters are missing' do
+      expect {
+        subject.refundable?
+      }.to raise_error(ArgumentError)
+    end
+
+    it 'should return true when the transaction is refundable' do
+      response = subject.refundable?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
+      expect(response).to be true
+    end
+
+    it 'should return false when the transaction was not found' do
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_error.txt"))
+
+      response = subject.refundable?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
+      expect(response).to eq(false)
+    end
+  end
+
+  describe '#refund_transaction' do
+    before(:each) do
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_success.txt"))
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: File.read("spec/fixtures/responses/refund_transaction_success.txt"))
+    end
+
+    it 'should raise an exception when required parameters are missing' do
+      expect {
+        subject.refund_transaction
+      }.to raise_error(ArgumentError)
+    end
+
+    it 'should raise an exception when the transaction is not refundable' do
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_error.txt"))
+
+      expect {
+        subject.refund_transaction(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
+      }.to raise_error(Buckaruby::NonRefundableTransactionException)
+    end
+
+    it 'should refund the transaction' do
+      response = subject.refund_transaction(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
+      expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
+      expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
+      expect(response.payment_method).to eq(Buckaruby::PaymentMethod::IDEAL)
+      expect(response.transaction_id).to eq("8CCE4BB06339F28A506E1A328025D7DF13CCAD59")
+      expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
+      expect(response.refund_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
+      expect(response.invoicenumber).to eq("12345")
+      expect(response.timestamp).to be_an_instance_of(Time)
+      expect(response.to_h).to be_an_instance_of(Hash)
+    end
+  end
+
+  describe '#status' do
+    before(:each) do
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_success.txt"))
+    end
+
+    it 'should raise an exception when required parameters are missing' do
       expect {
         subject.status
       }.to raise_error(ArgumentError)
@@ -319,7 +369,7 @@ describe Buckaruby::Gateway do
     end
   end
 
-  describe 'verifying payment response' do
+  describe '#callback' do
     it 'should raise an exception when parameters are invalid' do
       expect {
         subject.callback

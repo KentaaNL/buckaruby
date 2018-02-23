@@ -1,0 +1,1 @@
+BRQ_APIRESULT=Success&BRQ_INVALIDREFUNDINFO_1_ERRORMESSAGE=There+is+no+transaction+with+this+transaction+key+under+the+website+key+used+in+the+request.&BRQ_INVALIDREFUNDINFO_1_TRANSACTIONKEY=0&BRQ_SIGNATURE=e60bc9f33a369b90e7099960f5cba3f17a696c44

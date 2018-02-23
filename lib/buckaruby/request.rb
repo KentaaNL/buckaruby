@@ -183,6 +183,44 @@ module Buckaruby
     end
   end
 
+  # Request for a creating a refund.
+  class RefundTransactionRequest < Request
+    def execute(options)
+      super(options.merge(operation: Operation::TRANSACTION_REQUEST))
+    end
+
+    def build_request_params(options)
+      params = {
+        brq_payment_method: options[:payment_method],
+        brq_amount_credit: BigDecimal.new(options[:amount].to_s).to_s("F"),
+        brq_currency: options[:currency] || Currency::EURO,
+        brq_invoicenumber: options[:invoicenumber]
+      }
+
+      key = :"brq_service_#{options[:payment_method]}_action"
+      params[key] = Action::REFUND
+
+      params[:brq_originaltransaction] = options[:transaction_id]
+
+      params
+    end
+  end
+
+  # Request for retrieving refund information.
+  class RefundInfoRequest < Request
+    def execute(options)
+      super(options.merge(operation: Operation::REFUND_INFO))
+    end
+
+    def build_request_params(options)
+      params = {}
+
+      params[:brq_transaction] = options[:transaction_id]
+
+      params
+    end
+  end
+
   # Request for getting the status of a transaction.
   class StatusRequest < Request
     def execute(options)
