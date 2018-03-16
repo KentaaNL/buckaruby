@@ -1,7 +1,8 @@
 # Buckaruby changelog
 
 ## HEAD
-- Refund of a transaction implemented.
+- Refund transaction implemented.
+- Cancel transaction implemented.
 - Payment method iDEAL processing added.
 
 ## 1.0.2 (2017-08-25)

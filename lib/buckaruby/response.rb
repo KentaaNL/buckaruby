@@ -238,6 +238,14 @@ module Buckaruby
   # Response when getting the status of a transaction.
   class StatusResponse < ApiResponse
     include TransactionResponse
+
+    def cancellable?
+      !params[:brq_transaction_cancelable].nil? && params[:brq_transaction_cancelable].casecmp("true").zero?
+    end
+  end
+
+  # Response when cancelling a transaction.
+  class CancelResponse < ApiResponse
   end
 
   # Response when verifying the Buckaroo callback.

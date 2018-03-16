@@ -95,6 +95,30 @@ module Buckaruby
       execute_request(:status, options)
     end
 
+    # Checks if a transaction is cancellable.
+    def cancellable?(options = {})
+      @logger.debug("[cancellable?] options=#{options.inspect}")
+
+      validate_required_params!(options, :transaction_id)
+
+      response = execute_request(:status, options)
+      response.cancellable?
+    end
+
+    # Cancel a transaction.
+    def cancel_transaction(options = {})
+      @logger.debug("[cancel_transaction] options=#{options.inspect}")
+
+      validate_required_params!(options, :transaction_id)
+
+      response = execute_request(:status, options)
+      unless response.cancellable?
+        raise NonCancellableTransactionException, options[:transaction_id]
+      end
+
+      execute_request(:cancel, options)
+    end
+
     # Verify the response / callback.
     def callback(response = {})
       if response.empty?
@@ -243,6 +267,8 @@ module Buckaruby
         RefundInfoResponse.new(response, @options)
       when :status
         StatusResponse.new(response, @options)
+      when :cancel
+        CancelResponse.new(response, @options)
       end
     end
 
@@ -259,6 +285,8 @@ module Buckaruby
         RefundInfoRequest.new(@options)
       when :status
         StatusRequest.new(@options)
+      when :cancel
+        CancelRequest.new(@options)
       end
     end
   end

@@ -116,7 +116,7 @@ First check if the transaction is refundable, with the parameter `transaction_id
 response = gateway.refundable?(transaction_id: "abcdefg")
 ```
 
-If the responsive is positive, you can refund the transaction with:
+If the reponse is positive then you can refund the transaction with:
 
 ```ruby
 response = gateway.refund_transaction(transaction_id: "abcdefg")
@@ -127,6 +127,26 @@ The response includes a `status` to check if the refund was successful.
 If you try to refund a transaction that's not refundable, then a `Buckaruby::NonRefundableTransactionException` will be raised.
 
 See `Buckaruby::RefundTransactionResponse` for more details.
+
+### Cancel transaction
+
+Sometimes a transaction can be cancelled, for example a SEPA Direct Debit transaction before it has been offered to the bank.
+
+You can check if the transaction is cancellable, by using the method `cancellable?` with the parameter `transaction_id`:
+
+```ruby
+response = gateway.cancellable?(transaction_id: "abcdefg")
+```
+
+If the response is positive then you can cancel the transaction with:
+
+```ruby
+response = gateway.cancel_transaction(transaction_id: "abcdefg")
+```
+
+If this does not result in an exception, then the cancel was successful.
+
+If you try to cancel a transaction that's not cancellable, then a `Buckaruby::NonCancellableTransactionException` will be raised.
 
 ### Push response
 

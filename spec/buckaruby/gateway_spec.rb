@@ -279,10 +279,6 @@ describe Buckaruby::Gateway do
   end
 
   describe '#refundable?' do
-    before(:each) do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_success.txt"))
-    end
-
     it 'should raise an exception when required parameters are missing' do
       expect {
         subject.refundable?
@@ -290,6 +286,8 @@ describe Buckaruby::Gateway do
     end
 
     it 'should return true when the transaction is refundable' do
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_success.txt"))
+
       response = subject.refundable?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response).to be true
     end
@@ -298,16 +296,11 @@ describe Buckaruby::Gateway do
       stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_error.txt"))
 
       response = subject.refundable?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
-      expect(response).to eq(false)
+      expect(response).to be false
     end
   end
 
   describe '#refund_transaction' do
-    before(:each) do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_success.txt"))
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: File.read("spec/fixtures/responses/refund_transaction_success.txt"))
-    end
-
     it 'should raise an exception when required parameters are missing' do
       expect {
         subject.refund_transaction
@@ -323,6 +316,9 @@ describe Buckaruby::Gateway do
     end
 
     it 'should refund the transaction' do
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_success.txt"))
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: File.read("spec/fixtures/responses/refund_transaction_success.txt"))
+
       response = subject.refund_transaction(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
       expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
@@ -366,6 +362,52 @@ describe Buckaruby::Gateway do
       expect(response.account_iban).to eq("NL44RABO0123456789")
       expect(response.account_bic).to eq("RABONL2U")
       expect(response.account_name).to eq("J. de Tester")
+    end
+  end
+
+  describe '#cancellable?' do
+    it 'should raise an exception when required parameters are missing' do
+      expect {
+        subject.cancellable?
+      }.to raise_error(ArgumentError)
+    end
+
+    it 'should return true when the transaction is cancellable' do
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_cancellable.txt"))
+
+      response = subject.cancellable?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
+      expect(response).to be true
+    end
+
+    it 'should return false when the transaction is not cancellable' do
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_noncancellable.txt"))
+
+      response = subject.cancellable?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
+      expect(response).to be false
+    end
+  end
+
+  describe '#cancel_transaction' do
+    it 'should raise an exception when required parameters are missing' do
+      expect {
+        subject.cancel_transaction
+      }.to raise_error(ArgumentError)
+    end
+
+    it 'should raise an exception when the transaction is not cancellable' do
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_noncancellable.txt"))
+
+      expect {
+        subject.cancel_transaction(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
+      }.to raise_error(Buckaruby::NonCancellableTransactionException)
+    end
+
+    it 'should cancel the transaction' do
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_cancellable.txt"))
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=CancelTransaction").to_return(body: File.read("spec/fixtures/responses/cancel_success.txt"))
+
+      response = subject.cancel_transaction(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
+      expect(response).to be_an_instance_of(Buckaruby::CancelResponse)
     end
   end
 

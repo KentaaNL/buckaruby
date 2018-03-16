@@ -236,4 +236,17 @@ module Buckaruby
       params
     end
   end
+
+  # Request for cancelling a transaction.
+  class CancelRequest < Request
+    def execute(options)
+      super(options.merge(operation: Operation::CANCEL_TRANSACTION))
+    end
+
+    def build_request_params(options)
+      params = { brq_transaction: options[:transaction_id] }
+
+      params
+    end
+  end
 end

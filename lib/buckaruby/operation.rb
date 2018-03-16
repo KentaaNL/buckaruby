@@ -5,5 +5,6 @@ module Buckaruby
     TRANSACTION_REQUEST = "TransactionRequest"
     TRANSACTION_STATUS = "TransactionStatus"
     REFUND_INFO = "RefundInfo"
+    CANCEL_TRANSACTION = "CancelTransaction"
   end
 end
