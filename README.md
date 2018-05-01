@@ -184,6 +184,10 @@ When the signature could not be verified, a `Buckaruby::SignatureException` will
 
 All Buckaruby exceptions listed here inherit from the class `Buckaruby::BuckarooException`.
 
+## Example
+
+For a complete and working example project check out [Buckaruby PoC](https://github.com/KentaaNL/buckaruby-poc).
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/KentaaNL/buckaruby.
