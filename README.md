@@ -49,6 +49,8 @@ gateway = Buckaruby::Gateway.new(
 )
 ```
 
+You can override the default mode with the parameter `mode`.
+
 ### Start transaction
 
 To start a new transaction, use the method `setup_transaction`:
