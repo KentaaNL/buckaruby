@@ -8,6 +8,7 @@ module Buckaruby
       "BUNQNL2A" => "bunq",
       "INGBNL2A" => "ING",
       "KNABNL2H" => "Knab bank",
+      "MOYONL21" => "Moneyou",
       "RABONL2U" => "Rabobank",
       "RBRBNL21" => "RegioBank",
       "SNSBNL2A" => "SNS Bank",
