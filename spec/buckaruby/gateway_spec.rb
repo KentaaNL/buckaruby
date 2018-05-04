@@ -43,11 +43,19 @@ describe Buckaruby::Gateway do
       it { expect(issuers).to include("INGBNL2A" => "ING") }
     end
 
-    context 'when visa, mastercard, sepa direct debit, paypal or is passed' do
+    context 'when ideal processing is passed' do
+      let(:issuers) { subject.issuers(Buckaruby::PaymentMethod::IDEAL_PROCESSING) }
+      it { expect(issuers.length).to be > 0 }
+      it { expect(issuers).to include("RABONL2U" => "Rabobank") }
+    end
+
+    context 'when visa, mastercard, maestro, bankcontact, sepa direct debit or paypal is passed' do
       it 'should raise an ArgumentError' do
         expect { subject.issuers(Buckaruby::PaymentMethod::VISA) }.to raise_error(ArgumentError)
         expect { subject.issuers(Buckaruby::PaymentMethod::MASTER_CARD) }.to raise_error(ArgumentError)
+        expect { subject.issuers(Buckaruby::PaymentMethod::MAESTRO) }.to raise_error(ArgumentError)
         expect { subject.issuers(Buckaruby::PaymentMethod::SEPA_DIRECT_DEBIT) }.to raise_error(ArgumentError)
+        expect { subject.issuers(Buckaruby::PaymentMethod::BANCONTACT_MISTER_CASH) }.to raise_error(ArgumentError)
         expect { subject.issuers(Buckaruby::PaymentMethod::PAYPAL) }.to raise_error(ArgumentError)
       end
     end
