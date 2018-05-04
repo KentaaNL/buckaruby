@@ -5,6 +5,10 @@ AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
 
+# We target 2.3, but still want to support 2.0.
+Gemspec/RequiredRubyVersion:
+  Enabled: false
+
 Metrics/AbcSize:
   Max: 30
 
@@ -33,11 +37,17 @@ Metrics/PerceivedComplexity:
 Naming/AccessorMethodName:
   Enabled: false
 
+Naming/MemoizedInstanceVariableName:
+  Enabled: false
+
 Style/BlockDelimiters:
   Exclude:
     - 'spec/**/*.rb'
 
 Style/ConditionalAssignment:
+  Enabled: false
+
+Style/ExpandPathArguments:
   Enabled: false
 
 Style/GuardClause:

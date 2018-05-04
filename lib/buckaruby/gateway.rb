@@ -160,7 +160,7 @@ module Buckaruby
 
     # Validate amount of money, must be greater than 0.
     def validate_amount!(options)
-      money = BigDecimal.new(options[:amount].to_s)
+      money = BigDecimal(options[:amount].to_s)
       if money <= 0
         raise ArgumentError, "Invalid amount: #{options[:amount]} (must be greater than 0)"
       end

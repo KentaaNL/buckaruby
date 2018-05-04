@@ -45,7 +45,8 @@ module Buckaruby
         raise InvalidResponseException, raw_response
       end
 
-      return raw_response.body
+      raw_response.body
+
     # Try to catch some common exceptions Net::HTTP might raise
     rescue Errno::ETIMEDOUT, Errno::EINVAL, Errno::ECONNRESET, Errno::ECONNREFUSED, Errno::EHOSTUNREACH,
            IOError, SocketError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::OpenTimeout,
@@ -82,7 +83,7 @@ module Buckaruby
         brq_payment_method: options[:payment_method],
         brq_culture: options[:culture] || Language::DUTCH,
         brq_currency: options[:currency] || Currency::EURO,
-        brq_amount: BigDecimal.new(options[:amount].to_s).to_s("F"),
+        brq_amount: BigDecimal(options[:amount].to_s).to_s("F"),
         brq_invoicenumber: options[:invoicenumber]
       }
 
@@ -175,7 +176,7 @@ module Buckaruby
     def build_request_params(options)
       params = {
         brq_payment_method: options[:payment_method],
-        brq_amount_credit: BigDecimal.new(options[:amount].to_s).to_s("F"),
+        brq_amount_credit: BigDecimal(options[:amount].to_s).to_s("F"),
         brq_currency: options[:currency] || Currency::EURO,
         brq_invoicenumber: options[:invoicenumber]
       }
