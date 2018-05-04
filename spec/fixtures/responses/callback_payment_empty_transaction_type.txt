@@ -1,0 +1,1 @@
+brq_amount=10.00&brq_currency=EUR&brq_description=Test+cancel&brq_invoicenumber=12345&brq_mutationtype=NotSet&brq_statuscode=890&brq_statusmessage=Cancelled+by+user&brq_test=false&brq_timestamp=2015-01-27+10%3A26%3A42&brq_transaction_type=&brq_transactions=41C48B55FA9164E123CC73B1157459E840BE5D24&brq_websitekey=12345678&brq_signature=9bf412565dfd7399245975a132f649caa7d1d66f

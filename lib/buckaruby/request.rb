@@ -19,10 +19,9 @@ module Buckaruby
       uri = URI.parse(@config.api_url)
       uri.query = "op=#{options[:operation]}" if options[:operation]
 
-      raw_response = post_buckaroo(uri, build_request_data(options))
-      response = parse_response(raw_response)
+      response = post_buckaroo(uri, build_request_data(options))
 
-      @logger.debug("[execute] response: #{response.inspect}")
+      # @logger.debug("[execute] response: #{response.inspect}")
 
       response
     end
@@ -69,12 +68,6 @@ module Buckaruby
 
     def post_data(params)
       params.map { |key, value| "#{key}=#{CGI.escape(value.to_s)}" }.join("&")
-    end
-
-    def parse_response(body)
-      query = CGI.parse(body)
-      query.each { |key, value| query[key] = value.first }
-      query
     end
   end
 

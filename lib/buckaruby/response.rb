@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'cgi'
 require 'date'
 
 module Buckaruby
@@ -8,9 +9,14 @@ module Buckaruby
     attr_reader :params
 
     def initialize(response, config)
-      @params = Support::CaseInsensitiveHash.new(response)
+      @logger = config.logger
 
-      verify_signature!(response, config)
+      @response = parse_response(response)
+      @params = Support::CaseInsensitiveHash.new(@response)
+
+      @logger.debug("[response] params: #{params.inspect}")
+
+      verify_signature!(@response, config)
     end
 
     def status
@@ -34,6 +40,17 @@ module Buckaruby
     end
 
     private
+
+    def parse_response(body)
+      if body.is_a?(Hash)
+        response = body
+      else
+        response = CGI.parse(body)
+        response.each { |key, value| response[key] = value.first }
+      end
+
+      response
+    end
 
     def verify_signature!(response, config)
       if params[:brq_apiresult] != "Fail"

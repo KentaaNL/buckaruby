@@ -366,14 +366,26 @@ describe Buckaruby::Gateway do
   end
 
   describe '#callback' do
-    it 'should raise an exception when parameters are invalid' do
+    it 'should raise an exception when parameters are missing' do
       expect {
         subject.callback
       }.to raise_error(ArgumentError)
     end
 
+    it 'should raise an exception when parameter is an empty Hash' do
+      expect {
+        subject.callback({})
+      }.to raise_error(ArgumentError)
+    end
+
+    it 'should raise an exception when parameter is an empty String' do
+      expect {
+        subject.callback("")
+      }.to raise_error(ArgumentError)
+    end
+
     it 'should raise a SignatureException when the signature is invalid' do
-      params = { "brq_amount" => "10.00", "brq_currency" => "EUR", "brq_customer_name" => "J. de Tester", "brq_description" => "Test", "brq_invoicenumber" => "12345", "brq_mutationtype" => "Collecting", "brq_payer_hash" => "e02377112efcd30bb7420bb1b9855a3778864572", "brq_payment" => "E86256B2787EE7FF0C33D0D4C6159CD922227B79", "brq_service_ideal_consumerbic" => "RABONL2U", "brq_service_ideal_consumeriban" => "NL44RABO0123456789", "brq_service_ideal_consumerissuer" => "Rabobank", "brq_service_ideal_consumername" => "J. de Tester", "brq_statuscode" => "190", "brq_statuscode_detail" => "S001", "brq_statusmessage" => "Transaction successfully processed", "brq_test" => "true", "brq_timestamp" => "2014-11-05 13:10:42", "brq_transaction_method" => "ideal", "brq_transaction_type" => "C021", "brq_transactions" => "41C48B55FA9164E123CC73B1157459E840BE5D24", "brq_websitekey" => "12345678", "brq_signature" => "abcdefgh1234567890abcdefgh1234567890" }
+      params = File.read("spec/fixtures/responses/callback_invalid_signature.txt")
 
       expect {
         subject.callback(params)
@@ -381,6 +393,20 @@ describe Buckaruby::Gateway do
     end
 
     it 'should return the status when the signature is valid' do
+      params = File.read("spec/fixtures/responses/callback_valid_signature.txt")
+
+      response = subject.callback(params)
+      expect(response).to be_an_instance_of(Buckaruby::CallbackResponse)
+      expect(response.transaction_status).to be
+      expect(response.transaction_type).to be
+      expect(response.payment_method).to be
+      expect(response.payment_id).to be
+      expect(response.invoicenumber).to be
+      expect(response.timestamp).to be_an_instance_of(Time)
+      expect(response.to_h).to be_an_instance_of(Hash)
+    end
+
+    it 'should accept a Hash as parameters' do
       params = { "brq_amount" => "10.00", "brq_currency" => "EUR", "brq_customer_name" => "J. de Tester", "brq_description" => "Test", "brq_invoicenumber" => "12345", "brq_mutationtype" => "Collecting", "brq_payer_hash" => "e02377112efcd30bb7420bb1b9855a3778864572", "brq_payment" => "E86256B2787EE7FF0C33D0D4C6159CD922227B79", "brq_service_ideal_consumerbic" => "RABONL2U", "brq_service_ideal_consumeriban" => "NL44RABO0123456789", "brq_service_ideal_consumerissuer" => "Rabobank", "brq_service_ideal_consumername" => "J. de Tester", "brq_statuscode" => "190", "brq_statuscode_detail" => "S001", "brq_statusmessage" => "Transaction successfully processed", "brq_test" => "true", "brq_timestamp" => "2014-11-05 13:10:42", "brq_transaction_method" => "ideal", "brq_transaction_type" => "C021", "brq_transactions" => "41C48B55FA9164E123CC73B1157459E840BE5D24", "brq_websitekey" => "12345678", "brq_signature" => "0a74bba15fccd8094f33678c001b44851643876d" }
 
       response = subject.callback(params)
@@ -396,7 +422,7 @@ describe Buckaruby::Gateway do
 
     context 'payment response' do
       it 'should set the success status when payment status is success' do
-        params = { "brq_amount" => "10.00", "brq_currency" => "EUR", "brq_customer_name" => "J. de Tester", "brq_description" => "Test", "brq_invoicenumber" => "12345", "brq_mutationtype" => "Collecting", "brq_payer_hash" => "e02377112efcd30bb7420bb1b9855a3778864572", "brq_payment" => "E86256B2787EE7FF0C33D0D4C6159CD922227B79", "brq_service_ideal_consumerbic" => "RABONL2U", "brq_service_ideal_consumeriban" => "NL44RABO0123456789", "brq_service_ideal_consumerissuer" => "Rabobank", "brq_service_ideal_consumername" => "J. de Tester", "brq_statuscode" => "190", "brq_statuscode_detail" => "S001", "brq_statusmessage" => "Transaction successfully processed", "brq_test" => "true", "brq_timestamp" => "2014-11-05 13:10:42", "brq_transaction_method" => "ideal", "brq_transaction_type" => "C021", "brq_transactions" => "41C48B55FA9164E123CC73B1157459E840BE5D24", "brq_websitekey" => "12345678", "brq_signature" => "0a74bba15fccd8094f33678c001b44851643876d" }
+        params = File.read("spec/fixtures/responses/callback_payment_success.txt")
 
         response = subject.callback(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
@@ -410,7 +436,7 @@ describe Buckaruby::Gateway do
       end
 
       it 'should set the failed status when payment status is failed' do
-        params = { "brq_amount" => "10.00", "brq_currency" => "EUR", "brq_customer_name" => "J. de Tester", "brq_description" => "Test", "brq_invoicenumber" => "12345", "brq_mutationtype" => "Collecting", "brq_payer_hash" => "e02377112efcd30bb7420bb1b9855a3778864572", "brq_payment" => "E86256B2787EE7FF0C33D0D4C6159CD922227B79", "brq_service_ideal_consumerbic" => "RABONL2U", "brq_service_ideal_consumeriban" => "NL44RABO0123456789", "brq_service_ideal_consumerissuer" => "Rabobank", "brq_service_ideal_consumername" => "J. de Tester", "brq_statuscode" => "490", "brq_statuscode_detail" => "S001", "brq_statusmessage" => "Transaction successfully processed", "brq_test" => "true", "brq_timestamp" => "2014-11-05 13:10:42", "brq_transaction_method" => "ideal", "brq_transaction_type" => "C021", "brq_transactions" => "41C48B55FA9164E123CC73B1157459E840BE5D24", "brq_websitekey" => "12345678", "brq_signature" => "7e1957cea05cab55aa6e29c36182f9eed6a9984b" }
+        params = File.read("spec/fixtures/responses/callback_payment_failed.txt")
 
         response = subject.callback(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::FAILED)
@@ -424,7 +450,7 @@ describe Buckaruby::Gateway do
       end
 
       it 'should set the rejected status when payment status is rejected' do
-        params = { "brq_amount" => "10.00", "brq_currency" => "EUR", "brq_customer_name" => "J. de Tester", "brq_description" => "Test", "brq_invoicenumber" => "12345", "brq_mutationtype" => "Collecting", "brq_payer_hash" => "e02377112efcd30bb7420bb1b9855a3778864572", "brq_payment" => "E86256B2787EE7FF0C33D0D4C6159CD922227B79", "brq_service_ideal_consumerbic" => "RABONL2U", "brq_service_ideal_consumeriban" => "NL44RABO0123456789", "brq_service_ideal_consumerissuer" => "Rabobank", "brq_service_ideal_consumername" => "J. de Tester", "brq_statuscode" => "690", "brq_statuscode_detail" => "S001", "brq_statusmessage" => "Transaction successfully processed", "brq_test" => "true", "brq_timestamp" => "2014-11-05 13:10:42", "brq_transaction_method" => "ideal", "brq_transaction_type" => "C021", "brq_transactions" => "41C48B55FA9164E123CC73B1157459E840BE5D24", "brq_websitekey" => "12345678", "brq_signature" => "ec7b055655f95a23308ed30c085cd65dedccc197" }
+        params = File.read("spec/fixtures/responses/callback_payment_rejected.txt")
 
         response = subject.callback(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::REJECTED)
@@ -438,7 +464,7 @@ describe Buckaruby::Gateway do
       end
 
       it 'should set the cancelled status when payment status is cancelled' do
-        params = { "brq_amount" => "10.00", "brq_currency" => "EUR", "brq_customer_name" => "J. de Tester", "brq_description" => "Test", "brq_invoicenumber" => "12345", "brq_mutationtype" => "Collecting", "brq_payer_hash" => "e02377112efcd30bb7420bb1b9855a3778864572", "brq_payment" => "E86256B2787EE7FF0C33D0D4C6159CD922227B79", "brq_service_ideal_consumerbic" => "RABONL2U", "brq_service_ideal_consumeriban" => "NL44RABO0123456789", "brq_service_ideal_consumerissuer" => "Rabobank", "brq_service_ideal_consumername" => "J. de Tester", "brq_statuscode" => "890", "brq_statuscode_detail" => "S001", "brq_statusmessage" => "Transaction successfully processed", "brq_test" => "true", "brq_timestamp" => "2014-11-05 13:10:42", "brq_transaction_method" => "ideal", "brq_transaction_type" => "C021", "brq_transactions" => "41C48B55FA9164E123CC73B1157459E840BE5D24", "brq_websitekey" => "12345678", "brq_signature" => "71cc4d8a49e4062c6d394201f39f4b81b5a39026" }
+        params = File.read("spec/fixtures/responses/callback_payment_cancelled.txt")
 
         response = subject.callback(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::CANCELLED)
@@ -452,7 +478,7 @@ describe Buckaruby::Gateway do
       end
 
       it 'should set the pending status when payment status is pending' do
-        params = { "brq_amount" => "10.00", "brq_currency" => "EUR", "brq_customer_name" => "J. de Tester", "brq_description" => "Test", "brq_invoicenumber" => "12345", "brq_mutationtype" => "Collecting", "brq_payer_hash" => "e02377112efcd30bb7420bb1b9855a3778864572", "brq_payment" => "E86256B2787EE7FF0C33D0D4C6159CD922227B79", "brq_service_ideal_consumerbic" => "RABONL2U", "brq_service_ideal_consumeriban" => "NL44RABO0123456789", "brq_service_ideal_consumerissuer" => "Rabobank", "brq_service_ideal_consumername" => "J. de Tester", "brq_statuscode" => "790", "brq_statuscode_detail" => "S001", "brq_statusmessage" => "Transaction successfully processed", "brq_test" => "true", "brq_timestamp" => "2014-11-05 13:10:42", "brq_transaction_method" => "ideal", "brq_transaction_type" => "C021", "brq_transactions" => "41C48B55FA9164E123CC73B1157459E840BE5D24", "brq_websitekey" => "12345678", "brq_signature" => "3e166e22a7ab5880b7424d5614a7fb227d8a7770" }
+        params = File.read("spec/fixtures/responses/callback_payment_pending.txt")
 
         response = subject.callback(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
@@ -466,7 +492,7 @@ describe Buckaruby::Gateway do
       end
 
       it 'should include account iban, bic and name for an ideal response' do
-        params = { "brq_amount" => "10.00", "brq_currency" => "EUR", "brq_customer_name" => "J. de Tester", "brq_description" => "Test", "brq_invoicenumber" => "12345", "brq_mutationtype" => "Collecting", "brq_payer_hash" => "e02377112efcd30bb7420bb1b9855a3778864572", "brq_payment" => "E86256B2787EE7FF0C33D0D4C6159CD922227B79", "brq_service_ideal_consumerbic" => "RABONL2U", "brq_service_ideal_consumeriban" => "NL44RABO0123456789", "brq_service_ideal_consumerissuer" => "Rabobank", "brq_service_ideal_consumername" => "J. de Tester", "brq_statuscode" => "190", "brq_statuscode_detail" => "S001", "brq_statusmessage" => "Transaction successfully processed", "brq_test" => "true", "brq_timestamp" => "2014-11-05 13:10:42", "brq_transaction_method" => "ideal", "brq_transaction_type" => "C021", "brq_transactions" => "41C48B55FA9164E123CC73B1157459E840BE5D24", "brq_websitekey" => "12345678", "brq_signature" => "0a74bba15fccd8094f33678c001b44851643876d" }
+        params = File.read("spec/fixtures/responses/callback_payment_success.txt")
 
         response = subject.callback(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
@@ -480,7 +506,7 @@ describe Buckaruby::Gateway do
       end
 
       it 'should include account iban, name, mandate reference and collect date for a sepa direct debit response' do
-        params = { "brq_amount" => "10.00", "brq_currency" => "EUR", "brq_customer_name" => "J. Tester", "brq_description" => "Test", "brq_invoicenumber" => "12345", "brq_mutationtype" => "Collecting", "brq_payment" => "E86256B2787EE7FF0C33D0D4C6159CD922227B79", "brq_service_sepadirectdebit_collectdate" => "2014-11-13", "brq_service_sepadirectdebit_customeriban" => "NL13TEST0123456789", "brq_service_sepadirectdebit_directdebittype" => "OneOff", "brq_service_sepadirectdebit_mandatedate" => "2014-11-05", "brq_service_sepadirectdebit_mandatereference" => "012345", "brq_statuscode" => "791", "brq_statuscode_detail" => "C620", "brq_statusmessage" => "Awaiting transfer to bank.", "brq_test" => "true", "brq_timestamp" => "2014-11-05 13:45:18", "brq_transaction_method" => "SepaDirectDebit", "brq_transaction_type" => "C004", "brq_transactions" => "41C48B55FA9164E123CC73B1157459E840BE5D24", "brq_websitekey" => "12345678", "brq_signature" => "bcb7924473707d3b7067eb566cd6956dcf354d4c" }
+        params = File.read("spec/fixtures/responses/callback_payment_sepa.txt")
 
         response = subject.callback(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
@@ -498,7 +524,7 @@ describe Buckaruby::Gateway do
       end
 
       it 'should return transaction type payment when cancelling a visa or mastercard transaction (empty transaction type)' do
-        params = { "brq_amount" => "10.00", "brq_currency" => "EUR", "brq_description" => "Test cancel", "brq_invoicenumber" => "12345", "brq_mutationtype" => "NotSet", "brq_statuscode" => "890", "brq_statusmessage" => "Cancelled by user", "brq_test" => "false", "brq_timestamp" => "2015-01-27 10:26:42", "brq_transaction_type" => "", "brq_transactions" => "41C48B55FA9164E123CC73B1157459E840BE5D24", "brq_websitekey" => "12345678", "brq_signature" => "9bf412565dfd7399245975a132f649caa7d1d66f" }
+        params = File.read("spec/fixtures/responses/callback_payment_empty_transaction_type.txt")
 
         response = subject.callback(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::CANCELLED)
@@ -512,7 +538,7 @@ describe Buckaruby::Gateway do
 
     context 'payment recurrent response' do
       it 'should recognize a visa payment recurrent response' do
-        params = { "brq_amount" => "10.00", "brq_currency" => "EUR", "brq_customer_name" => "Test", "brq_description" => "test", "brq_invoicenumber" => "12345", "brq_issuing_country" => "NL", "brq_mutationtype" => "Collecting", "brq_payment" => "E86256B2787EE7FF0C33D0D4C6159CD922227B79", "brq_recurring" => "True", "brq_SERVICE_visa_CardExpirationDate" => "2017-08", "brq_SERVICE_visa_CardNumberEnding" => "0005", "brq_SERVICE_visa_MaskedCreditcardNumber" => "456355******0005", "brq_statuscode" => "190", "brq_statuscode_detail" => "S001", "brq_statusmessage" => "Transaction successfully processed", "brq_test" => "true", "brq_timestamp" => "2017-08-08 15:01:23", "brq_transaction_method" => "visa", "brq_transaction_type" => "C044", "brq_transactions" => "B51118F58785274E117EFE1BF99D4D50CCB96949", "brq_websitekey" => "12345678", "brq_signature" => "2d445ce39320a10e6637b6ace6896559ce040cb3" }
+        params = File.read("spec/fixtures/responses/callback_recurrent_visa.txt")
 
         response = subject.callback(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
@@ -526,7 +552,7 @@ describe Buckaruby::Gateway do
       end
 
       it 'should recognize a sepa direct debit payment recurrent response' do
-        params = { "brq_amount" => "1.00", "brq_currency" => "EUR", "brq_customer_name" => "J. Tester", "brq_description" => "Recurrent: Test", "brq_invoicenumber" => "12345", "brq_mutationtype" => "Collecting", "brq_payment" => "E86256B2787EE7FF0C33D0D4C6159CD922227B79", "brq_recurring" => "True", "brq_SERVICE_sepadirectdebit_CollectDate" => "2016-09-16", "brq_SERVICE_sepadirectdebit_CustomerIBAN" => "NL13TEST0123456789", "brq_SERVICE_sepadirectdebit_DirectDebitType" => "First", "brq_SERVICE_sepadirectdebit_MandateDate" => "2016-09-07", "brq_SERVICE_sepadirectdebit_MandateReference" => "e1a31b3e461ab74cdbacf16bccd5290f9a284618", "brq_statuscode" => "190", "brq_statusmessage" => "Success", "brq_test" => "false", "brq_timestamp" => "2016-09-16 00:26:03", "brq_transaction_method" => "SepaDirectDebit", "brq_transaction_type" => "C005", "brq_transactions" => "B51118F58785274E117EFE1BF99D4D50CCB96949", "brq_websitekey" => "12345678", "brq_signature" => "851d0eacc314ceb9070abeb83d1853270459d81a" }
+        params = File.read("spec/fixtures/responses/callback_recurrent_sepa.txt")
 
         response = subject.callback(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
@@ -542,7 +568,7 @@ describe Buckaruby::Gateway do
 
     context 'refund response' do
       it 'should recognize an ideal refund response' do
-        params = { "brq_amount_credit" => "10.00", "brq_currency" => "EUR", "brq_customer_name" => "J. de Tester", "brq_description" => "Refund: Test", "brq_invoicenumber" => "12345", "brq_mutationtype" => "Collecting", "brq_payment" => "E86256B2787EE7FF0C33D0D4C6159CD922227B79", "brq_relatedtransaction_refund" => "41C48B55FA9164E123CC73B1157459E840BE5D24", "brq_service_ideal_customeraccountname" => "J. de Tester", "brq_service_ideal_customerbic" => "RABONL2U", "brq_service_ideal_customeriban" => "NL44RABO0123456789", "brq_statuscode" => "190", "brq_statuscode_detail" => "S001", "brq_statusmessage" => "Transaction successfully processed", "brq_test" => "true", "brq_timestamp" => "2014-11-06 15:27:31", "brq_transaction_method" => "ideal", "brq_transaction_type" => "C121", "brq_transactions" => "B51118F58785274E117EFE1BF99D4D50CCB96949", "brq_websitekey" => "12345678", "brq_signature" => "395bacf2bb5231501b94b3d22996f4f61c013f4b" }
+        params = File.read("spec/fixtures/responses/callback_refund_ideal.txt")
 
         response = subject.callback(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
@@ -557,7 +583,7 @@ describe Buckaruby::Gateway do
       end
 
       it 'should recognize a paypal refund response' do
-        params = { "brq_amount_credit" => "10.00", "brq_currency" => "EUR", "brq_customer_name" => "J. Tester", "brq_description" => "Refund: Test", "brq_invoicenumber" => "12345", "brq_mutationtype" => "Processing", "brq_payment" => "E86256B2787EE7FF0C33D0D4C6159CD922227B79", "brq_relatedtransaction_refund" => "41C48B55FA9164E123CC73B1157459E840BE5D24", "brq_statuscode" => "190", "brq_statuscode_detail" => "S001", "brq_statusmessage" => "Transaction successfully processed", "brq_test" => "false", "brq_timestamp" => "2014-11-06 15:04:20", "brq_transaction_method" => "paypal", "brq_transaction_type" => "V110", "brq_transactions" => "B51118F58785274E117EFE1BF99D4D50CCB96949", "brq_websitekey" => "12345678", "brq_signature" => "da55998b9681cc9d10f983e21f44c0510b474c12" }
+        params = File.read("spec/fixtures/responses/callback_refund_paypal.txt")
 
         response = subject.callback(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
@@ -574,7 +600,7 @@ describe Buckaruby::Gateway do
 
     context 'reversal response' do
       it 'should recognize a sepa direct debit reversal response' do
-        params = { "brq_amount_credit" => "10.00", "brq_currency" => "EUR", "brq_customer_name" => "J. Tester", "brq_description" => "Reversal: Test", "brq_invoicenumber" => "12345", "brq_mutationtype" => "Collecting", "brq_payment" => "E86256B2787EE7FF0C33D0D4C6159CD922227B79", "brq_relatedtransaction_reversal" => "41C48B55FA9164E123CC73B1157459E840BE5D24", "brq_service_sepadirectdebit_reasoncode" => "MD06", "brq_service_sepadirectdebit_reasonexplanation" => "Debtor uses 8 weeks reversal right", "brq_statuscode" => "190", "brq_statusmessage" => "Success", "brq_test" => "false", "brq_timestamp" => "2014-11-28 03:37:48", "brq_transaction_method" => "SepaDirectDebit", "brq_transaction_type" => "C501", "brq_transactions" => "8CCE4BB06339F28A506E1A328025D7DF13CCAD59", "brq_websitekey" => "12345678", "brq_signature" => "4b8ccf699dadca7465510ba94a59fa9d7b5b050a" }
+        params = File.read("spec/fixtures/responses/callback_reversal_sepa.txt")
 
         response = subject.callback(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
@@ -589,7 +615,7 @@ describe Buckaruby::Gateway do
       end
 
       it 'should recognize a paypal reversal response' do
-        params = { "brq_amount_credit" => "15.40", "brq_currency" => "EUR", "brq_customer_name" => "J. Tester", "brq_description" => "Reversal: Test", "brq_invoicenumber" => "12345", "brq_mutationtype" => "Processing", "brq_payment" => "E86256B2787EE7FF0C33D0D4C6159CD922227B79", "brq_relatedtransaction_reversal" => "41C48B55FA9164E123CC73B1157459E840BE5D24", "brq_statuscode" => "190", "brq_statusmessage" => "Success", "brq_test" => "false", "brq_timestamp" => "2015-12-12 08:26:46", "brq_transaction_method" => "paypal", "brq_transaction_type" => "V111", "brq_transactions" => "8CCE4BB06339F28A506E1A328025D7DF13CCAD59", "brq_websitekey" => "12345678", "brq_signature" => "124f1a2bdfbd952a8d909d45cce421b6734a2c41" }
+        params = File.read("spec/fixtures/responses/callback_reversal_paypal.txt")
 
         response = subject.callback(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
