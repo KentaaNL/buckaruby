@@ -3,7 +3,6 @@
 require 'bigdecimal'
 require 'cgi'
 require 'date'
-require 'logger'
 require 'net/http'
 require 'openssl'
 require 'uri'
@@ -11,14 +10,13 @@ require 'uri'
 module Buckaruby
   # Base class for any request.
   class Request
-    def initialize(options)
-      @options = options
-
-      @logger = defined?(Rails) ? Rails.logger : Logger.new(STDOUT)
+    def initialize(config)
+      @config = config
+      @logger = config.logger
     end
 
     def execute(options)
-      uri = URI.parse(api_url)
+      uri = URI.parse(@config.api_url)
       uri.query = "op=#{options[:operation]}" if options[:operation]
 
       raw_response = post_buckaroo(uri, build_request_data(options))
@@ -57,14 +55,14 @@ module Buckaruby
     end
 
     def build_request_data(options)
-      params = { brq_websitekey: @options[:website] }
+      params = { brq_websitekey: @config.website }
 
       params.merge!(build_request_params(options))
 
       params[:add_buckaruby] = "Buckaruby #{Buckaruby::VERSION}"
 
       # Sign the data with our secret key.
-      params[:brq_signature] = Signature.generate_signature(params, @options)
+      params[:brq_signature] = Signature.generate_signature(params, @config)
 
       params
     end
@@ -77,14 +75,6 @@ module Buckaruby
       query = CGI.parse(body)
       query.each { |key, value| query[key] = value.first }
       query
-    end
-
-    def test?
-      @options[:mode] == :test
-    end
-
-    def api_url
-      test? ? Urls::TEST_URL : Urls::PRODUCTION_URL
     end
   end
 

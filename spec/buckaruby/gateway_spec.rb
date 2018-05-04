@@ -23,52 +23,6 @@ describe Buckaruby::Gateway do
         }.to raise_error(ArgumentError)
       end
     end
-
-    describe 'set mode' do
-      it 'should be test when no mode is passed' do
-        gateway = Buckaruby::Gateway.new(website: "12345678", secret: "7C222FB2927D828AF22F592134E8932480637C0D")
-        expect(gateway.options[:mode]).to eq(:test)
-      end
-
-      it 'should be test when mode test is passed' do
-        gateway = Buckaruby::Gateway.new(website: "12345678", secret: "7C222FB2927D828AF22F592134E8932480637C0D", mode: :test)
-        expect(gateway.options[:mode]).to eq(:test)
-      end
-
-      it 'should be production when mode production is passed' do
-        gateway = Buckaruby::Gateway.new(website: "12345678", secret: "7C222FB2927D828AF22F592134E8932480637C0D", mode: :production)
-        expect(gateway.options[:mode]).to eq(:production)
-      end
-
-      it 'should raise an exception when an invalid mode is passed' do
-        expect {
-          Buckaruby::Gateway.new(website: "12345678", secret: "7C222FB2927D828AF22F592134E8932480637C0D", mode: :invalid)
-        }.to raise_error(ArgumentError)
-      end
-    end
-
-    describe 'set hash method' do
-      it 'should raise an exception when an invalid hash method is passed' do
-        expect {
-          Buckaruby::Gateway.new(website: "12345678", secret: "7C222FB2927D828AF22F592134E8932480637C0D", hash_method: :invalid)
-        }.to raise_error(ArgumentError)
-      end
-
-      it 'should accept SHA-1 as hash method' do
-        gateway = Buckaruby::Gateway.new(website: "12345678", secret: "7C222FB2927D828AF22F592134E8932480637C0D", hash_method: 'SHA1')
-        expect(gateway.options[:hash_method]).to eq(:sha1)
-      end
-
-      it 'should accept SHA-256 as hash method' do
-        gateway = Buckaruby::Gateway.new(website: "12345678", secret: "7C222FB2927D828AF22F592134E8932480637C0D", hash_method: :SHA256)
-        expect(gateway.options[:hash_method]).to eq(:sha256)
-      end
-
-      it 'should accept SHA-512 as hash method' do
-        gateway = Buckaruby::Gateway.new(website: "12345678", secret: "7C222FB2927D828AF22F592134E8932480637C0D", hash_method: :sha512)
-        expect(gateway.options[:hash_method]).to eq(:sha512)
-      end
-    end
   end
 
   subject { Buckaruby::Gateway.new(website: "12345678", secret: "7C222FB2927D828AF22F592134E8932480637C0D") }

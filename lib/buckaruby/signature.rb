@@ -6,19 +6,16 @@ module Buckaruby
   # Calculate a signature based on the parameters of the payment request or response.
   # -> see BPE 3.0 Gateway NVP, chapter 4 'Digital Signature'
   class Signature
-    def self.generate_signature(params, options)
-      secret = options[:secret]
-      hash_method = options[:hash_method]
-
-      case hash_method
+    def self.generate_signature(params, config)
+      case config.hash_method
       when :sha1
-        Digest::SHA1.hexdigest(generate_signature_string(params, secret))
+        Digest::SHA1.hexdigest(generate_signature_string(params, config.secret))
       when :sha256
-        Digest::SHA256.hexdigest(generate_signature_string(params, secret))
+        Digest::SHA256.hexdigest(generate_signature_string(params, config.secret))
       when :sha512
-        Digest::SHA512.hexdigest(generate_signature_string(params, secret))
+        Digest::SHA512.hexdigest(generate_signature_string(params, config.secret))
       else
-        raise ArgumentError, "Invalid hash method provided: #{hash_method}"
+        raise ArgumentError, "Invalid hash method provided: #{config.hash_method}"
       end
     end
 

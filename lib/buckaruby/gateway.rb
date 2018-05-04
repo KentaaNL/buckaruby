@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'bigdecimal'
-require 'logger'
 
 module Buckaruby
   # Implementation of the BPE 3.0 NVP Gateway.
@@ -11,16 +10,11 @@ module Buckaruby
       attr_accessor :mode
     end
 
-    attr_reader :options
+    attr_reader :config
 
     def initialize(options = {})
-      validate_required_params!(options, :website, :secret)
-
-      @logger = defined?(Rails) ? Rails.logger : Logger.new(STDOUT)
-      @options = options
-
-      set_buckaroo_mode!(@options)
-      set_hash_method!(@options)
+      @config = Configuration.new(options)
+      @logger = config.logger
     end
 
     # Get a list with payment issuers.
@@ -125,7 +119,7 @@ module Buckaruby
         raise ArgumentError, "No callback parameters found"
       end
 
-      CallbackResponse.new(response, @options)
+      CallbackResponse.new(response, config)
     end
 
     private
@@ -228,29 +222,6 @@ module Buckaruby
       options[:account_iban] = iban
     end
 
-    # Set Buckaroo mode from options, class setting or the default (test).
-    def set_buckaroo_mode!(options)
-      mode = options.key?(:mode) ? options[:mode] : Gateway.mode
-      mode ||= :test
-
-      if mode != :test && mode != :production
-        raise ArgumentError, "Invalid Buckaroo mode provided: #{mode} (expected :test or :production)"
-      end
-
-      options[:mode] = mode
-    end
-
-    # Set the hash method from options or default (SHA-1).
-    def set_hash_method!(options)
-      hash_method = (options[:hash_method] || "SHA1").downcase.to_sym
-
-      unless [:sha1, :sha256, :sha512].include?(hash_method)
-        raise ArgumentError, "Invalid hash method provided: #{options[:hash_method]} (expected :sha1, :sha256 or :sha512)"
-      end
-
-      options[:hash_method] = hash_method
-    end
-
     # Build and execute a request.
     def execute_request(request_type, options)
       request = build_request(request_type)
@@ -258,17 +229,17 @@ module Buckaruby
 
       case request_type
       when :setup_transaction
-        SetupTransactionResponse.new(response, @options)
+        SetupTransactionResponse.new(response, config)
       when :recurrent_transaction
-        RecurrentTransactionResponse.new(response, @options)
+        RecurrentTransactionResponse.new(response, config)
       when :refund_transaction
-        RefundTransactionResponse.new(response, @options)
+        RefundTransactionResponse.new(response, config)
       when :refund_info
-        RefundInfoResponse.new(response, @options)
+        RefundInfoResponse.new(response, config)
       when :status
-        StatusResponse.new(response, @options)
+        StatusResponse.new(response, config)
       when :cancel
-        CancelResponse.new(response, @options)
+        CancelResponse.new(response, config)
       end
     end
 
@@ -276,17 +247,17 @@ module Buckaruby
     def build_request(request_type)
       case request_type
       when :setup_transaction
-        SetupTransactionRequest.new(@options)
+        SetupTransactionRequest.new(config)
       when :recurrent_transaction
-        RecurrentTransactionRequest.new(@options)
+        RecurrentTransactionRequest.new(config)
       when :refund_transaction
-        RefundTransactionRequest.new(@options)
+        RefundTransactionRequest.new(config)
       when :refund_info
-        RefundInfoRequest.new(@options)
+        RefundInfoRequest.new(config)
       when :status
-        StatusRequest.new(@options)
+        StatusRequest.new(config)
       when :cancel
-        CancelRequest.new(@options)
+        CancelRequest.new(config)
       end
     end
   end

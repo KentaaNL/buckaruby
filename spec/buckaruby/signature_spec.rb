@@ -36,29 +36,48 @@ describe Buckaruby::Signature do
   end
 
   describe 'generate_signature' do
-    it 'should raise an exception when generating a signature with an invalid hash method' do
-      expect {
+    let(:config) { Buckaruby::Configuration.new(website: '12345678', secret: 'secret', hash_method: hash_method) }
+
+    context 'invalid hash method' do
+      let(:hash_method) { :invalid }
+
+      it 'should raise an exception when generating a signature' do
+        expect {
+          params = { brq_test: 'abcdef', brq_test2: 'foobar' }
+          Buckaruby::Signature.generate_signature(params, config)
+        }.to raise_error(ArgumentError)
+      end
+    end
+
+    context 'SHA-1 as hash method' do
+      let(:hash_method) { :sha1 }
+
+      it 'should generate a valid signature' do
         params = { brq_test: 'abcdef', brq_test2: 'foobar' }
-        Buckaruby::Signature.generate_signature(params, secret: 'secret', hash_method: :invalid)
-      }.to raise_error(ArgumentError)
+        string = Buckaruby::Signature.generate_signature(params, config)
+        expect(string).to eq('c864c2abad67580274b2df00fd2a53739952b924')
+      end
     end
 
-    it 'should generate a valid signature with SHA-1 as hash method' do
-      params = { brq_test: 'abcdef', brq_test2: 'foobar' }
-      string = Buckaruby::Signature.generate_signature(params, secret: 'secret', hash_method: :sha1)
-      expect(string).to eq('c864c2abad67580274b2df00fd2a53739952b924')
+    context 'SHA-256 as hash method' do
+      let(:hash_method) { :sha256 }
+
+      it 'should generate a valid signature' do
+        params = { brq_test: 'abcdef', brq_test2: 'foobar' }
+
+        string = Buckaruby::Signature.generate_signature(params, config)
+        expect(string).to eq('79afb9eac4182fdc2de222b558bcb0d3978f57bd4bf24eb2e7ea791943443716')
+      end
     end
 
-    it 'should generate a valid signature with SHA-256 as hash method' do
-      params = { brq_test: 'abcdef', brq_test2: 'foobar' }
-      string = Buckaruby::Signature.generate_signature(params, secret: 'secret', hash_method: :sha256)
-      expect(string).to eq('79afb9eac4182fdc2de222b558bcb0d3978f57bd4bf24eb2e7ea791943443716')
-    end
+    context 'SHA-512 as hash method' do
+      let(:hash_method) { :sha512 }
 
-    it 'should generate a valid signature with SHA-512 as hash method' do
-      params = { brq_test: 'abcdef', brq_test2: 'foobar' }
-      string = Buckaruby::Signature.generate_signature(params, secret: 'secret', hash_method: :sha512)
-      expect(string).to eq('161e485fd71c708fa7f39c1732349fae1e5b8a0c05cd4f9d806ad570b2414f5b99b4aaf89ed48c55c188b82b9565d93471d3d20163002909360f31f29f4a988d')
+      it 'should generate a valid signature' do
+        params = { brq_test: 'abcdef', brq_test2: 'foobar' }
+        string = Buckaruby::Signature.generate_signature(params, config)
+        expect(string).to eq('161e485fd71c708fa7f39c1732349fae1e5b8a0c05cd4f9d806ad570b2414f5b99b4aaf89ed48c55c188b82b9565d93471d3d20163002909360f31f29f4a988d')
+      end
     end
   end
 end

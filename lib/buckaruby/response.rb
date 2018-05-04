@@ -7,10 +7,10 @@ module Buckaruby
   class Response
     attr_reader :params
 
-    def initialize(response, options)
+    def initialize(response, config)
       @params = Support::CaseInsensitiveHash.new(response)
 
-      verify_signature!(response, options)
+      verify_signature!(response, config)
     end
 
     def status
@@ -35,10 +35,10 @@ module Buckaruby
 
     private
 
-    def verify_signature!(response, options)
+    def verify_signature!(response, config)
       if params[:brq_apiresult] != "Fail"
         sent_signature = params[:brq_signature]
-        generated_signature = Signature.generate_signature(response, options)
+        generated_signature = Signature.generate_signature(response, config)
 
         if sent_signature != generated_signature
           raise SignatureException.new(sent_signature, generated_signature)
@@ -188,8 +188,8 @@ module Buckaruby
 
   # Base class for a response via the API.
   class ApiResponse < Response
-    def initialize(response, options)
-      super(response, options)
+    def initialize(response, config)
+      super(response, config)
 
       if params[:brq_apiresult].nil? || params[:brq_apiresult].casecmp("fail").zero?
         raise ApiException, params
