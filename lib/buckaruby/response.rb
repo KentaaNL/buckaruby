@@ -8,10 +8,10 @@ module Buckaruby
   class Response
     attr_reader :params
 
-    def initialize(response, config)
+    def initialize(body, config)
       @logger = config.logger
 
-      @response = parse_response(response)
+      @response = parse_response(body)
       @params = Support::CaseInsensitiveHash.new(@response)
 
       @logger.debug("[response] params: #{params.inspect}")
