@@ -1,10 +1,10 @@
 # Buckaruby changelog
 
-## HEAD
+## 1.1.0 (2018-06-01)
 - Added payment method iDEAL processing.
+- Added Moneyou to the list of iDEAL issuers.
 - Implemented refund transaction.
 - Implemented cancel transaction.
-- Added Moneyou to the list of iDEAL issuers.
 
 ## 1.0.2 (2017-08-25)
 
