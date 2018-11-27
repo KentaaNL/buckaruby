@@ -5,4 +5,4 @@ source 'https://rubygems.org'
 # Specify your gem's dependencies in buckaruby.gemspec
 gemspec
 
-gem 'rubocop', '~> 0.55.0', group: :test
+gem 'rubocop', '~> 0.60.0', group: :test
