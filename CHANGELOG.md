@@ -1,5 +1,8 @@
 # Buckaruby changelog
 
+## 1.1.1 (2018-11-30)
+- Added Handelsbanken to the list of iDEAL issuers.
+
 ## 1.1.0 (2018-06-01)
 - Added payment method iDEAL processing.
 - Added Moneyou to the list of iDEAL issuers.
