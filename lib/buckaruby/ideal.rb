@@ -6,6 +6,7 @@ module Buckaruby
       "ABNANL2A" => "ABN AMRO",
       "ASNBNL21" => "ASN Bank",
       "BUNQNL2A" => "bunq",
+      "HANDNL2A" => "Handelsbanken",
       "INGBNL2A" => "ING",
       "KNABNL2H" => "Knab bank",
       "MOYONL21" => "Moneyou",
