@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Buckaruby::Configuration do
+RSpec.describe Buckaruby::Configuration do
   describe '#website' do
     it 'sets the website from options' do
       config = Buckaruby::Configuration.new(website: "12345678", secret: "7C222FB2927D828AF22F592134E8932480637C0D")

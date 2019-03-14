@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-describe Buckaruby::Gateway do
+RSpec.describe Buckaruby::Gateway do
   describe 'initialization' do
     describe 'bad parameters' do
-      it 'should raise an exception when creating a new instance with invalid parameters' do
+      it 'raises an exception when creating a new instance with invalid parameters' do
         expect {
           Buckaruby::Gateway.new
         }.to raise_error(ArgumentError)
@@ -31,7 +31,7 @@ describe Buckaruby::Gateway do
 
   describe '#issuers' do
     context 'when no or false parameters are passed' do
-      it 'should raise an ArgumentError' do
+      it 'raises an ArgumentError' do
         expect { subject.issuers }.to raise_error(ArgumentError)
         expect { subject.issuers(:wrong) }.to raise_error(ArgumentError)
       end
@@ -39,18 +39,20 @@ describe Buckaruby::Gateway do
 
     context 'when ideal is passed' do
       let(:issuers) { subject.issuers(Buckaruby::PaymentMethod::IDEAL) }
+
       it { expect(issuers.length).to be > 0 }
       it { expect(issuers).to include("INGBNL2A" => "ING") }
     end
 
     context 'when ideal processing is passed' do
       let(:issuers) { subject.issuers(Buckaruby::PaymentMethod::IDEAL_PROCESSING) }
+
       it { expect(issuers.length).to be > 0 }
       it { expect(issuers).to include("RABONL2U" => "Rabobank") }
     end
 
     context 'when visa, mastercard, maestro, bankcontact, sepa direct debit or paypal is passed' do
-      it 'should raise an ArgumentError' do
+      it 'raises an ArgumentError' do
         expect { subject.issuers(Buckaruby::PaymentMethod::VISA) }.to raise_error(ArgumentError)
         expect { subject.issuers(Buckaruby::PaymentMethod::MASTER_CARD) }.to raise_error(ArgumentError)
         expect { subject.issuers(Buckaruby::PaymentMethod::MAESTRO) }.to raise_error(ArgumentError)
@@ -62,11 +64,11 @@ describe Buckaruby::Gateway do
   end
 
   describe '#setup_transaction' do
-    before(:each) do
+    before do
       stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: File.read("spec/fixtures/responses/setup_transaction_success.txt"))
     end
 
-    it 'should raise an exception when initiating a transaction with missing parameters' do
+    it 'raises an exception when initiating a transaction with missing parameters' do
       expect {
         subject.setup_transaction(amount: 10)
       }.to raise_error(ArgumentError)
@@ -84,7 +86,7 @@ describe Buckaruby::Gateway do
       }.to raise_error(ArgumentError)
     end
 
-    it 'should raise an exception when initiating a transaction with invalid amount' do
+    it 'raises an exception when initiating a transaction with invalid amount' do
       expect {
         subject.setup_transaction(amount: 0, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
       }.to raise_error(ArgumentError)
@@ -94,19 +96,19 @@ describe Buckaruby::Gateway do
       }.to raise_error(ArgumentError)
     end
 
-    it 'should raise an exception when initiating a transaction with invalid payment method' do
+    it 'raises an exception when initiating a transaction with invalid payment method' do
       expect {
         subject.setup_transaction(amount: 10, payment_method: "abc", payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
       }.to raise_error(ArgumentError)
     end
 
-    it 'should raise an exception when initiating a transaction with invalid payment issuer' do
+    it 'raises an exception when initiating a transaction with invalid payment issuer' do
       expect {
         subject.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: "abc", invoicenumber: "12345", return_url: "http://www.return.url/")
       }.to raise_error(ArgumentError)
     end
 
-    it 'should raise a ConnectionException when connection the Buckaroo fails' do
+    it 'raises a ConnectionException when connection the Buckaroo fails' do
       stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest").to_raise(Errno::ECONNREFUSED)
 
       expect {
@@ -114,7 +116,7 @@ describe Buckaruby::Gateway do
       }.to raise_error(Buckaruby::ConnectionException)
     end
 
-    it 'should raise an InvalidResponseException when Buckaroo returns an invalid response' do
+    it 'raises an InvalidResponseException when Buckaroo returns an invalid response' do
       stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(status: 500)
 
       expect {
@@ -122,7 +124,7 @@ describe Buckaruby::Gateway do
       }.to raise_error(Buckaruby::InvalidResponseException)
     end
 
-    it 'should raise an ApiException when API result Fail is returned' do
+    it 'raises an ApiException when API result Fail is returned' do
       stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: "BRQ_APIRESULT=Fail&BRQ_APIERRORMESSAGE=Invalid+request")
 
       expect {
@@ -130,60 +132,63 @@ describe Buckaruby::Gateway do
       }.to raise_error(Buckaruby::ApiException)
     end
 
-    describe 'should initiate a transaction when amount is integer, decimal or string' do
+    describe 'initiates a transaction when amount is integer, decimal or string' do
       context 'when amount is an integer' do
         let(:response) { subject.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/") }
+
         it { expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse) }
         it { expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24") }
-        it { expect(response.redirect_url).to be }
+        it { expect(response.redirect_url).not_to be nil }
       end
 
       context 'when amount is a decimal' do
         let(:response) { subject.setup_transaction(amount: 10.50, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/") }
+
         it { expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse) }
         it { expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24") }
-        it { expect(response.redirect_url).to be }
+        it { expect(response.redirect_url).not_to be nil }
       end
 
       context 'when amount is a string' do
         let(:response) { subject.setup_transaction(amount: '10', payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/") }
+
         it { expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse) }
         it { expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24") }
-        it { expect(response.redirect_url).to be }
+        it { expect(response.redirect_url).not_to be nil }
       end
     end
 
-    it 'should initiate a transaction for payment method ideal' do
+    it 'initiates a transaction for payment method ideal' do
       response = subject.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
       expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse)
       expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
-      expect(response.redirect_url).to be
+      expect(response.redirect_url).not_to be nil
       expect(response.timestamp).to be_an_instance_of(Time)
       expect(response.to_h).to be_an_instance_of(Hash)
     end
 
-    it 'should initiate a transaction for payment method visa' do
+    it 'initiates a transaction for payment method visa' do
       response = subject.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::VISA, invoicenumber: "12345", return_url: "http://www.return.url/")
       expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse)
       expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
-      expect(response.redirect_url).to be
+      expect(response.redirect_url).not_to be nil
       expect(response.timestamp).to be_an_instance_of(Time)
       expect(response.to_h).to be_an_instance_of(Hash)
     end
 
-    it 'should initiate a transaction for payment method mastercard' do
+    it 'initiates a transaction for payment method mastercard' do
       response = subject.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::MASTER_CARD, invoicenumber: "12345", return_url: "http://www.return.url/")
       expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse)
       expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
-      expect(response.redirect_url).to be
+      expect(response.redirect_url).not_to be nil
       expect(response.timestamp).to be_an_instance_of(Time)
       expect(response.to_h).to be_an_instance_of(Hash)
     end
 
-    it 'should initiate a transaction for payment method sepa direct debit' do
+    it 'initiates a transaction for payment method sepa direct debit' do
       response = subject.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::SEPA_DIRECT_DEBIT, invoicenumber: "12345", return_url: "http://www.return.url/", account_iban: "NL13TEST0123456789", account_name: "J. Tester", mandate_reference: "00P12345", collect_date: Date.new(2016, 1, 1))
       expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse)
       expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
@@ -192,23 +197,23 @@ describe Buckaruby::Gateway do
       expect(response.to_h).to be_an_instance_of(Hash)
     end
 
-    it 'should initiate a transaction for payment method paypal' do
+    it 'initiates a transaction for payment method paypal' do
       response = subject.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::PAYPAL, invoicenumber: "12345", return_url: "http://www.return.url/")
       expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse)
       expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
-      expect(response.redirect_url).to be
+      expect(response.redirect_url).not_to be nil
       expect(response.timestamp).to be_an_instance_of(Time)
       expect(response.to_h).to be_an_instance_of(Hash)
     end
   end
 
   describe '#recurrent_transaction' do
-    before(:each) do
+    before do
       stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: File.read("spec/fixtures/responses/recurrent_transaction_success.txt"))
     end
 
-    it 'should raise an exception when initiating a recurrent transaction with missing parameters' do
+    it 'raises an exception when initiating a recurrent transaction with missing parameters' do
       expect {
         subject.recurrent_transaction(amount: 10)
       }.to raise_error(ArgumentError)
@@ -222,13 +227,13 @@ describe Buckaruby::Gateway do
       }.to raise_error(ArgumentError)
     end
 
-    it 'should raise an exception when initiating a transaction with invalid payment method' do
+    it 'raises an exception when initiating a transaction with invalid payment method' do
       expect {
         subject.recurrent_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, invoicenumber: "12345", transaction_id: "12345")
       }.to raise_error(ArgumentError)
     end
 
-    it 'should initiate a recurrent transaction for payment method visa' do
+    it 'initiates a recurrent transaction for payment method visa' do
       response = subject.recurrent_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::VISA, invoicenumber: "12345", transaction_id: "12345")
       expect(response).to be_an_instance_of(Buckaruby::RecurrentTransactionResponse)
       expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
@@ -241,20 +246,20 @@ describe Buckaruby::Gateway do
   end
 
   describe '#refundable?' do
-    it 'should raise an exception when required parameters are missing' do
+    it 'raises an exception when required parameters are missing' do
       expect {
         subject.refundable?
       }.to raise_error(ArgumentError)
     end
 
-    it 'should return true when the transaction is refundable' do
+    it 'returns true when the transaction is refundable' do
       stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_success.txt"))
 
       response = subject.refundable?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response).to be true
     end
 
-    it 'should return false when the transaction was not found' do
+    it 'returns false when the transaction was not found' do
       stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_error.txt"))
 
       response = subject.refundable?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
@@ -263,13 +268,13 @@ describe Buckaruby::Gateway do
   end
 
   describe '#refund_transaction' do
-    it 'should raise an exception when required parameters are missing' do
+    it 'raises an exception when required parameters are missing' do
       expect {
         subject.refund_transaction
       }.to raise_error(ArgumentError)
     end
 
-    it 'should raise an exception when the transaction is not refundable' do
+    it 'raises an exception when the transaction is not refundable' do
       stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_error.txt"))
 
       expect {
@@ -277,7 +282,7 @@ describe Buckaruby::Gateway do
       }.to raise_error(Buckaruby::NonRefundableTransactionException)
     end
 
-    it 'should refund the transaction' do
+    it 'refunds the transaction' do
       stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_success.txt"))
       stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: File.read("spec/fixtures/responses/refund_transaction_success.txt"))
 
@@ -295,11 +300,11 @@ describe Buckaruby::Gateway do
   end
 
   describe '#status' do
-    before(:each) do
+    before do
       stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_success.txt"))
     end
 
-    it 'should raise an exception when required parameters are missing' do
+    it 'raises an exception when required parameters are missing' do
       expect {
         subject.status
       }.to raise_error(ArgumentError)
@@ -307,7 +312,7 @@ describe Buckaruby::Gateway do
 
     it { expect(subject.status(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")).to be_an_instance_of(Buckaruby::StatusResponse) }
 
-    it 'should return transaction status' do
+    it 'returns transaction status' do
       response = subject.status(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
       expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
@@ -319,7 +324,7 @@ describe Buckaruby::Gateway do
       expect(response.to_h).to be_an_instance_of(Hash)
     end
 
-    it 'should include account iban, bic and name for an ideal response' do
+    it 'includes account iban, bic and name for an ideal response' do
       response = subject.status(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.account_iban).to eq("NL44RABO0123456789")
       expect(response.account_bic).to eq("RABONL2U")
@@ -328,20 +333,20 @@ describe Buckaruby::Gateway do
   end
 
   describe '#cancellable?' do
-    it 'should raise an exception when required parameters are missing' do
+    it 'raises an exception when required parameters are missing' do
       expect {
         subject.cancellable?
       }.to raise_error(ArgumentError)
     end
 
-    it 'should return true when the transaction is cancellable' do
+    it 'returns true when the transaction is cancellable' do
       stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_cancellable.txt"))
 
       response = subject.cancellable?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response).to be true
     end
 
-    it 'should return false when the transaction is not cancellable' do
+    it 'returns false when the transaction is not cancellable' do
       stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_noncancellable.txt"))
 
       response = subject.cancellable?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
@@ -350,13 +355,13 @@ describe Buckaruby::Gateway do
   end
 
   describe '#cancel_transaction' do
-    it 'should raise an exception when required parameters are missing' do
+    it 'raises an exception when required parameters are missing' do
       expect {
         subject.cancel_transaction
       }.to raise_error(ArgumentError)
     end
 
-    it 'should raise an exception when the transaction is not cancellable' do
+    it 'raises an exception when the transaction is not cancellable' do
       stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_noncancellable.txt"))
 
       expect {
@@ -364,7 +369,7 @@ describe Buckaruby::Gateway do
       }.to raise_error(Buckaruby::NonCancellableTransactionException)
     end
 
-    it 'should cancel the transaction' do
+    it 'cancels the transaction' do
       stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_cancellable.txt"))
       stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=CancelTransaction").to_return(body: File.read("spec/fixtures/responses/cancel_success.txt"))
 
@@ -374,25 +379,25 @@ describe Buckaruby::Gateway do
   end
 
   describe '#callback' do
-    it 'should raise an exception when parameters are missing' do
+    it 'raises an exception when parameters are missing' do
       expect {
         subject.callback
       }.to raise_error(ArgumentError)
     end
 
-    it 'should raise an exception when parameter is an empty Hash' do
+    it 'raises an exception when parameter is an empty Hash' do
       expect {
         subject.callback({})
       }.to raise_error(ArgumentError)
     end
 
-    it 'should raise an exception when parameter is an empty String' do
+    it 'raises an exception when parameter is an empty String' do
       expect {
         subject.callback("")
       }.to raise_error(ArgumentError)
     end
 
-    it 'should raise a SignatureException when the signature is invalid' do
+    it 'raises a SignatureException when the signature is invalid' do
       params = File.read("spec/fixtures/responses/callback_invalid_signature.txt")
 
       expect {
@@ -400,36 +405,38 @@ describe Buckaruby::Gateway do
       }.to raise_error(Buckaruby::SignatureException, "Sent signature (abcdefgh1234567890abcdefgh1234567890) doesn't match generated signature (0a74bba15fccd8094f33678c001b44851643876d)")
     end
 
-    it 'should return the status when the signature is valid' do
+    it 'returns the status when the signature is valid' do
       params = File.read("spec/fixtures/responses/callback_valid_signature.txt")
 
       response = subject.callback(params)
       expect(response).to be_an_instance_of(Buckaruby::CallbackResponse)
-      expect(response.transaction_status).to be
-      expect(response.transaction_type).to be
-      expect(response.payment_method).to be
-      expect(response.payment_id).to be
-      expect(response.invoicenumber).to be
+      expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
+      expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
+      expect(response.payment_method).to eq(Buckaruby::PaymentMethod::IDEAL)
+      expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
+      expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
+      expect(response.invoicenumber).to eq("12345")
       expect(response.timestamp).to be_an_instance_of(Time)
       expect(response.to_h).to be_an_instance_of(Hash)
     end
 
-    it 'should accept a Hash as parameters' do
+    it 'accepts a Hash as parameters' do
       params = { "brq_amount" => "10.00", "brq_currency" => "EUR", "brq_customer_name" => "J. de Tester", "brq_description" => "Test", "brq_invoicenumber" => "12345", "brq_mutationtype" => "Collecting", "brq_payer_hash" => "e02377112efcd30bb7420bb1b9855a3778864572", "brq_payment" => "E86256B2787EE7FF0C33D0D4C6159CD922227B79", "brq_service_ideal_consumerbic" => "RABONL2U", "brq_service_ideal_consumeriban" => "NL44RABO0123456789", "brq_service_ideal_consumerissuer" => "Rabobank", "brq_service_ideal_consumername" => "J. de Tester", "brq_statuscode" => "190", "brq_statuscode_detail" => "S001", "brq_statusmessage" => "Transaction successfully processed", "brq_test" => "true", "brq_timestamp" => "2014-11-05 13:10:42", "brq_transaction_method" => "ideal", "brq_transaction_type" => "C021", "brq_transactions" => "41C48B55FA9164E123CC73B1157459E840BE5D24", "brq_websitekey" => "12345678", "brq_signature" => "0a74bba15fccd8094f33678c001b44851643876d" }
 
       response = subject.callback(params)
       expect(response).to be_an_instance_of(Buckaruby::CallbackResponse)
-      expect(response.transaction_status).to be
-      expect(response.transaction_type).to be
-      expect(response.payment_method).to be
-      expect(response.payment_id).to be
-      expect(response.invoicenumber).to be
+      expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
+      expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
+      expect(response.payment_method).to eq(Buckaruby::PaymentMethod::IDEAL)
+      expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
+      expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
+      expect(response.invoicenumber).to eq("12345")
       expect(response.timestamp).to be_an_instance_of(Time)
       expect(response.to_h).to be_an_instance_of(Hash)
     end
 
-    context 'payment response' do
-      it 'should set the success status when payment status is success' do
+    context 'when callback is a payment response' do
+      it 'sets the success status when payment status is success' do
         params = File.read("spec/fixtures/responses/callback_payment_success.txt")
 
         response = subject.callback(params)
@@ -443,7 +450,7 @@ describe Buckaruby::Gateway do
         expect(response.to_h).to be_an_instance_of(Hash)
       end
 
-      it 'should set the failed status when payment status is failed' do
+      it 'sets the failed status when payment status is failed' do
         params = File.read("spec/fixtures/responses/callback_payment_failed.txt")
 
         response = subject.callback(params)
@@ -457,7 +464,7 @@ describe Buckaruby::Gateway do
         expect(response.to_h).to be_an_instance_of(Hash)
       end
 
-      it 'should set the rejected status when payment status is rejected' do
+      it 'sets the rejected status when payment status is rejected' do
         params = File.read("spec/fixtures/responses/callback_payment_rejected.txt")
 
         response = subject.callback(params)
@@ -471,7 +478,7 @@ describe Buckaruby::Gateway do
         expect(response.to_h).to be_an_instance_of(Hash)
       end
 
-      it 'should set the cancelled status when payment status is cancelled' do
+      it 'sets the cancelled status when payment status is cancelled' do
         params = File.read("spec/fixtures/responses/callback_payment_cancelled.txt")
 
         response = subject.callback(params)
@@ -485,7 +492,7 @@ describe Buckaruby::Gateway do
         expect(response.to_h).to be_an_instance_of(Hash)
       end
 
-      it 'should set the pending status when payment status is pending' do
+      it 'sets the pending status when payment status is pending' do
         params = File.read("spec/fixtures/responses/callback_payment_pending.txt")
 
         response = subject.callback(params)
@@ -499,7 +506,7 @@ describe Buckaruby::Gateway do
         expect(response.to_h).to be_an_instance_of(Hash)
       end
 
-      it 'should include account iban, bic and name for an ideal response' do
+      it 'includes account iban, bic and name for an ideal response' do
         params = File.read("spec/fixtures/responses/callback_payment_success.txt")
 
         response = subject.callback(params)
@@ -513,7 +520,7 @@ describe Buckaruby::Gateway do
         expect(response.to_h).to be_an_instance_of(Hash)
       end
 
-      it 'should include account iban, name, mandate reference and collect date for a sepa direct debit response' do
+      it 'includes account iban, name, mandate reference and collect date for a sepa direct debit response' do
         params = File.read("spec/fixtures/responses/callback_payment_sepa.txt")
 
         response = subject.callback(params)
@@ -531,7 +538,7 @@ describe Buckaruby::Gateway do
         expect(response.to_h).to be_an_instance_of(Hash)
       end
 
-      it 'should return transaction type payment when cancelling a visa or mastercard transaction (empty transaction type)' do
+      it 'returns transaction type payment when cancelling a visa or mastercard transaction (empty transaction type)' do
         params = File.read("spec/fixtures/responses/callback_payment_empty_transaction_type.txt")
 
         response = subject.callback(params)
@@ -544,8 +551,8 @@ describe Buckaruby::Gateway do
       end
     end
 
-    context 'payment recurrent response' do
-      it 'should recognize a visa payment recurrent response' do
+    context 'when callback is a payment recurrent response' do
+      it 'recognizes a visa payment recurrent response' do
         params = File.read("spec/fixtures/responses/callback_recurrent_visa.txt")
 
         response = subject.callback(params)
@@ -559,7 +566,7 @@ describe Buckaruby::Gateway do
         expect(response.to_h).to be_an_instance_of(Hash)
       end
 
-      it 'should recognize a sepa direct debit payment recurrent response' do
+      it 'recognizes a sepa direct debit payment recurrent response' do
         params = File.read("spec/fixtures/responses/callback_recurrent_sepa.txt")
 
         response = subject.callback(params)
@@ -574,8 +581,8 @@ describe Buckaruby::Gateway do
       end
     end
 
-    context 'refund response' do
-      it 'should recognize an ideal refund response' do
+    context 'when callback is a refund response' do
+      it 'recognizes an ideal refund response' do
         params = File.read("spec/fixtures/responses/callback_refund_ideal.txt")
 
         response = subject.callback(params)
@@ -590,7 +597,7 @@ describe Buckaruby::Gateway do
         expect(response.to_h).to be_an_instance_of(Hash)
       end
 
-      it 'should recognize a paypal refund response' do
+      it 'recognizes a paypal refund response' do
         params = File.read("spec/fixtures/responses/callback_refund_paypal.txt")
 
         response = subject.callback(params)
@@ -606,8 +613,8 @@ describe Buckaruby::Gateway do
       end
     end
 
-    context 'reversal response' do
-      it 'should recognize a sepa direct debit reversal response' do
+    context 'when callback is a reversal response' do
+      it 'recognizes a sepa direct debit reversal response' do
         params = File.read("spec/fixtures/responses/callback_reversal_sepa.txt")
 
         response = subject.callback(params)
@@ -622,7 +629,7 @@ describe Buckaruby::Gateway do
         expect(response.to_h).to be_an_instance_of(Hash)
       end
 
-      it 'should recognize a paypal reversal response' do
+      it 'recognizes a paypal reversal response' do
         params = File.read("spec/fixtures/responses/callback_reversal_paypal.txt")
 
         response = subject.callback(params)

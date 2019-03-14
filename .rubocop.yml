@@ -1,13 +1,17 @@
 # Buckaruby RuboCop configuration
 
+require: rubocop-rspec
+
 AllCops:
   TargetRubyVersion: 2.3
   DisplayCopNames: true
   DisplayStyleGuide: true
 
+
 # We target 2.3, but still want to support 2.0.
 Gemspec/RequiredRubyVersion:
   Enabled: false
+
 
 Metrics/AbcSize:
   Max: 30
@@ -34,11 +38,29 @@ Metrics/ModuleLength:
 Metrics/PerceivedComplexity:
   Max: 9
 
+
 Naming/AccessorMethodName:
   Enabled: false
 
 Naming/MemoizedInstanceVariableName:
   Enabled: false
+
+
+RSpec/DescribedClass:
+  EnforcedStyle: explicit
+
+RSpec/ExampleLength:
+  Max: 15
+
+RSpec/MultipleExpectations:
+  Max: 12
+
+RSpec/NamedSubject:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Max: 4
+
 
 Style/BlockDelimiters:
   Exclude:

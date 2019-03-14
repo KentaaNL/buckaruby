@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Buckaruby::Support::CaseInsensitiveHash do
+RSpec.describe Buckaruby::Support::CaseInsensitiveHash do
   describe 'retrieve and assign' do
     it 'accepts String keys and makes them case insensitive' do
       hash = Buckaruby::Support::CaseInsensitiveHash.new
