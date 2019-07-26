@@ -50,8 +50,8 @@ module Buckaruby
     # Try to catch some common exceptions Net::HTTP might raise
     rescue Errno::ETIMEDOUT, Errno::EINVAL, Errno::ECONNRESET, Errno::ECONNREFUSED, Errno::EHOSTUNREACH,
            IOError, SocketError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::OpenTimeout,
-           Net::ProtocolError, Net::ReadTimeout, OpenSSL::SSL::SSLError => ex
-      raise ConnectionException, ex
+           Net::ProtocolError, Net::ReadTimeout, OpenSSL::SSL::SSLError => e
+      raise ConnectionException, e
     end
 
     def build_request_data(options)
