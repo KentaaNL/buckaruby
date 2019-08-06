@@ -1,6 +1,6 @@
 # Buckaruby changelog
 
-## 1.2.0 (2019-08-11)
+## 1.2.0 (2019-08-06)
 
 - Added support for sending custom & additional variables with the request.
 
