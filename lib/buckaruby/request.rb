@@ -58,6 +58,8 @@ module Buckaruby
       params = { brq_websitekey: @config.website }
 
       params.merge!(build_request_params(options))
+      params.merge!(build_custom_params(options[:custom])) if options[:custom]
+      params.merge!(build_additional_params(options[:additional])) if options[:additional]
 
       params[:add_buckaruby] = "Buckaruby #{Buckaruby::VERSION}"
 
@@ -65,6 +67,14 @@ module Buckaruby
       params[:brq_signature] = Signature.generate_signature(params, @config)
 
       params
+    end
+
+    def build_custom_params(options)
+      options.map { |key, value| [:"cust_#{key}", value] }.to_h
+    end
+
+    def build_additional_params(options)
+      options.map { |key, value| [:"add_#{key}", value] }.to_h
     end
 
     def post_data(params)

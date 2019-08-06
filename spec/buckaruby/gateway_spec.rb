@@ -206,6 +206,30 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.timestamp).to be_an_instance_of(Time)
       expect(response.to_h).to be_an_instance_of(Hash)
     end
+
+    context 'with custom variables' do
+      it 'sends the custom variables with the request' do
+        response = subject.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: "ABNANL2A", invoicenumber: "12345", return_url: "http://www.return.url/", custom: { foo: :bar, quux: "42" })
+        expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse)
+        expect(response.custom[:foo]).to eq("bar")
+        expect(response.custom[:quux]).to eq("42")
+
+        expect(WebMock).to have_requested(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest")
+          .with(body: "brq_websitekey=12345678&brq_payment_method=ideal&brq_culture=nl-NL&brq_currency=EUR&brq_amount=10.0&brq_invoicenumber=12345&brq_service_ideal_action=Pay&brq_service_ideal_issuer=ABNANL2A&brq_service_ideal_version=2&brq_return=http%3A%2F%2Fwww.return.url%2F&cust_foo=bar&cust_quux=42&add_buckaruby=Buckaruby+#{Buckaruby::VERSION}&brq_signature=3335ef9c73400fb02f4a4833b9c0f71a60db56c3")
+      end
+    end
+
+    context 'with additional variables' do
+      it 'sends the additional variables with the request' do
+        response = subject.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: "ABNANL2A", invoicenumber: "12345", return_url: "http://www.return.url/", additional: { myreference: "12345" })
+        expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse)
+        expect(response.additional[:buckaruby]).to eq("1.2.0")
+        expect(response.additional[:myreference]).to eq("12345")
+
+        expect(WebMock).to have_requested(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest")
+          .with(body: "brq_websitekey=12345678&brq_payment_method=ideal&brq_culture=nl-NL&brq_currency=EUR&brq_amount=10.0&brq_invoicenumber=12345&brq_service_ideal_action=Pay&brq_service_ideal_issuer=ABNANL2A&brq_service_ideal_version=2&brq_return=http%3A%2F%2Fwww.return.url%2F&add_myreference=12345&add_buckaruby=Buckaruby+#{Buckaruby::VERSION}&brq_signature=7efc0c3402b5cd04bf12517b90ba126174629aeb")
+      end
+    end
   end
 
   describe '#recurrent_transaction' do

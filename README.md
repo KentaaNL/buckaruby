@@ -170,6 +170,39 @@ response = gateway.status(transaction_id: 12345)
 
 See `Buckaruby::StatusResponse` for more details.
 
+### Merchant variables
+
+You can send custom variables and additional variables with each request.
+
+Use the parameter `custom` to build a hash with custom variables and `additional` for building a hash with additional variabeles.
+For example:
+
+```ruby
+options = {
+  amount: 10,
+  payment_method: Buckaruby::PaymentMethod::IDEAL,
+  payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first,
+  invoicenumber: "12345",
+  return_url: "http://www.return.url/",
+  custom: {
+    foo: "bar",
+    quux: "42"
+  },
+  additional: {
+    myreference: "12345"
+  }
+}
+
+response = gateway.setup_transaction(options)
+```
+
+In the response, you can retrieve the custom and additional variables with the methods `custom` and `additional`:
+
+```ruby
+puts response.custom[:foo]
+puts response.additional[:myreference]
+````
+
 ### Error handling
 
 When missing or invalid parameters are passed to any method, an `ArgumentError` will be raised.

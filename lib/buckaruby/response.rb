@@ -39,6 +39,36 @@ module Buckaruby
       parse_time(params[:brq_timestamp])
     end
 
+    def custom
+      @custom ||= begin
+        custom = Support::CaseInsensitiveHash.new
+
+        params.each do |key, value|
+          next unless key.upcase.start_with?("CUST_")
+
+          new_key = key.to_s[5..-1]
+          custom[new_key] = value
+        end
+
+        custom
+      end
+    end
+
+    def additional
+      @additional ||= begin
+        additional = Support::CaseInsensitiveHash.new
+
+        params.each do |key, value|
+          next unless key.upcase.start_with?("ADD_")
+
+          new_key = key.to_s[4..-1]
+          additional[new_key] = value
+        end
+
+        additional
+      end
+    end
+
     private
 
     def parse_response(body)
