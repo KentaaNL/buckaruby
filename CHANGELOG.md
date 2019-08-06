@@ -1,9 +1,15 @@
 # Buckaruby changelog
 
+## 1.2.0 (2019-08-11)
+
+- Added support for sending custom & additional variables with the request.
+
 ## 1.1.1 (2018-11-30)
+
 - Added Handelsbanken to the list of iDEAL issuers.
 
 ## 1.1.0 (2018-06-01)
+
 - Added payment method iDEAL processing.
 - Added Moneyou to the list of iDEAL issuers.
 - Implemented refund transaction.
