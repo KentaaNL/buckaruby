@@ -40,6 +40,15 @@ module Buckaruby
       Ideal::ISSUERS
     end
 
+    # New generate data request.
+    def generate(options = {})
+      @logger.debug("[generate] options=#{options.inspect}")
+
+      validate_generate_params!(options)
+
+      execute_request(:data, options)
+    end
+
     # Setup a new transaction.
     def setup_transaction(options = {})
       @logger.debug("[setup_transaction] options=#{options.inspect}")
@@ -154,6 +163,26 @@ module Buckaruby
       end
     end
 
+    # Validate params for generate request.
+    def validate_generate_params!(options)
+      required_params = [:service]
+
+      if options[:service] == Service::IDEAL_QR
+        required_params << [:amount, :description, :purchase_id, :expires_at]
+        required_params << [:minimum_amount, :maximum_amount] if options.key?(:amount_changeable)
+      end
+
+      validate_required_params!(options, required_params)
+
+      if options[:service] == Service::IDEAL_QR
+        validate_amount!(options)
+
+        # TODO: validate minimum/maximum amount
+      end
+
+      validate_service!(options, Service::IDEAL_QR)
+    end
+
     # Validate params for setup transaction.
     def validate_setup_transaction_params!(options)
       required_params = [:amount, :payment_method, :invoicenumber]
@@ -192,6 +221,13 @@ module Buckaruby
     def validate_payment_method!(options, valid)
       unless valid.include?(options[:payment_method])
         raise ArgumentError, "Invalid payment method: #{options[:payment_method]}"
+      end
+    end
+
+    # Validate the service.
+    def validate_service!(options, valid)
+      unless valid.include?(options[:service])
+        raise ArgumentError, "Invalid service: #{options[:service]}"
       end
     end
 
@@ -264,6 +300,8 @@ module Buckaruby
         StatusResponse.new(response, config)
       when :cancel
         CancelResponse.new(response, config)
+      when :data
+        DataResponse.new(response, config)
       end
     end
 
@@ -284,6 +322,8 @@ module Buckaruby
         StatusRequest.new(config)
       when :cancel
         CancelRequest.new(config)
+      when :data
+        DataRequest.new(config)
       end
     end
   end

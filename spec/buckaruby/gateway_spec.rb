@@ -753,4 +753,48 @@ RSpec.describe Buckaruby::Gateway do
       end
     end
   end
+
+  describe '#generate' do
+    before do
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=DataRequest").to_return(body: File.read("spec/fixtures/responses/generate_idealqr_success.txt"))
+    end
+
+    it 'raises an exception when parameters are missing' do
+      expect {
+        subject.generate
+      }.to raise_error(ArgumentError)
+
+      expect {
+        subject.generate(service: Buckaruby::Service::IDEAL_QR)
+      }.to raise_error(ArgumentError)
+
+      expect {
+        subject.generate(service: Buckaruby::Service::IDEAL_QR, amount: 10)
+      }.to raise_error(ArgumentError)
+
+      expect {
+        subject.generate(service: Buckaruby::Service::IDEAL_QR, amount: 10, description: "test")
+      }.to raise_error(ArgumentError)
+
+      expect {
+        subject.generate(service: Buckaruby::Service::IDEAL_QR, amount: 10, description: "test", purchase_id: "12345")
+      }.to raise_error(ArgumentError)
+    end
+
+    it 'raises an exception when initiating a data request with invalid service' do
+      expect {
+        subject.generate(service: "abc")
+      }.to raise_error(ArgumentError)
+    end
+
+    it 'initiates a data request for iDEAL QR' do
+      response = subject.generate(service: Buckaruby::Service::IDEAL_QR, amount: 10, description: "test", purchase_id: "12345", expires_at: Date.new(2018, 1, 1))
+      expect(response).to be_an_instance_of(Buckaruby::DataResponse)
+      expect(response.status).to eq(Buckaruby::TransactionStatus::SUCCESS)
+      expect(response.timestamp).to be_an_instance_of(Time)
+      expect(response.data_request).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
+      expect(response.service).to eq(Buckaruby::Service::IDEAL_QR)
+      expect(response.qr_image_url).to eq("https://qrcode.ideal.nl/qrcode/12345678-1234-1234-1234-123456789012.png")
+    end
+  end
 end

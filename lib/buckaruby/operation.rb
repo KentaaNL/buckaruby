@@ -2,10 +2,11 @@
 
 module Buckaruby
   module Operation
-    TRANSACTION_REQUEST = "TransactionRequest"
-    TRANSACTION_STATUS = "TransactionStatus"
-    TRANSACTION_REQUEST_SPECIFICATION = "TransactionRequestSpecification"
-    REFUND_INFO = "RefundInfo"
     CANCEL_TRANSACTION = "CancelTransaction"
+    DATA_REQUEST = "DataRequest"
+    REFUND_INFO = "RefundInfo"
+    TRANSACTION_REQUEST = "TransactionRequest"
+    TRANSACTION_REQUEST_SPECIFICATION = "TransactionRequestSpecification"
+    TRANSACTION_STATUS = "TransactionStatus"
   end
 end

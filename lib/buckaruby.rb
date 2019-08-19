@@ -6,6 +6,7 @@ require_relative 'buckaruby/ideal'
 require_relative 'buckaruby/language'
 require_relative 'buckaruby/operation'
 require_relative 'buckaruby/payment_method'
+require_relative 'buckaruby/service'
 require_relative 'buckaruby/transaction_status'
 require_relative 'buckaruby/transaction_type'
 

@@ -365,4 +365,21 @@ module Buckaruby
       @custom_parameters ||= FieldMapper.map_fields(params, :brq_customparameters)
     end
   end
+
+  # Response for a data request.
+  class DataResponse < ApiResponse
+    def data_request
+      params[:brq_datarequest]
+    end
+
+    def service
+      params[:brq_primary_service].downcase
+    end
+
+    def qr_image_url
+      if service == Service::IDEAL_QR
+        params[:brq_service_idealqr_qrimageurl]
+      end
+    end
+  end
 end

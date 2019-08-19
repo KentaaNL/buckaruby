@@ -267,4 +267,60 @@ module Buckaruby
       params
     end
   end
+
+  # Request for a "Data request".
+  class DataRequest < Request
+    def execute(options)
+      super(options.merge(operation: Operation::DATA_REQUEST))
+    end
+
+    def build_request_params(options)
+      params = { brq_payment_method: options[:service] }
+
+      case options[:service]
+      when Service::IDEAL_QR
+        params.merge!(build_idealqr_params(options))
+      end
+
+      params
+    end
+
+    private
+
+    def build_idealqr_params(options)
+      params = {
+        brq_service_idealqr_action: Action::GENERATE,
+        brq_service_idealqr_description: options[:description],
+        brq_service_idealqr_amount: BigDecimal(options[:amount].to_s).to_s("F"),
+        brq_service_idealqr_purchaseid: options[:purchase_id],
+        brq_service_idealqr_expiration: options[:expires_at].strftime("%Y-%m-%d")
+      }
+
+      # These parameters are mandatory, but we provide a default value.
+      if options.key?(:oneoff)
+        params[:brq_service_idealqr_isoneoff] = options[:oneoff]
+      else
+        params[:brq_service_idealqr_isoneoff] = false
+      end
+
+      if options.key?(:amount_changeable)
+        params[:brq_service_idealqr_amountischangeable] = options[:amount_changeable]
+      else
+        params[:brq_service_idealqr_amountischangeable] = false
+      end
+
+      if options.key?(:image_size)
+        params[:brq_service_idealqr_imagesize] = options[:image_size]
+      else
+        params[:brq_service_idealqr_imagesize] = 100
+      end
+
+      # Optional parameters.
+      params[:brq_service_idealqr_isprocessing] = options[:processing] if options.key?(:processing)
+      params[:brq_service_idealqr_minamount] = options[:minimum_amount] if options.key?(:minimum_amount)
+      params[:brq_service_idealqr_maxamount] = options[:maximum_amount] if options.key?(:maximum_amount)
+
+      params
+    end
+  end
 end

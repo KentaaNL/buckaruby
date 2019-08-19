@@ -46,7 +46,7 @@ Metrics/ModuleLength:
   Enabled: false
 
 Metrics/PerceivedComplexity:
-  Max: 9
+  Max: 10
 
 
 Naming/AccessorMethodName:
