@@ -14,5 +14,6 @@ module Buckaruby
     VISA = "visa"
     MASTER_CARD = "mastercard"
     MAESTRO = "maestro"
+    AMERICAN_EXPRESS = "amex"
   end
 end
