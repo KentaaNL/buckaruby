@@ -573,6 +573,20 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.timestamp).to be_an_instance_of(Time)
         expect(response.to_h).to be_an_instance_of(Hash)
       end
+
+      it 'sets the transaction type to payment and payment method to American Express for amex callback' do
+        params = File.read("spec/fixtures/responses/callback_payment_amex.txt")
+
+        response = subject.callback(params)
+        expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
+        expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
+        expect(response.payment_method).to eq(Buckaruby::PaymentMethod::AMERICAN_EXPRESS)
+        expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
+        expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
+        expect(response.invoicenumber).to eq("12345")
+        expect(response.timestamp).to be_an_instance_of(Time)
+        expect(response.to_h).to be_an_instance_of(Hash)
+      end
     end
 
     context 'when callback is a payment recurrent response' do
@@ -630,6 +644,21 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::PAYPAL)
         expect(response.transaction_id).to eq("B51118F58785274E117EFE1BF99D4D50CCB96949")
         expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
+        expect(response.invoicenumber).to eq("12345")
+        expect(response.refund_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
+        expect(response.timestamp).to be_an_instance_of(Time)
+        expect(response.to_h).to be_an_instance_of(Hash)
+      end
+
+      it 'recognizes an amex refund response' do
+        params = File.read("spec/fixtures/responses/callback_refund_amex.txt")
+
+        response = subject.callback(params)
+        expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
+        expect(response.transaction_type).to eq(Buckaruby::TransactionType::REFUND)
+        expect(response.payment_method).to eq(Buckaruby::PaymentMethod::AMERICAN_EXPRESS)
+        expect(response.transaction_id).to eq("B51118F58785274E117EFE1BF99D4D50CCB96949")
+        expect(response.payment_id).to be nil
         expect(response.invoicenumber).to eq("12345")
         expect(response.refund_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
         expect(response.timestamp).to be_an_instance_of(Time)
