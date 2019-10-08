@@ -1,5 +1,9 @@
 # Buckaruby changelog
 
+## 1.3.0 (2019-10-08)
+
+- Added payment method American Express.
+
 ## 1.2.0 (2019-08-06)
 
 - Added support for sending custom & additional variables with the request.
