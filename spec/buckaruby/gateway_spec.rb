@@ -574,6 +574,20 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.to_h).to be_an_instance_of(Hash)
       end
 
+      it 'sets the transaction type to payment and payment method to VISA for visa callback' do
+        params = File.read("spec/fixtures/responses/callback_payment_visa.txt")
+
+        response = subject.callback(params)
+        expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
+        expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
+        expect(response.payment_method).to eq(Buckaruby::PaymentMethod::VISA)
+        expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
+        expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
+        expect(response.invoicenumber).to eq("12345")
+        expect(response.timestamp).to be_an_instance_of(Time)
+        expect(response.to_h).to be_an_instance_of(Hash)
+      end
+
       it 'sets the transaction type to payment and payment method to American Express for amex callback' do
         params = File.read("spec/fixtures/responses/callback_payment_amex.txt")
 
