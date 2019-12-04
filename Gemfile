@@ -6,7 +6,7 @@ source 'https://rubygems.org'
 gemspec
 
 group :test do
-  gem 'rubocop', '~> 0.74.0'
-  gem 'rubocop-performance', '~> 1.4.0'
-  gem 'rubocop-rspec', '~> 1.35.0'
+  gem 'rubocop', '~> 0.77.0'
+  gem 'rubocop-performance', '~> 1.5.1'
+  gem 'rubocop-rspec', '~> 1.37.0'
 end
