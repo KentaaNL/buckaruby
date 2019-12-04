@@ -1,5 +1,9 @@
 # Buckaruby changelog
 
+## 1.3.1 (2019-12-04)
+
+- Update list of credit card transaction types.
+
 ## 1.3.0 (2019-10-08)
 
 - Added payment method American Express.
