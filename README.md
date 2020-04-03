@@ -51,9 +51,9 @@ gateway = Buckaruby::Gateway.new(
 
 You can override the default mode with the parameter `mode`.
 
-#### Payment methods
+### Payment methods
 
-To retrieve the payment methods enabled in Buckaroo and supported by this library, you can use the method `payment_methods`. On success, this method will return an array with all payment methods that can be used. See also `PaymentMethod` for predefined constants.
+To retrieve the payment methods enabled in Buckaroo and supported by this library, you can use the method `payment_methods`. This method will return an array with all payment methods that can be used. See also `Buckaruby::PaymentMethod` for predefined constants.
 
 ```ruby
 payment_methods = gateway.payment_methods
@@ -215,7 +215,7 @@ puts response.additional[:myreference]
 
 To retrieve a specification about what needs to be sent with transaction request, you can use the method `specify_transaction`. The parameter `payment_method` is optional. When supplied it will only send the specification for that payment method.
 
-This request is also used by the `payment_methods` call, to determine which services (payment methods) are enabled in Buckaroo.
+This request is also used by the `payment_methods` method to determine which services (payment methods) are enabled in Buckaroo.
 
 ```ruby
 response = gateway.specify_transaction(payment_method: Buckaruby::PaymentMethod::IDEAL)
