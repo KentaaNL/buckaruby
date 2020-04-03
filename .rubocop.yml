@@ -15,6 +15,17 @@ Gemspec/RequiredRubyVersion:
   Enabled: false
 
 
+Layout/LineLength:
+  Enabled: false
+
+
+Lint/RaiseException:
+  Enabled: true
+
+Lint/StructNewOverride:
+  Enabled: true
+
+
 Metrics/AbcSize:
   Max: 30
 
@@ -27,9 +38,6 @@ Metrics/ClassLength:
 
 Metrics/CyclomaticComplexity:
   Max: 9
-
-Metrics/LineLength:
-  Enabled: false
 
 Metrics/MethodLength:
   Enabled: false
@@ -76,6 +84,15 @@ Style/ExpandPathArguments:
 
 Style/GuardClause:
   Enabled: false
+
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
 
 Style/IfUnlessModifier:
   Enabled: false
