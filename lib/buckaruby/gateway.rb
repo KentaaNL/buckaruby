@@ -17,7 +17,21 @@ module Buckaruby
       @logger = config.logger
     end
 
-    # Get a list with payment issuers.
+    # Returns the payment methods enabled by Buckaroo and supported by this library.
+    def payment_methods
+      valid_payment_methods = [
+        PaymentMethod::IDEAL, PaymentMethod::IDEAL_PROCESSING, PaymentMethod::VISA, PaymentMethod::MASTER_CARD,
+        PaymentMethod::MAESTRO, PaymentMethod::AMERICAN_EXPRESS, PaymentMethod::SEPA_DIRECT_DEBIT,
+        PaymentMethod::PAYPAL, PaymentMethod::BANCONTACT_MISTER_CASH
+      ]
+
+      response = execute_request(:specify_transaction)
+      services = response.services.map { |service| service[:name] }
+
+      services & valid_payment_methods
+    end
+
+    # Get a list with payment issuers (currently only iDEAL).
     def issuers(payment_method)
       if payment_method != PaymentMethod::IDEAL && payment_method != PaymentMethod::IDEAL_PROCESSING
         raise ArgumentError, "Invalid payment method, only iDEAL is supported."
@@ -44,6 +58,13 @@ module Buckaruby
       validate_recurrent_transaction_params!(options)
 
       execute_request(:recurrent_transaction, options)
+    end
+
+    # Retrieve the specification for setting up a transaction.
+    def specify_transaction(options = {})
+      @logger.debug("[specify_transaction] options=#{options.inspect}")
+
+      execute_request(:specify_transaction, options)
     end
 
     # Checks if a transaction is refundable.
@@ -150,8 +171,9 @@ module Buckaruby
       validate_amount!(options)
 
       valid_payment_methods = [
-        PaymentMethod::IDEAL, PaymentMethod::IDEAL_PROCESSING, PaymentMethod::VISA, PaymentMethod::MASTER_CARD, PaymentMethod::MAESTRO,
-        PaymentMethod::AMERICAN_EXPRESS, PaymentMethod::SEPA_DIRECT_DEBIT, PaymentMethod::PAYPAL, PaymentMethod::BANCONTACT_MISTER_CASH
+        PaymentMethod::IDEAL, PaymentMethod::IDEAL_PROCESSING, PaymentMethod::VISA, PaymentMethod::MASTER_CARD,
+        PaymentMethod::MAESTRO, PaymentMethod::AMERICAN_EXPRESS, PaymentMethod::SEPA_DIRECT_DEBIT,
+        PaymentMethod::PAYPAL, PaymentMethod::BANCONTACT_MISTER_CASH
       ]
       validate_payment_method!(options, valid_payment_methods)
 
@@ -223,7 +245,7 @@ module Buckaruby
     end
 
     # Build and execute a request.
-    def execute_request(request_type, options)
+    def execute_request(request_type, options = {})
       request = build_request(request_type)
       response = request.execute(options)
 
@@ -232,6 +254,8 @@ module Buckaruby
         SetupTransactionResponse.new(response, config)
       when :recurrent_transaction
         RecurrentTransactionResponse.new(response, config)
+      when :specify_transaction
+        TransactionSpecificationResponse.new(response, config)
       when :refund_transaction
         RefundTransactionResponse.new(response, config)
       when :refund_info
@@ -250,6 +274,8 @@ module Buckaruby
         SetupTransactionRequest.new(config)
       when :recurrent_transaction
         RecurrentTransactionRequest.new(config)
+      when :specify_transaction
+        TransactionSpecificationRequest.new(config)
       when :refund_transaction
         RefundTransactionRequest.new(config)
       when :refund_info

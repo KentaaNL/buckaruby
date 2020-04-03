@@ -29,6 +29,17 @@ RSpec.describe Buckaruby::Gateway do
 
   it { expect(subject).to be_an_instance_of(Buckaruby::Gateway) }
 
+  describe '#payment_methods' do
+    before do
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequestSpecification").to_return(body: File.read("spec/fixtures/responses/specify_transaction_success.txt"))
+    end
+
+    it 'returns the payment methods enabled by Buckaroo and supported by this library' do
+      payment_methods = subject.payment_methods
+      expect(payment_methods).to eq([Buckaruby::PaymentMethod::IDEAL, Buckaruby::PaymentMethod::VISA])
+    end
+  end
+
   describe '#issuers' do
     context 'when no or false parameters are passed' do
       it 'raises an ArgumentError' do
@@ -399,6 +410,36 @@ RSpec.describe Buckaruby::Gateway do
 
       response = subject.cancel_transaction(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response).to be_an_instance_of(Buckaruby::CancelResponse)
+    end
+  end
+
+  describe '#specify_transaction' do
+    before do
+      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequestSpecification").to_return(body: File.read("spec/fixtures/responses/specify_transaction_success.txt"))
+    end
+
+    it 'retrieves the specification for setting up a transaction' do
+      response = subject.specify_transaction
+      expect(response).to be_an_instance_of(Buckaruby::TransactionSpecificationResponse)
+
+      services = response.services
+      expect(services).to be_an_instance_of(Array)
+      expect(services.length).to eq(2)
+
+      service = services.last
+      expect(service).to be_an_instance_of(Buckaruby::Support::CaseInsensitiveHash)
+      expect(service[:name]).to eq(Buckaruby::PaymentMethod::VISA)
+      expect(service[:description]).to eq("Visa")
+      expect(service[:version]).to eq("1")
+
+      currencies = service[:supportedcurrencies]
+      expect(currencies).to be_an_instance_of(Array)
+      expect(currencies.length).to eq(21)
+
+      currency = currencies.last
+      expect(currency).to be_an_instance_of(Buckaruby::Support::CaseInsensitiveHash)
+      expect(currency[:name]).to eq("US Dollar")
+      expect(currency[:code]).to eq(Buckaruby::Currency::US_DOLLAR)
     end
   end
 

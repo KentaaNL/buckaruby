@@ -159,6 +159,30 @@ module Buckaruby
     end
   end
 
+  # Request for a creating a transaction specification.
+  class TransactionSpecificationRequest < Request
+    def execute(options)
+      super(options.merge(operation: Operation::TRANSACTION_REQUEST_SPECIFICATION))
+    end
+
+    def build_request_params(options)
+      params = {}
+
+      if options[:payment_method]
+        if options[:payment_method].respond_to?(:join)
+          params[:brq_services] = options[:payment_method].join(",")
+        else
+          params[:brq_services] = options[:payment_method]
+        end
+      end
+
+      params[:brq_latestversiononly] = "true"
+      params[:brq_culture] = options[:culture] || Language::DUTCH
+
+      params
+    end
+  end
+
   # Request for a creating a recurrent transaction.
   class RecurrentTransactionRequest < TransactionRequest
     def build_transaction_request_params(options)

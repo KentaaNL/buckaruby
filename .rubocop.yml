@@ -52,7 +52,7 @@ RSpec/DescribedClass:
   EnforcedStyle: explicit
 
 RSpec/ExampleLength:
-  Max: 15
+  Max: 17
 
 RSpec/MultipleExpectations:
   Max: 12

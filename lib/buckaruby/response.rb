@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'support/case_insensitive_hash'
+
 require 'cgi'
 require 'date'
 
@@ -347,5 +349,20 @@ module Buckaruby
   # Response when verifying the Buckaroo callback.
   class CallbackResponse < Response
     include TransactionResponse
+  end
+
+  # Response when retrieving the specification for a transaction.
+  class TransactionSpecificationResponse < Response
+    def services
+      @services ||= FieldMapper.map_fields(params, :brq_services)
+    end
+
+    def basic_fields
+      @basic_fields ||= FieldMapper.map_fields(params, :brq_basicfields)
+    end
+
+    def custom_parameters
+      @custom_parameters ||= FieldMapper.map_fields(params, :brq_customparameters)
+    end
   end
 end
