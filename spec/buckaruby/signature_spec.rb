@@ -33,6 +33,12 @@ RSpec.describe Buckaruby::Signature do
       string = Buckaruby::Signature.generate_signature_string(params, 'secret')
       expect(string).to eq('brq_testA=FoobarBRQ_TESTB=abcDEFBRQ_TestC=testsecret')
     end
+
+    it 'sorts symbols first, then numbers, then case insensitive letters' do
+      params = { 'brq_a_a': 'foo', brq_a0: 'foo', brq_a0a: 'foo', brq_a1a: 'foo', brq_aaA: 'foo', brq_aab: 'foo', brq_aba: 'foo', brq_aCa: 'foo' }
+      string = Buckaruby::Signature.generate_signature_string(params, 'secret')
+      expect(string).to eq('brq_a_a=foobrq_a0=foobrq_a0a=foobrq_a1a=foobrq_aaA=foobrq_aab=foobrq_aba=foobrq_aCa=foosecret')
+    end
   end
 
   describe 'generate_signature' do
