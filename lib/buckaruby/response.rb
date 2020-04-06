@@ -85,7 +85,7 @@ module Buckaruby
     end
 
     def verify_signature!(response, config)
-      if params[:brq_apiresult] != "Fail"
+      if params[:brq_apiresult].nil? || !params[:brq_apiresult].casecmp("fail").zero?
         sent_signature = params[:brq_signature]
         generated_signature = Signature.generate_signature(response, config)
 
