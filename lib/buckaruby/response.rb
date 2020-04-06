@@ -352,7 +352,7 @@ module Buckaruby
   end
 
   # Response when retrieving the specification for a transaction.
-  class TransactionSpecificationResponse < Response
+  class TransactionSpecificationResponse < ApiResponse
     def services
       @services ||= FieldMapper.map_fields(params, :brq_services)
     end
