@@ -1,27 +1,33 @@
 # Buckaruby changelog
 
+## 1.4.0 (2020-04-06)
+
+- Add `payment_methods` to retrieve all payment methods enabled by Buckaroo and supported by this library.
+- Add `specify_transaction` to get a specification for setting up a transaction.
+- Fix calcuating the signature for long responses and indexed fields.
+
 ## 1.3.1 (2019-12-04)
 
 - Update list of credit card transaction types.
 
 ## 1.3.0 (2019-10-08)
 
-- Added payment method American Express.
+- Add payment method American Express.
 
 ## 1.2.0 (2019-08-06)
 
-- Added support for sending custom & additional variables with the request.
+- Add support for sending custom & additional variables with the request.
 
 ## 1.1.1 (2018-11-30)
 
-- Added Handelsbanken to the list of iDEAL issuers.
+- Add Handelsbanken to the list of iDEAL issuers.
 
 ## 1.1.0 (2018-06-01)
 
-- Added payment method iDEAL processing.
-- Added Moneyou to the list of iDEAL issuers.
-- Implemented refund transaction.
-- Implemented cancel transaction.
+- Add payment method iDEAL processing.
+- Add Moneyou to the list of iDEAL issuers.
+- Implement refund transaction.
+- Implement cancel transaction.
 
 ## 1.0.2 (2017-08-25)
 
