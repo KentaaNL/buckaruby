@@ -4,7 +4,7 @@
 
 - Add `payment_methods` to retrieve all payment methods enabled by Buckaroo and supported by this library.
 - Add `specify_transaction` to get a specification for setting up a transaction.
-- Fix calcuating the signature for long responses and indexed fields.
+- Fix calculating the signature for long responses and indexed fields.
 
 ## 1.3.1 (2019-12-04)
 
