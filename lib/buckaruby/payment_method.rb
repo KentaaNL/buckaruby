@@ -8,6 +8,7 @@ module Buckaruby
     SEPA_DIRECT_DEBIT = "sepadirectdebit"
     PAYPAL = "paypal"
     BANCONTACT_MISTER_CASH = "bancontactmrcash"
+    SOFORT = "sofortueberweisung"
     TRANSFER = "transfer"
 
     # Credit cards
