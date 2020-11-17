@@ -2,8 +2,10 @@
 
 module Buckaruby
   # Helper for calculating the IBAN for a given account number, bank code and country code.
-  class Iban
-    def self.calculate_iban(account_number, bank_code, country_code = "NL")
+  module Iban
+    module_function
+
+    def calculate_iban(account_number, bank_code, country_code = "NL")
       if account_number.nil? || account_number.to_s.empty?
         raise ArgumentError, "Invalid account number"
       end

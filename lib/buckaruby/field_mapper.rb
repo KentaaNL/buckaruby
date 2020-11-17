@@ -4,8 +4,10 @@ require_relative 'support/case_insensitive_hash'
 
 module Buckaruby
   # Map NVP fields to hashes and multiple values (with index) to arrays.
-  class FieldMapper
-    def self.map_fields(params, prefix)
+  module FieldMapper
+    module_function
+
+    def map_fields(params, prefix)
       results = []
       index = 1
 

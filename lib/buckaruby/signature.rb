@@ -5,8 +5,10 @@ require 'digest'
 module Buckaruby
   # Calculate a signature based on the parameters of the payment request or response.
   # -> see BPE 3.0 Gateway NVP, chapter 4 'Digital Signature'
-  class Signature
-    def self.generate_signature(params, config)
+  module Signature
+    module_function
+
+    def generate_signature(params, config)
       case config.hash_method
       when :sha1
         Digest::SHA1.hexdigest(generate_signature_string(params, config.secret))
@@ -19,7 +21,7 @@ module Buckaruby
       end
     end
 
-    def self.generate_signature_string(params, secret)
+    def generate_signature_string(params, secret)
       sign_params = params.select { |key, _value| key.to_s.upcase.start_with?("BRQ_", "ADD_", "CUST_") && key.to_s.casecmp("BRQ_SIGNATURE").nonzero? }
       sign_params = order_signature_params(sign_params)
 
@@ -36,7 +38,7 @@ module Buckaruby
     #     a_a, a0, a0a, a1a, aaA, aab, aba, aCa
     CHAR_ORDER = "_01234567890abcdefghijklmnopqrstuvwxyz"
 
-    def self.order_signature_params(params)
+    def order_signature_params(params)
       params.sort_by do |key, _value|
         key.to_s.downcase.each_char.map { |c| CHAR_ORDER.index(c) }
       end
