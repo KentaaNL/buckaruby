@@ -1,5 +1,9 @@
 # Buckaruby changelog
 
+## 1.5.0 (2020-11-17)
+
+- Add payment method Sofort.
+
 ## 1.4.0 (2020-04-06)
 
 - Add `payment_methods` to retrieve all payment methods enabled by Buckaroo and supported by this library.
