@@ -183,6 +183,7 @@ module Buckaruby
              'C002', 'C004', 'C005',                          # (SEPA) Direct Debit
              'V010', 'V014',                                  # PayPal
              'C090', 'V090',                                  # Bancontact
+             'N074', 'C075',                                  # Sofort
              'C001',                                          # Transfer
 
              'C044', 'C192', 'C283', 'C293', 'C318', 'C345',
@@ -210,6 +211,7 @@ module Buckaruby
              'C102', 'C500',                                  # (SEPA) Direct Debit
              'V110',                                          # PayPal
              'C092', 'V092',                                  # Bancontact
+             'N540', 'C543',                                  # Sofort
              'C101',                                          # Transfer
 
              'C080', 'C194', 'C281', 'C290', 'C315', 'C342',
@@ -229,6 +231,7 @@ module Buckaruby
           TransactionType::REFUND
         when 'C501', 'C502', 'C562',                          # (SEPA) Direct Debit
              'V111',                                          # PayPal
+             'C544',                                          # Sofort
 
              'C554', 'C593', 'C882', 'V132', 'V138', 'V144',
              'V544', 'V592',                                  # Visa
