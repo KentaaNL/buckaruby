@@ -10,7 +10,7 @@ module Buckaruby
 
     module_function
 
-    # See http://support.buckaroo.nl/index.php/Transactietypes
+    # See https://support.buckaroo.nl/categorie%C3%ABn/integratie/transactietypes-overzicht
     def parse(brq_transaction_type, brq_recurring)
       if brq_transaction_type && !brq_transaction_type.empty?
         case brq_transaction_type

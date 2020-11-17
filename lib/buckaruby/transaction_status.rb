@@ -11,7 +11,7 @@ module Buckaruby
 
     module_function
 
-    # See http://support.buckaroo.nl/index.php/Statuscodes
+    # See https://support.buckaroo.nl/categorie%C3%ABn/transacties/status
     def parse(brq_statuscode)
       case brq_statuscode
       when '190'
