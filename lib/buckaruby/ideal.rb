@@ -12,6 +12,7 @@ module Buckaruby
       "MOYONL21" => "Moneyou",
       "RABONL2U" => "Rabobank",
       "RBRBNL21" => "RegioBank",
+      "REVOLT21" => "Revolut",
       "SNSBNL2A" => "SNS Bank",
       "TRIONL2U" => "Triodos Bank",
       "FVLBNL22" => "Van Lanschot"
