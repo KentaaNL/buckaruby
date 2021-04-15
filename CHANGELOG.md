@@ -1,5 +1,9 @@
 # Buckaruby changelog
 
+## 1.6.0 (2021-04-15)
+
+- Add Revolut to the list of iDEAL issuers.
+
 ## 1.5.0 (2020-11-17)
 
 - Add payment method Sofort.
