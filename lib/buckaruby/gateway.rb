@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'bigdecimal'
+require 'forwardable'
 
 module Buckaruby
   # Implementation of the BPE 3.0 NVP Gateway.
