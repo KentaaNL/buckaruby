@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'buckaruby/action'
+require_relative 'buckaruby/amount'
 require_relative 'buckaruby/currency'
 require_relative 'buckaruby/ideal'
 require_relative 'buckaruby/language'

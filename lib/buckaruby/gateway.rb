@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'bigdecimal'
 require 'forwardable'
 
 module Buckaruby
@@ -184,8 +183,8 @@ module Buckaruby
 
     # Validate amount of money, must be greater than 0.
     def validate_amount!(options)
-      money = BigDecimal(options[:amount].to_s)
-      if money <= 0
+      amount = Amount.new(options[:amount])
+      unless amount.positive?
         raise ArgumentError, "Invalid amount: #{options[:amount]} (must be greater than 0)"
       end
     end

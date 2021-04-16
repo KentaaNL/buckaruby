@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'bigdecimal'
 require 'cgi'
 require 'date'
 require 'net/http'
@@ -88,7 +87,7 @@ module Buckaruby
         brq_payment_method: options[:payment_method],
         brq_culture: options[:culture] || Language::DUTCH,
         brq_currency: options[:currency] || Currency::EURO,
-        brq_amount: BigDecimal(options[:amount].to_s).to_s("F"),
+        brq_amount: Amount.new(options[:amount]).to_s,
         brq_invoicenumber: options[:invoicenumber]
       }
 
@@ -205,7 +204,7 @@ module Buckaruby
     def build_request_params(options)
       params = {
         brq_payment_method: options[:payment_method],
-        brq_amount_credit: BigDecimal(options[:amount].to_s).to_s("F"),
+        brq_amount_credit: Amount.new(options[:amount]).to_s,
         brq_currency: options[:currency] || Currency::EURO,
         brq_invoicenumber: options[:invoicenumber]
       }
