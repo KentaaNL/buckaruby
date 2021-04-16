@@ -178,6 +178,16 @@ response = gateway.status(transaction_id: 12345)
 
 See `Buckaruby::StatusResponse` for more details.
 
+### Generate
+
+TODO: describe generate / iDEAL QR
+
+```
+response = gateway.generate(service: Buckaruby::Service::IDEAL_QR, description: "Kentaa", amount: "12.50", purchase_id: "12345", expires_at: Date.today + 30, image_size: 250)
+```
+
+See `Buckaruby::DataResponse` for more details.
+
 ### Merchant variables
 
 You can send custom variables and additional variables with each request.
