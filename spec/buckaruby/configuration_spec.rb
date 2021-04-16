@@ -10,9 +10,8 @@ RSpec.describe Buckaruby::Configuration do
     end
 
     it 'raises an exception when website is missing' do
-      expect {
-        Buckaruby::Configuration.new(secret: "7C222FB2927D828AF22F592134E8932480637C0D")
-      }.to raise_error(ArgumentError)
+      config = Buckaruby::Configuration.new(secret: "7C222FB2927D828AF22F592134E8932480637C0D")
+      expect { config.website }.to raise_error(ArgumentError)
     end
   end
 
@@ -23,9 +22,8 @@ RSpec.describe Buckaruby::Configuration do
     end
 
     it 'raises an exception when secret is missing' do
-      expect {
-        Buckaruby::Configuration.new(website: "12345678")
-      }.to raise_error(ArgumentError)
+      config = Buckaruby::Configuration.new(website: "12345678")
+      expect { config.secret }.to raise_error(ArgumentError)
     end
   end
 
@@ -46,17 +44,15 @@ RSpec.describe Buckaruby::Configuration do
     end
 
     it 'raises an exception when an invalid mode is passed' do
-      expect {
-        Buckaruby::Configuration.new(website: "12345678", secret: "7C222FB2927D828AF22F592134E8932480637C0D", mode: :invalid)
-      }.to raise_error(ArgumentError)
+      config = Buckaruby::Configuration.new(website: "12345678", secret: "7C222FB2927D828AF22F592134E8932480637C0D", mode: :invalid)
+      expect { config.mode }.to raise_error(ArgumentError)
     end
   end
 
   describe '#hash_method' do
     it 'raises an exception when an invalid hash method is passed' do
-      expect {
-        Buckaruby::Configuration.new(website: "12345678", secret: "7C222FB2927D828AF22F592134E8932480637C0D", hash_method: :invalid)
-      }.to raise_error(ArgumentError)
+      config = Buckaruby::Configuration.new(website: "12345678", secret: "7C222FB2927D828AF22F592134E8932480637C0D", hash_method: :invalid)
+      expect { config.hash_method }.to raise_error(ArgumentError)
     end
 
     it 'accepts SHA-1 as hash method' do

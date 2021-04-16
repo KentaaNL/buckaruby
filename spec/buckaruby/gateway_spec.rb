@@ -3,28 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe Buckaruby::Gateway do
-  describe 'initialization' do
-    describe 'bad parameters' do
-      it 'raises an exception when creating a new instance with invalid parameters' do
-        expect {
-          Buckaruby::Gateway.new
-        }.to raise_error(ArgumentError)
-
-        expect {
-          Buckaruby::Gateway.new(website: "12345678")
-        }.to raise_error(ArgumentError)
-
-        expect {
-          Buckaruby::Gateway.new(secret: "7C222FB2927D828AF22F592134E8932480637C0D")
-        }.to raise_error(ArgumentError)
-
-        expect {
-          Buckaruby::Gateway.new(website: "", secret: "")
-        }.to raise_error(ArgumentError)
-      end
-    end
-  end
-
   subject { Buckaruby::Gateway.new(website: "12345678", secret: "7C222FB2927D828AF22F592134E8932480637C0D") }
 
   it { expect(subject).to be_an_instance_of(Buckaruby::Gateway) }

@@ -5,8 +5,7 @@ source 'https://rubygems.org'
 # Specify your gem's dependencies in buckaruby.gemspec
 gemspec
 
-group :test do
-  gem 'rubocop', '~> 0.81.0'
-  gem 'rubocop-performance', '~> 1.5.2'
-  gem 'rubocop-rspec', '~> 1.38.1'
-end
+gem 'rubocop', '~> 1.12.0'
+gem 'rubocop-performance', '~> 1.10.2'
+gem 'rubocop-rake', '~> 0.5.1'
+gem 'rubocop-rspec', '~> 2.2.0'

@@ -2,23 +2,20 @@
 
 require:
   - rubocop-performance
+  - rubocop-rake
   - rubocop-rspec
 
 AllCops:
+  NewCops: enable
   TargetRubyVersion: 2.4
   DisplayCopNames: true
   DisplayStyleGuide: true
+  Exclude:
+    - 'vendor/**/*'
 
 
 Layout/LineLength:
   Enabled: false
-
-
-Lint/RaiseException:
-  Enabled: true
-
-Lint/StructNewOverride:
-  Enabled: true
 
 
 Metrics/AbcSize:
@@ -44,13 +41,6 @@ Metrics/PerceivedComplexity:
   Max: 9
 
 
-Naming/AccessorMethodName:
-  Enabled: false
-
-Naming/MemoizedInstanceVariableName:
-  Enabled: false
-
-
 RSpec/DescribedClass:
   EnforcedStyle: explicit
 
@@ -74,28 +64,16 @@ Style/BlockDelimiters:
 Style/ConditionalAssignment:
   Enabled: false
 
-Style/ExpandPathArguments:
-  Enabled: false
-
 Style/GuardClause:
   Enabled: false
-
-Style/HashEachMethods:
-  Enabled: true
-
-Style/HashTransformKeys:
-  Enabled: true
-
-Style/HashTransformValues:
-  Enabled: true
 
 Style/IfUnlessModifier:
   Enabled: false
 
-Style/StringLiterals:
+Style/SafeNavigation:
   Enabled: false
 
-Style/SafeNavigation:
+Style/StringLiterals:
   Enabled: false
 
 Style/SymbolArray:

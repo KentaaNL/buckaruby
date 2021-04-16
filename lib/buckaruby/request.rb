@@ -12,18 +12,13 @@ module Buckaruby
   class Request
     def initialize(config)
       @config = config
-      @logger = config.logger
     end
 
     def execute(options)
       uri = URI.parse(@config.api_url)
       uri.query = "op=#{options[:operation]}" if options[:operation]
 
-      response = post_buckaroo(uri, build_request_data(options))
-
-      # @logger.debug("[execute] response: #{response.inspect}")
-
-      response
+      post_buckaroo(uri, build_request_data(options))
     end
 
     def build_request_params(_options)
@@ -262,9 +257,7 @@ module Buckaruby
     end
 
     def build_request_params(options)
-      params = { brq_transaction: options[:transaction_id] }
-
-      params
+      { brq_transaction: options[:transaction_id] }
     end
   end
 end

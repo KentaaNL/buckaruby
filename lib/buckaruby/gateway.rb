@@ -5,16 +5,17 @@ require 'bigdecimal'
 module Buckaruby
   # Implementation of the BPE 3.0 NVP Gateway.
   class Gateway
+    extend Forwardable
+
+    def_delegators :config, :logger
+
     class << self
       # Buckaroo mode can be set as class setting
       attr_accessor :mode
     end
 
-    attr_reader :config
-
     def initialize(options = {})
-      @config = Configuration.new(options)
-      @logger = config.logger
+      @options = options
     end
 
     # Returns the payment methods enabled by Buckaroo and supported by this library.
@@ -42,7 +43,7 @@ module Buckaruby
 
     # Setup a new transaction.
     def setup_transaction(options = {})
-      @logger.debug("[setup_transaction] options=#{options.inspect}")
+      logger.debug("[setup_transaction] options=#{options.inspect}")
 
       validate_setup_transaction_params!(options)
 
@@ -53,7 +54,7 @@ module Buckaruby
 
     # Setup a recurrent transaction.
     def recurrent_transaction(options = {})
-      @logger.debug("[recurrent_transaction] options=#{options.inspect}")
+      logger.debug("[recurrent_transaction] options=#{options.inspect}")
 
       validate_recurrent_transaction_params!(options)
 
@@ -62,14 +63,14 @@ module Buckaruby
 
     # Retrieve the specification for setting up a transaction.
     def specify_transaction(options = {})
-      @logger.debug("[specify_transaction] options=#{options.inspect}")
+      logger.debug("[specify_transaction] options=#{options.inspect}")
 
       execute_request(:specify_transaction, options)
     end
 
     # Checks if a transaction is refundable.
     def refundable?(options = {})
-      @logger.debug("[refundable?] options=#{options.inspect}")
+      logger.debug("[refundable?] options=#{options.inspect}")
 
       validate_required_params!(options, :transaction_id)
 
@@ -79,7 +80,7 @@ module Buckaruby
 
     # Refund a transaction.
     def refund_transaction(options = {})
-      @logger.debug("[refund_transaction] options=#{options.inspect}")
+      logger.debug("[refund_transaction] options=#{options.inspect}")
 
       validate_refund_transaction_params!(options)
 
@@ -103,7 +104,7 @@ module Buckaruby
 
     # Get transaction status.
     def status(options = {})
-      @logger.debug("[status] options=#{options.inspect}")
+      logger.debug("[status] options=#{options.inspect}")
 
       validate_status_params!(options)
 
@@ -112,7 +113,7 @@ module Buckaruby
 
     # Checks if a transaction is cancellable.
     def cancellable?(options = {})
-      @logger.debug("[cancellable?] options=#{options.inspect}")
+      logger.debug("[cancellable?] options=#{options.inspect}")
 
       validate_required_params!(options, :transaction_id)
 
@@ -122,7 +123,7 @@ module Buckaruby
 
     # Cancel a transaction.
     def cancel_transaction(options = {})
-      @logger.debug("[cancel_transaction] options=#{options.inspect}")
+      logger.debug("[cancel_transaction] options=#{options.inspect}")
 
       validate_required_params!(options, :transaction_id)
 
@@ -197,10 +198,8 @@ module Buckaruby
 
     # Validate the payment issuer when iDEAL is selected as payment method.
     def validate_payment_issuer!(options)
-      if options[:payment_method] == PaymentMethod::IDEAL || options[:payment_method] == PaymentMethod::IDEAL_PROCESSING
-        unless Ideal::ISSUERS.include?(options[:payment_issuer])
-          raise ArgumentError, "Invalid payment issuer: #{options[:payment_issuer]}"
-        end
+      if (options[:payment_method] == PaymentMethod::IDEAL || options[:payment_method] == PaymentMethod::IDEAL_PROCESSING) && !Ideal::ISSUERS.include?(options[:payment_issuer])
+        raise ArgumentError, "Invalid payment issuer: #{options[:payment_issuer]}"
       end
     end
 
@@ -285,6 +284,10 @@ module Buckaruby
       when :cancel
         CancelRequest.new(config)
       end
+    end
+
+    def config
+      @config ||= Configuration.new(@options)
     end
   end
 end

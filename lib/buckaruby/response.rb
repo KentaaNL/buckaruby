@@ -11,14 +11,14 @@ module Buckaruby
     attr_reader :params
 
     def initialize(body, config)
-      @logger = config.logger
+      response = parse_response(body)
 
-      @response = parse_response(body)
-      @params = Support::CaseInsensitiveHash.new(@response)
+      @params = Support::CaseInsensitiveHash.new(response)
 
-      @logger.debug("[response] params: #{params.inspect}")
+      logger = config.logger
+      logger.debug("[response] params: #{params.inspect}")
 
-      verify_signature!(@response, config)
+      verify_signature!(response, config)
     end
 
     def status
@@ -172,7 +172,7 @@ module Buckaruby
     end
 
     def to_h
-      hash = {
+      {
         account_bic: account_bic,
         account_iban: account_iban,
         account_name: account_name,
@@ -187,9 +187,7 @@ module Buckaruby
         transaction_id: transaction_id,
         transaction_type: transaction_type,
         transaction_status: transaction_status
-      }.reject { |_key, value| value.nil? }
-
-      hash
+      }.compact
     end
 
     private
