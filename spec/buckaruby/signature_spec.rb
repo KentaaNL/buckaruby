@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Buckaruby::Signature do
-  describe 'generate_signature_string' do
+  describe '.generate_signature_string' do
     it 'ignores parameters that are not prefixed with brq_, add_ or cust_' do
       params = { abc: 'true', def: 'true', brq_test: 'true', add_test: 'true', cust_test: 'true' }
       string = Buckaruby::Signature.generate_signature_string(params, 'secret')
@@ -41,7 +41,7 @@ RSpec.describe Buckaruby::Signature do
     end
   end
 
-  describe 'generate_signature' do
+  describe '.generate_signature' do
     let(:config) { Buckaruby::Configuration.new(website: '12345678', secret: 'secret', hash_method: hash_method) }
 
     context 'with invalid hash method' do

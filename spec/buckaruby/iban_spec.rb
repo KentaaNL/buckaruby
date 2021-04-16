@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Buckaruby::Iban do
-  describe 'calculate_iban' do
+  describe '.calculate_iban' do
     describe 'bad initialization' do
       it 'raises an exception when account number is not supplied' do
         expect {
