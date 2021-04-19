@@ -158,7 +158,6 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
       expect(response.redirect_url).not_to be nil
       expect(response.timestamp).to be_an_instance_of(Time)
-      expect(response.to_h).to be_an_instance_of(Hash)
     end
 
     it 'initiates a transaction for payment method visa' do
@@ -168,7 +167,6 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
       expect(response.redirect_url).not_to be nil
       expect(response.timestamp).to be_an_instance_of(Time)
-      expect(response.to_h).to be_an_instance_of(Hash)
     end
 
     it 'initiates a transaction for payment method mastercard' do
@@ -178,7 +176,6 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
       expect(response.redirect_url).not_to be nil
       expect(response.timestamp).to be_an_instance_of(Time)
-      expect(response.to_h).to be_an_instance_of(Hash)
     end
 
     it 'initiates a transaction for payment method sepa direct debit' do
@@ -187,7 +184,6 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
       expect(response.timestamp).to be_an_instance_of(Time)
-      expect(response.to_h).to be_an_instance_of(Hash)
     end
 
     it 'initiates a transaction for payment method paypal' do
@@ -197,7 +193,6 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
       expect(response.redirect_url).not_to be nil
       expect(response.timestamp).to be_an_instance_of(Time)
-      expect(response.to_h).to be_an_instance_of(Hash)
     end
 
     it 'initiates a transaction for payment method sofort' do
@@ -207,7 +202,6 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
       expect(response.redirect_url).not_to be nil
       expect(response.timestamp).to be_an_instance_of(Time)
-      expect(response.to_h).to be_an_instance_of(Hash)
     end
 
     context 'with custom variables' do
@@ -268,7 +262,6 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.payment_method).to eq(Buckaruby::PaymentMethod::VISA)
       expect(response.invoicenumber).to eq("12345")
       expect(response.timestamp).to be_an_instance_of(Time)
-      expect(response.to_h).to be_an_instance_of(Hash)
     end
   end
 
@@ -322,7 +315,6 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.refund_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.invoicenumber).to eq("12345")
       expect(response.timestamp).to be_an_instance_of(Time)
-      expect(response.to_h).to be_an_instance_of(Hash)
     end
   end
 
@@ -348,7 +340,6 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
       expect(response.invoicenumber).to eq("12345")
       expect(response.timestamp).to be_an_instance_of(Time)
-      expect(response.to_h).to be_an_instance_of(Hash)
     end
 
     it 'includes account iban, bic and name for an ideal response' do
@@ -474,7 +465,6 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
       expect(response.invoicenumber).to eq("12345")
       expect(response.timestamp).to be_an_instance_of(Time)
-      expect(response.to_h).to be_an_instance_of(Hash)
     end
 
     it 'accepts a Hash as parameters' do
@@ -489,7 +479,6 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
       expect(response.invoicenumber).to eq("12345")
       expect(response.timestamp).to be_an_instance_of(Time)
-      expect(response.to_h).to be_an_instance_of(Hash)
     end
 
     context 'when callback is a payment response' do
@@ -504,7 +493,6 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
         expect(response.invoicenumber).to eq("12345")
         expect(response.timestamp).to be_an_instance_of(Time)
-        expect(response.to_h).to be_an_instance_of(Hash)
       end
 
       it 'sets the failed status when payment status is failed' do
@@ -518,7 +506,6 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
         expect(response.invoicenumber).to eq("12345")
         expect(response.timestamp).to be_an_instance_of(Time)
-        expect(response.to_h).to be_an_instance_of(Hash)
       end
 
       it 'sets the rejected status when payment status is rejected' do
@@ -532,7 +519,6 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
         expect(response.invoicenumber).to eq("12345")
         expect(response.timestamp).to be_an_instance_of(Time)
-        expect(response.to_h).to be_an_instance_of(Hash)
       end
 
       it 'sets the cancelled status when payment status is cancelled' do
@@ -546,7 +532,6 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
         expect(response.invoicenumber).to eq("12345")
         expect(response.timestamp).to be_an_instance_of(Time)
-        expect(response.to_h).to be_an_instance_of(Hash)
       end
 
       it 'sets the pending status when payment status is pending' do
@@ -560,7 +545,6 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
         expect(response.invoicenumber).to eq("12345")
         expect(response.timestamp).to be_an_instance_of(Time)
-        expect(response.to_h).to be_an_instance_of(Hash)
       end
 
       it 'includes account iban, bic and name for an ideal response' do
@@ -574,7 +558,6 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.account_bic).to eq("RABONL2U")
         expect(response.account_name).to eq("J. de Tester")
         expect(response.timestamp).to be_an_instance_of(Time)
-        expect(response.to_h).to be_an_instance_of(Hash)
       end
 
       it 'includes account iban, name, mandate reference and collect date for a sepa direct debit response' do
@@ -592,7 +575,6 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.mandate_reference).to eq("012345")
         expect(response.collect_date).to eq(Date.new(2014, 11, 13))
         expect(response.timestamp).to be_an_instance_of(Time)
-        expect(response.to_h).to be_an_instance_of(Hash)
       end
 
       it 'returns transaction type payment when cancelling a visa or mastercard transaction (empty transaction type)' do
@@ -604,7 +586,6 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
         expect(response.invoicenumber).to eq("12345")
         expect(response.timestamp).to be_an_instance_of(Time)
-        expect(response.to_h).to be_an_instance_of(Hash)
       end
 
       it 'sets the transaction type to payment and payment method to VISA for visa callback' do
@@ -618,7 +599,6 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
         expect(response.invoicenumber).to eq("12345")
         expect(response.timestamp).to be_an_instance_of(Time)
-        expect(response.to_h).to be_an_instance_of(Hash)
       end
 
       it 'sets the transaction type to payment and payment method to American Express for amex callback' do
@@ -632,7 +612,6 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
         expect(response.invoicenumber).to eq("12345")
         expect(response.timestamp).to be_an_instance_of(Time)
-        expect(response.to_h).to be_an_instance_of(Hash)
       end
 
       it 'sets the transaction type to payment and payment method to Sofrt for sort callback' do
@@ -646,7 +625,6 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
         expect(response.invoicenumber).to eq("12345")
         expect(response.timestamp).to be_an_instance_of(Time)
-        expect(response.to_h).to be_an_instance_of(Hash)
       end
     end
 
@@ -662,7 +640,6 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
         expect(response.invoicenumber).to eq("12345")
         expect(response.timestamp).to be_an_instance_of(Time)
-        expect(response.to_h).to be_an_instance_of(Hash)
       end
 
       it 'recognizes a sepa direct debit payment recurrent response' do
@@ -676,7 +653,6 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
         expect(response.invoicenumber).to eq("12345")
         expect(response.timestamp).to be_an_instance_of(Time)
-        expect(response.to_h).to be_an_instance_of(Hash)
       end
     end
 
@@ -693,7 +669,6 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.invoicenumber).to eq("12345")
         expect(response.refund_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
         expect(response.timestamp).to be_an_instance_of(Time)
-        expect(response.to_h).to be_an_instance_of(Hash)
       end
 
       it 'recognizes a paypal refund response' do
@@ -708,7 +683,6 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.invoicenumber).to eq("12345")
         expect(response.refund_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
         expect(response.timestamp).to be_an_instance_of(Time)
-        expect(response.to_h).to be_an_instance_of(Hash)
       end
 
       it 'recognizes an amex refund response' do
@@ -723,7 +697,6 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.invoicenumber).to eq("12345")
         expect(response.refund_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
         expect(response.timestamp).to be_an_instance_of(Time)
-        expect(response.to_h).to be_an_instance_of(Hash)
       end
     end
 
@@ -740,7 +713,6 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.invoicenumber).to eq("12345")
         expect(response.reversal_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
         expect(response.timestamp).to be_an_instance_of(Time)
-        expect(response.to_h).to be_an_instance_of(Hash)
       end
 
       it 'recognizes a paypal reversal response' do
@@ -755,7 +727,6 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.invoicenumber).to eq("12345")
         expect(response.reversal_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
         expect(response.timestamp).to be_an_instance_of(Time)
-        expect(response.to_h).to be_an_instance_of(Hash)
       end
     end
   end

@@ -171,25 +171,6 @@ module Buckaruby
       status
     end
 
-    def to_h
-      {
-        account_bic: account_bic,
-        account_iban: account_iban,
-        account_name: account_name,
-        collect_date: collect_date,
-        invoicenumber: invoicenumber,
-        mandate_reference: mandate_reference,
-        payment_id: payment_id,
-        payment_method: payment_method,
-        refund_transaction_id: refund_transaction_id,
-        reversal_transaction_id: reversal_transaction_id,
-        timestamp: timestamp,
-        transaction_id: transaction_id,
-        transaction_type: transaction_type,
-        transaction_status: transaction_status
-      }.compact
-    end
-
     private
 
     def parse_date(date)
