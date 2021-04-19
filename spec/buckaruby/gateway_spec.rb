@@ -9,7 +9,7 @@ RSpec.describe Buckaruby::Gateway do
 
   describe '#payment_methods' do
     before do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequestSpecification").to_return(body: File.read("spec/fixtures/responses/specify_transaction_success.txt"))
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionRequestSpecification").to_return(body: File.read("spec/fixtures/responses/specify_transaction_success.txt"))
     end
 
     it 'returns the payment methods enabled by Buckaroo and supported by this library' do
@@ -54,7 +54,7 @@ RSpec.describe Buckaruby::Gateway do
 
   describe '#setup_transaction' do
     before do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: File.read("spec/fixtures/responses/setup_transaction_success.txt"))
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: File.read("spec/fixtures/responses/setup_transaction_success.txt"))
     end
 
     it 'raises an exception when initiating a transaction with missing parameters' do
@@ -102,7 +102,7 @@ RSpec.describe Buckaruby::Gateway do
     end
 
     it 'raises a ConnectionException when connection the Buckaroo fails' do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest").to_raise(Errno::ECONNREFUSED)
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionRequest").to_raise(Errno::ECONNREFUSED)
 
       expect {
         gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
@@ -110,7 +110,7 @@ RSpec.describe Buckaruby::Gateway do
     end
 
     it 'raises an InvalidResponseException when Buckaroo returns an invalid response' do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(status: 500)
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(status: 500)
 
       expect {
         gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
@@ -118,7 +118,7 @@ RSpec.describe Buckaruby::Gateway do
     end
 
     it 'raises an ApiException when API result Fail is returned' do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: "BRQ_APIRESULT=Fail&BRQ_APIERRORMESSAGE=Invalid+request")
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: "BRQ_APIRESULT=Fail&BRQ_APIERRORMESSAGE=Invalid+request")
 
       expect {
         gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
@@ -211,7 +211,7 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.custom[:foo]).to eq("bar")
         expect(response.custom[:quux]).to eq("42")
 
-        expect(WebMock).to have_requested(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest")
+        expect(WebMock).to have_requested(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionRequest")
           .with(body: "brq_websitekey=12345678&brq_payment_method=ideal&brq_culture=nl-NL&brq_currency=EUR&brq_amount=10.00&brq_invoicenumber=12345&brq_service_ideal_action=Pay&brq_service_ideal_issuer=ABNANL2A&brq_service_ideal_version=2&brq_return=http%3A%2F%2Fwww.return.url%2F&cust_foo=bar&cust_quux=42&add_buckaruby=Buckaruby+#{Buckaruby::VERSION}&brq_signature=93fef0e48b13fcffa988f7eb84c77fd13349dc32")
       end
     end
@@ -223,7 +223,7 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.additional[:buckaruby]).to eq("1.2.0")
         expect(response.additional[:myreference]).to eq("12345")
 
-        expect(WebMock).to have_requested(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest")
+        expect(WebMock).to have_requested(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionRequest")
           .with(body: "brq_websitekey=12345678&brq_payment_method=ideal&brq_culture=nl-NL&brq_currency=EUR&brq_amount=10.00&brq_invoicenumber=12345&brq_service_ideal_action=Pay&brq_service_ideal_issuer=ABNANL2A&brq_service_ideal_version=2&brq_return=http%3A%2F%2Fwww.return.url%2F&add_myreference=12345&add_buckaruby=Buckaruby+#{Buckaruby::VERSION}&brq_signature=3e49bbb4e458c4c21ac10159716bb834863107b4")
       end
     end
@@ -231,7 +231,7 @@ RSpec.describe Buckaruby::Gateway do
 
   describe '#recurrent_transaction' do
     before do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: File.read("spec/fixtures/responses/recurrent_transaction_success.txt"))
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: File.read("spec/fixtures/responses/recurrent_transaction_success.txt"))
     end
 
     it 'raises an exception when initiating a recurrent transaction with missing parameters' do
@@ -273,14 +273,14 @@ RSpec.describe Buckaruby::Gateway do
     end
 
     it 'returns true when the transaction is refundable' do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_success.txt"))
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_success.txt"))
 
       response = gateway.refundable?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response).to be true
     end
 
     it 'returns false when the transaction was not found' do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_error.txt"))
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_error.txt"))
 
       response = gateway.refundable?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response).to be false
@@ -295,7 +295,7 @@ RSpec.describe Buckaruby::Gateway do
     end
 
     it 'raises an exception when the transaction is not refundable' do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_error.txt"))
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_error.txt"))
 
       expect {
         gateway.refund_transaction(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
@@ -303,8 +303,8 @@ RSpec.describe Buckaruby::Gateway do
     end
 
     it 'refunds the transaction' do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_success.txt"))
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: File.read("spec/fixtures/responses/refund_transaction_success.txt"))
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_success.txt"))
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: File.read("spec/fixtures/responses/refund_transaction_success.txt"))
 
       response = gateway.refund_transaction(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
@@ -320,7 +320,7 @@ RSpec.describe Buckaruby::Gateway do
 
   describe '#status' do
     before do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_success.txt"))
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_success.txt"))
     end
 
     it 'raises an exception when required parameters are missing' do
@@ -358,14 +358,14 @@ RSpec.describe Buckaruby::Gateway do
     end
 
     it 'returns true when the transaction is cancellable' do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_cancellable.txt"))
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_cancellable.txt"))
 
       response = gateway.cancellable?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response).to be true
     end
 
     it 'returns false when the transaction is not cancellable' do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_noncancellable.txt"))
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_noncancellable.txt"))
 
       response = gateway.cancellable?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response).to be false
@@ -380,7 +380,7 @@ RSpec.describe Buckaruby::Gateway do
     end
 
     it 'raises an exception when the transaction is not cancellable' do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_noncancellable.txt"))
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_noncancellable.txt"))
 
       expect {
         gateway.cancel_transaction(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
@@ -388,8 +388,8 @@ RSpec.describe Buckaruby::Gateway do
     end
 
     it 'cancels the transaction' do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_cancellable.txt"))
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=CancelTransaction").to_return(body: File.read("spec/fixtures/responses/cancel_success.txt"))
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_cancellable.txt"))
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=CancelTransaction").to_return(body: File.read("spec/fixtures/responses/cancel_success.txt"))
 
       response = gateway.cancel_transaction(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response).to be_an_instance_of(Buckaruby::CancelResponse)
@@ -398,7 +398,7 @@ RSpec.describe Buckaruby::Gateway do
 
   describe '#specify_transaction' do
     before do
-      stub_request(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequestSpecification").to_return(body: File.read("spec/fixtures/responses/specify_transaction_success.txt"))
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionRequestSpecification").to_return(body: File.read("spec/fixtures/responses/specify_transaction_success.txt"))
     end
 
     it 'retrieves the specification for setting up a transaction' do

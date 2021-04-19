@@ -9,11 +9,6 @@ module Buckaruby
 
     def_delegators :config, :logger
 
-    class << self
-      # Buckaroo mode can be set as class setting
-      attr_accessor :mode
-    end
-
     def initialize(options = {})
       @options = options
     end

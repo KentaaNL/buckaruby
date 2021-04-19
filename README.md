@@ -22,14 +22,6 @@ Or install it yourself as:
 
 ## Usage
 
-Configure Buckaruby to use it in test or production (live) mode:
-
-```ruby
-Buckaruby::Gateway.mode = :production  # defaults to :test
-```
-
-### Initialization
-
 Create the gateway and configure it using your Buckaroo website key and secret key:
 
 ```ruby
@@ -49,7 +41,15 @@ gateway = Buckaruby::Gateway.new(
 )
 ```
 
-You can override the default mode with the parameter `mode`.
+The gateway is created for the live environment by default. If you want to use the testing environment, then add `test: true`:
+
+```ruby
+gateway = Buckaruby::Gateway.new(
+  website: "123456789",
+  secret: "abcdef1234567890",
+  test: true                  # use the testing environment; default is false
+)
+```
 
 ### Payment methods
 

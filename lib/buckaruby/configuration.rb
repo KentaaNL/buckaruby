@@ -6,22 +6,22 @@ module Buckaruby
   # Configuration settings for the Buckaruby Gateway.
   class Configuration
     TEST_URL = "https://testcheckout.buckaroo.nl/nvp/"
-    PRODUCTION_URL = "https://checkout.buckaroo.nl/nvp/"
+    LIVE_URL = "https://checkout.buckaroo.nl/nvp/"
 
     def initialize(options)
       @options = options
     end
 
     def test?
-      mode == :test
+      @options.fetch(:test, false)
     end
 
-    def production?
-      mode == :production
+    def live?
+      !test?
     end
 
     def api_url
-      test? ? TEST_URL : PRODUCTION_URL
+      live? ? LIVE_URL : TEST_URL
     end
 
     def website
@@ -39,20 +39,6 @@ module Buckaruby
         raise ArgumentError, "Missing required parameter: secret" if secret.to_s.empty?
 
         secret
-      end
-    end
-
-    # Use Buckaroo mode from options, class setting or the default (test).
-    def mode
-      @mode ||= begin
-        mode   = @options.key?(:mode) ? @options[:mode] : Gateway.mode
-        mode ||= :test
-
-        if mode != :test && mode != :production
-          raise ArgumentError, "Invalid Buckaroo mode provided: #{mode} (expected :test or :production)"
-        end
-
-        mode
       end
     end
 
