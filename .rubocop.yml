@@ -19,7 +19,7 @@ Layout/LineLength:
 
 
 Metrics/AbcSize:
-  Max: 30
+  Max: 27
 
 Metrics/BlockLength:
   Exclude:
@@ -36,9 +36,6 @@ Metrics/MethodLength:
 
 Metrics/ModuleLength:
   Enabled: false
-
-Metrics/PerceivedComplexity:
-  Max: 9
 
 
 RSpec/DescribedClass:
