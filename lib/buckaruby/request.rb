@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'cgi'
 require 'date'
 require 'net/http'
 require 'openssl'
@@ -15,11 +14,17 @@ module Buckaruby
 
     def execute(options)
       uri = URI.parse(@config.api_url)
-      uri.query = "op=#{options[:operation]}" if options[:operation]
+      uri.query = URI.encode_www_form(op: operation) if operation
 
       post_buckaroo(uri, build_request_data(options))
     end
 
+    # Returns the service operation for this request.
+    def operation
+      nil
+    end
+
+    # Returns the request parameters (to be implemented by subclasses).
     def build_request_params(_options)
       raise NotImplementedError
     end
@@ -28,12 +33,12 @@ module Buckaruby
 
     def post_buckaroo(uri, params)
       http = Net::HTTP.new(uri.host, uri.port)
-      if uri.scheme == "https"
+      if uri.scheme == 'https'
         http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER
       end
 
-      raw_response = http.post(uri.request_uri, post_data(params))
+      raw_response = http.post(uri.request_uri, URI.encode_www_form(params))
 
       unless raw_response.is_a?(Net::HTTPSuccess)
         raise InvalidResponseException, raw_response
@@ -70,16 +75,12 @@ module Buckaruby
     def build_additional_params(options)
       options.map { |key, value| [:"add_#{key}", value] }.to_h
     end
-
-    def post_data(params)
-      params.map { |key, value| "#{key}=#{CGI.escape(value.to_s)}" }.join("&")
-    end
   end
 
   # Base class for a transaction request.
   class TransactionRequest < Request
-    def execute(options)
-      super(options.merge(operation: Operation::TRANSACTION_REQUEST))
+    def operation
+      Operation::TRANSACTION_REQUEST
     end
 
     def build_request_params(options)
@@ -153,30 +154,6 @@ module Buckaruby
     end
   end
 
-  # Request for a creating a transaction specification.
-  class TransactionSpecificationRequest < Request
-    def execute(options)
-      super(options.merge(operation: Operation::TRANSACTION_REQUEST_SPECIFICATION))
-    end
-
-    def build_request_params(options)
-      params = {}
-
-      if options[:payment_method]
-        if options[:payment_method].respond_to?(:join)
-          params[:brq_services] = options[:payment_method].join(",")
-        else
-          params[:brq_services] = options[:payment_method]
-        end
-      end
-
-      params[:brq_latestversiononly] = "true"
-      params[:brq_culture] = options[:culture] || Language::DUTCH
-
-      params
-    end
-  end
-
   # Request for a creating a recurrent transaction.
   class RecurrentTransactionRequest < TransactionRequest
     def build_transaction_request_params(options)
@@ -187,7 +164,7 @@ module Buckaruby
 
       # Indicate that this is a request without user redirection to a webpage.
       # This is needed to make recurrent payments working.
-      params[:brq_channel] = "backoffice"
+      params[:brq_channel] = 'backoffice'
 
       params[:brq_originaltransaction] = options[:transaction_id]
 
@@ -195,10 +172,34 @@ module Buckaruby
     end
   end
 
+  # Request for a creating a transaction specification.
+  class TransactionSpecificationRequest < Request
+    def operation
+      Operation::TRANSACTION_REQUEST_SPECIFICATION
+    end
+
+    def build_request_params(options)
+      params = {}
+
+      if options[:payment_method]
+        if options[:payment_method].respond_to?(:join)
+          params[:brq_services] = options[:payment_method].join(',')
+        else
+          params[:brq_services] = options[:payment_method]
+        end
+      end
+
+      params[:brq_latestversiononly] = 'true'
+      params[:brq_culture] = options[:culture] || Language::DUTCH
+
+      params
+    end
+  end
+
   # Request for a creating a refund.
   class RefundTransactionRequest < Request
-    def execute(options)
-      super(options.merge(operation: Operation::TRANSACTION_REQUEST))
+    def operation
+      Operation::TRANSACTION_REQUEST
     end
 
     def build_request_params(options)
@@ -220,8 +221,8 @@ module Buckaruby
 
   # Request for retrieving refund information.
   class RefundInfoRequest < Request
-    def execute(options)
-      super(options.merge(operation: Operation::REFUND_INFO))
+    def operation
+      Operation::REFUND_INFO
     end
 
     def build_request_params(options)
@@ -235,8 +236,8 @@ module Buckaruby
 
   # Request for getting the status of a transaction.
   class StatusRequest < Request
-    def execute(options)
-      super(options.merge(operation: Operation::TRANSACTION_STATUS))
+    def operation
+      Operation::TRANSACTION_STATUS
     end
 
     def build_request_params(options)
@@ -251,8 +252,8 @@ module Buckaruby
 
   # Request for cancelling a transaction.
   class CancelRequest < Request
-    def execute(options)
-      super(options.merge(operation: Operation::CANCEL_TRANSACTION))
+    def operation
+      Operation::CANCEL_TRANSACTION
     end
 
     def build_request_params(options)
