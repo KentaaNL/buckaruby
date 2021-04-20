@@ -242,26 +242,10 @@ module Buckaruby
     def execute_request(request_type, options = {})
       request = build_request(request_type)
       response = request.execute(options)
-
-      case request_type
-      when :setup_transaction
-        SetupTransactionResponse.new(response, config)
-      when :recurrent_transaction
-        RecurrentTransactionResponse.new(response, config)
-      when :specify_transaction
-        TransactionSpecificationResponse.new(response, config)
-      when :refund_transaction
-        RefundTransactionResponse.new(response, config)
-      when :refund_info
-        RefundInfoResponse.new(response, config)
-      when :status
-        StatusResponse.new(response, config)
-      when :cancel
-        CancelResponse.new(response, config)
-      end
+      build_response(request_type, response)
     end
 
-    # Factory method for constructing a request.
+    # Factory method for constructing the request.
     def build_request(request_type)
       case request_type
       when :setup_transaction
@@ -278,6 +262,26 @@ module Buckaruby
         StatusRequest.new(config)
       when :cancel
         CancelRequest.new(config)
+      end
+    end
+
+    # Factory method for constructing the response.
+    def build_response(request_type, response)
+      case request_type
+      when :setup_transaction
+        SetupTransactionResponse.new(response, config)
+      when :recurrent_transaction
+        RecurrentTransactionResponse.new(response, config)
+      when :specify_transaction
+        TransactionSpecificationResponse.new(response, config)
+      when :refund_transaction
+        RefundTransactionResponse.new(response, config)
+      when :refund_info
+        RefundInfoResponse.new(response, config)
+      when :status
+        StatusResponse.new(response, config)
+      when :cancel
+        CancelResponse.new(response, config)
       end
     end
 
