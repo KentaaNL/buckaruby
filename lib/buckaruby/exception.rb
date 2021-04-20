@@ -60,7 +60,7 @@ module Buckaruby
   class SignatureException < BuckarooException
     attr_reader :sent_signature, :generated_signature
 
-    def initialize(sent_signature = "", generated_signature = "")
+    def initialize(sent_signature, generated_signature)
       @sent_signature = sent_signature
       @generated_signature = generated_signature
 
