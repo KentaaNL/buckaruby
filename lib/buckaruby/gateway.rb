@@ -33,7 +33,7 @@ module Buckaruby
         raise ArgumentError, "Invalid payment method, only iDEAL is supported."
       end
 
-      Ideal::ISSUERS
+      {}
     end
 
     # Setup a new transaction.
@@ -172,8 +172,6 @@ module Buckaruby
         PaymentMethod::PAYPAL, PaymentMethod::BANCONTACT_MISTER_CASH, PaymentMethod::SOFORT
       ]
       validate_payment_method!(options, valid_payment_methods)
-
-      validate_payment_issuer!(options)
     end
 
     # Validate amount of money, must be greater than 0.
@@ -188,13 +186,6 @@ module Buckaruby
     def validate_payment_method!(options, valid)
       unless valid.include?(options[:payment_method])
         raise ArgumentError, "Invalid payment method: #{options[:payment_method]}"
-      end
-    end
-
-    # Validate the payment issuer when iDEAL is selected as payment method.
-    def validate_payment_issuer!(options)
-      if (options[:payment_method] == PaymentMethod::IDEAL || options[:payment_method] == PaymentMethod::IDEAL_PROCESSING) && !Ideal::ISSUERS.include?(options[:payment_issuer])
-        raise ArgumentError, "Invalid payment issuer: #{options[:payment_issuer]}"
       end
     end
 

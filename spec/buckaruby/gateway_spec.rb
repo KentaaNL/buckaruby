@@ -29,15 +29,13 @@ RSpec.describe Buckaruby::Gateway do
     context 'when ideal is passed' do
       let(:issuers) { gateway.issuers(Buckaruby::PaymentMethod::IDEAL) }
 
-      it { expect(issuers.length).to be > 0 }
-      it { expect(issuers).to include("INGBNL2A" => "ING") }
+      it { expect(issuers.length).to eq 0 }
     end
 
     context 'when ideal processing is passed' do
       let(:issuers) { gateway.issuers(Buckaruby::PaymentMethod::IDEAL_PROCESSING) }
 
-      it { expect(issuers.length).to be > 0 }
-      it { expect(issuers).to include("RABONL2U" => "Rabobank") }
+      it { expect(issuers.length).to eq 0 }
     end
 
     context 'when visa, mastercard, maestro, bankcontact, sepa direct debit or paypal is passed' do
@@ -67,37 +65,31 @@ RSpec.describe Buckaruby::Gateway do
       }.to raise_error(ArgumentError)
 
       expect {
-        gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first)
+        gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: "TESTNL12")
       }.to raise_error(ArgumentError)
 
       expect {
-        gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345")
+        gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: "TESTNL12", invoicenumber: "12345")
       }.to raise_error(ArgumentError)
     end
 
     it 'raises an exception when initiating a transaction with invalid amount' do
       expect {
-        gateway.setup_transaction(amount: 0, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
+        gateway.setup_transaction(amount: 0, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: "TESTNL12", invoicenumber: "12345", return_url: "http://www.return.url/")
       }.to raise_error(ArgumentError)
 
       expect {
-        gateway.setup_transaction(amount: -1, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
+        gateway.setup_transaction(amount: -1, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: "TESTNL12", invoicenumber: "12345", return_url: "http://www.return.url/")
       }.to raise_error(ArgumentError)
 
       expect {
-        gateway.setup_transaction(amount: "abc", payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
+        gateway.setup_transaction(amount: "abc", payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: "TESTNL12", invoicenumber: "12345", return_url: "http://www.return.url/")
       }.to raise_error(ArgumentError)
     end
 
     it 'raises an exception when initiating a transaction with invalid payment method' do
       expect {
-        gateway.setup_transaction(amount: 10, payment_method: "abc", payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
-      }.to raise_error(ArgumentError)
-    end
-
-    it 'raises an exception when initiating a transaction with invalid payment issuer' do
-      expect {
-        gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: "abc", invoicenumber: "12345", return_url: "http://www.return.url/")
+        gateway.setup_transaction(amount: 10, payment_method: "abc", payment_issuer: "TESTNL12", invoicenumber: "12345", return_url: "http://www.return.url/")
       }.to raise_error(ArgumentError)
     end
 
@@ -105,7 +97,7 @@ RSpec.describe Buckaruby::Gateway do
       stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionRequest").to_raise(Errno::ECONNREFUSED)
 
       expect {
-        gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
+        gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: "TESTNL12", invoicenumber: "12345", return_url: "http://www.return.url/")
       }.to raise_error(Buckaruby::ConnectionException)
     end
 
@@ -113,7 +105,7 @@ RSpec.describe Buckaruby::Gateway do
       stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(status: 500)
 
       expect {
-        gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
+        gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: "TESTNL12", invoicenumber: "12345", return_url: "http://www.return.url/")
       }.to raise_error(Buckaruby::InvalidResponseException)
     end
 
@@ -121,7 +113,7 @@ RSpec.describe Buckaruby::Gateway do
       stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: "")
 
       expect {
-        gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
+        gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: "TESTNL12", invoicenumber: "12345", return_url: "http://www.return.url/")
       }.to raise_error(Buckaruby::ApiException)
     end
 
@@ -129,13 +121,13 @@ RSpec.describe Buckaruby::Gateway do
       stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: "BRQ_APIRESULT=Fail&BRQ_APIERRORMESSAGE=Invalid+request")
 
       expect {
-        gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
+        gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: "TESTNL12", invoicenumber: "12345", return_url: "http://www.return.url/")
       }.to raise_error(Buckaruby::ApiException)
     end
 
     describe 'initiates a transaction when amount is integer, decimal or string' do
       context 'when amount is an integer' do
-        let(:response) { gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/") }
+        let(:response) { gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: "TESTNL12", invoicenumber: "12345", return_url: "http://www.return.url/") }
 
         it { expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse) }
         it { expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24") }
@@ -143,7 +135,7 @@ RSpec.describe Buckaruby::Gateway do
       end
 
       context 'when amount is a decimal' do
-        let(:response) { gateway.setup_transaction(amount: 10.50, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/") }
+        let(:response) { gateway.setup_transaction(amount: 10.50, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: "TESTNL12", invoicenumber: "12345", return_url: "http://www.return.url/") }
 
         it { expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse) }
         it { expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24") }
@@ -151,7 +143,7 @@ RSpec.describe Buckaruby::Gateway do
       end
 
       context 'when amount is a string' do
-        let(:response) { gateway.setup_transaction(amount: '10', payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/") }
+        let(:response) { gateway.setup_transaction(amount: '10', payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: "TESTNL12", invoicenumber: "12345", return_url: "http://www.return.url/") }
 
         it { expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse) }
         it { expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24") }
@@ -160,7 +152,7 @@ RSpec.describe Buckaruby::Gateway do
     end
 
     it 'initiates a transaction for payment method ideal' do
-      response = gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
+      response = gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: "TESTNL12", invoicenumber: "12345", return_url: "http://www.return.url/")
       expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse)
       expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
