@@ -157,7 +157,7 @@ module Buckaruby
 
       case options[:payment_method]
       when PaymentMethod::IDEAL, PaymentMethod::IDEAL_PROCESSING
-        required_params << :payment_issuer
+        required_params << :issuer
       when PaymentMethod::SEPA_DIRECT_DEBIT
         required_params << [:account_iban, :account_name]
       end

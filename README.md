@@ -67,7 +67,7 @@ To start a new transaction, use the method `setup_transaction`:
 options = {
   amount: 10,
   payment_method: Buckaruby::PaymentMethod::IDEAL,
-  payment_issuer: "INGBNL2A",
+  issuer: "INGBNL2A",
   invoicenumber: "12345",
   return_url: "http://www.return.url/"
 }
@@ -189,7 +189,7 @@ For example:
 options = {
   amount: 10,
   payment_method: Buckaruby::PaymentMethod::IDEAL,
-  payment_issuer: "INGBNL2A",
+  issuer: "INGBNL2A",
   invoicenumber: "12345",
   return_url: "http://www.return.url/",
   custom: {
