@@ -8,17 +8,17 @@ require 'date'
 module Buckaruby
   # Base class for any response.
   class Response
-    attr_reader :params
+    attr_reader :response
 
     def initialize(body, config)
-      response = parse_response(body)
-
-      @params = Support::CaseInsensitiveHash.new(response)
+      @response = parse_response(body)
 
       logger = config.logger
       logger.debug("[response] params: #{params.inspect}")
+    end
 
-      verify_signature!(response, config)
+    def params
+      @params ||= Support::CaseInsensitiveHash.new(response)
     end
 
     def status
@@ -72,19 +72,8 @@ module Buckaruby
       response
     end
 
-    def verify_signature!(response, config)
-      if params[:brq_apiresult].nil? || params[:brq_apiresult].casecmp("fail") != 0
-        sent_signature = params[:brq_signature]
-        generated_signature = Signature.generate_signature(response, config)
-
-        if sent_signature != generated_signature
-          raise SignatureException.new(sent_signature, generated_signature)
-        end
-      end
-    end
-
     def parse_time(time)
-      time ? Time.strptime(time, '%Y-%m-%d %H:%M:%S') : nil
+      Time.strptime(time, '%Y-%m-%d %H:%M:%S') if time
     end
   end
 
@@ -174,22 +163,30 @@ module Buckaruby
     private
 
     def parse_date(date)
-      date ? Date.strptime(date, '%Y-%m-%d') : nil
+      Date.strptime(date, '%Y-%m-%d') if date
     end
 
     def parse_payment_method(method)
-      method ? method.downcase : nil
+      method.downcase if method
     end
   end
 
   # Base class for a response via the API.
   class ApiResponse < Response
-    def initialize(response, config)
-      super(response, config)
+    def initialize(body, config)
+      super(body, config)
 
-      if params[:brq_apiresult].nil? || params[:brq_apiresult].casecmp("fail").zero?
+      if api_result.nil? || api_result.casecmp("fail").zero?
         raise ApiException, params
       end
+
+      Signature.verify!(config, response)
+    end
+
+    private
+
+    def api_result
+      params[:brq_apiresult]
     end
   end
 
@@ -247,6 +244,12 @@ module Buckaruby
   # Response when verifying the Buckaroo callback.
   class CallbackResponse < Response
     include TransactionResponse
+
+    def initialize(body, config)
+      super(body, config)
+
+      Signature.verify!(config, response)
+    end
   end
 
   # Response when retrieving the specification for a transaction.

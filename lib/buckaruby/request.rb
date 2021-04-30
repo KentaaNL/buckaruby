@@ -63,7 +63,7 @@ module Buckaruby
       params[:add_buckaruby] = "Buckaruby #{Buckaruby::VERSION}"
 
       # Sign the data with our secret key.
-      params[:brq_signature] = Signature.generate_signature(params, @config)
+      params[:brq_signature] = Signature.generate(@config, params)
 
       params
     end

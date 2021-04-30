@@ -117,6 +117,14 @@ RSpec.describe Buckaruby::Gateway do
       }.to raise_error(Buckaruby::InvalidResponseException)
     end
 
+    it 'raises an ApiException when empty body is returned' do
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: "")
+
+      expect {
+        gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: Buckaruby::Ideal::ISSUERS.keys.first, invoicenumber: "12345", return_url: "http://www.return.url/")
+      }.to raise_error(Buckaruby::ApiException)
+    end
+
     it 'raises an ApiException when API result Fail is returned' do
       stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: "BRQ_APIRESULT=Fail&BRQ_APIERRORMESSAGE=Invalid+request")
 
@@ -307,6 +315,7 @@ RSpec.describe Buckaruby::Gateway do
       stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionRequest").to_return(body: File.read("spec/fixtures/responses/refund_transaction_success.txt"))
 
       response = gateway.refund_transaction(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
+      expect(response).to be_an_instance_of(Buckaruby::RefundTransactionResponse)
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
       expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
       expect(response.payment_method).to eq(Buckaruby::PaymentMethod::IDEAL)
@@ -329,10 +338,9 @@ RSpec.describe Buckaruby::Gateway do
       }.to raise_error(ArgumentError)
     end
 
-    it { expect(gateway.status(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")).to be_an_instance_of(Buckaruby::StatusResponse) }
-
-    it 'returns transaction status' do
+    it 'returns the transaction status' do
       response = gateway.status(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
+      expect(response).to be_an_instance_of(Buckaruby::StatusResponse)
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
       expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
       expect(response.payment_method).to eq(Buckaruby::PaymentMethod::IDEAL)
@@ -347,6 +355,30 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.account_iban).to eq("NL44RABO0123456789")
       expect(response.account_bic).to eq("RABONL2U")
       expect(response.account_name).to eq("J. de Tester")
+    end
+
+    it 'raises an ApiException when API result Fail is returned' do
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: "BRQ_APIRESULT=Fail&BRQ_APIERRORMESSAGE=Invalid+request")
+
+      expect {
+        gateway.status(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
+      }.to raise_error(Buckaruby::ApiException)
+    end
+
+    it 'raises a SignatureException when the signature is missing' do
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: "BRQ_APIRESULT=Success")
+
+      expect {
+        gateway.status(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
+      }.to raise_error(Buckaruby::SignatureException, "Sent signature () doesn't match generated signature (48e5a16f76a6a4ad6c3fb9685c0f40d0c2c475d6)")
+    end
+
+    it 'raises a SignatureException when the signature is invalid' do
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: "BRQ_APIRESULT=Success&BRQ_SIGNATURE=abcdefgh1234567890abcdefgh1234567890")
+
+      expect {
+        gateway.status(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
+      }.to raise_error(Buckaruby::SignatureException, "Sent signature (abcdefgh1234567890abcdefgh1234567890) doesn't match generated signature (48e5a16f76a6a4ad6c3fb9685c0f40d0c2c475d6)")
     end
   end
 
@@ -379,7 +411,7 @@ RSpec.describe Buckaruby::Gateway do
       }.to raise_error(ArgumentError)
     end
 
-    it 'raises an exception when the transaction is not cancellable' do
+    it 'raises a NonCancellableTransactionException when the transaction is not cancellable' do
       stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_noncancellable.txt"))
 
       expect {
@@ -614,7 +646,7 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.timestamp).to be_an_instance_of(Time)
       end
 
-      it 'sets the transaction type to payment and payment method to Sofrt for sort callback' do
+      it 'sets the transaction type to payment and payment method to Sofort for sofort callback' do
         params = File.read("spec/fixtures/responses/callback_payment_sofort.txt")
 
         response = gateway.callback(params)
