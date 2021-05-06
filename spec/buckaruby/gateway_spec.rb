@@ -38,13 +38,14 @@ RSpec.describe Buckaruby::Gateway do
       it { expect(issuers.length).to eq 0 }
     end
 
-    context 'when visa, mastercard, maestro, bankcontact, sepa direct debit or paypal is passed' do
+    context 'when a payment method other than ideal is passed' do
       it 'raises an ArgumentError' do
         expect { gateway.issuers(Buckaruby::PaymentMethod::VISA) }.to raise_error(ArgumentError)
         expect { gateway.issuers(Buckaruby::PaymentMethod::MASTER_CARD) }.to raise_error(ArgumentError)
         expect { gateway.issuers(Buckaruby::PaymentMethod::MAESTRO) }.to raise_error(ArgumentError)
+        expect { gateway.issuers(Buckaruby::PaymentMethod::AMERICAN_EXPRESS) }.to raise_error(ArgumentError)
         expect { gateway.issuers(Buckaruby::PaymentMethod::SEPA_DIRECT_DEBIT) }.to raise_error(ArgumentError)
-        expect { gateway.issuers(Buckaruby::PaymentMethod::BANCONTACT_MISTER_CASH) }.to raise_error(ArgumentError)
+        expect { gateway.issuers(Buckaruby::PaymentMethod::BANCONTACT) }.to raise_error(ArgumentError)
         expect { gateway.issuers(Buckaruby::PaymentMethod::PAYPAL) }.to raise_error(ArgumentError)
       end
     end
