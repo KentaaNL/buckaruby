@@ -127,12 +127,12 @@ module Buckaruby
       when PaymentMethod::SEPA_DIRECT_DEBIT
         params.merge!(
           brq_service_sepadirectdebit_action: Action::PAY,
-          brq_service_sepadirectdebit_customeriban: options[:account_iban],
-          brq_service_sepadirectdebit_customeraccountname: options[:account_name]
+          brq_service_sepadirectdebit_customeriban: options[:consumer_iban],
+          brq_service_sepadirectdebit_customeraccountname: options[:consumer_name]
         )
 
-        if options[:account_bic]
-          params[:brq_service_sepadirectdebit_customerbic] = options[:account_bic]
+        if options[:consumer_bic]
+          params[:brq_service_sepadirectdebit_customerbic] = options[:consumer_bic]
         end
 
         if options[:collect_date]

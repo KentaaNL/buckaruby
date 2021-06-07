@@ -180,7 +180,7 @@ RSpec.describe Buckaruby::Gateway do
     end
 
     it 'initiates a transaction for payment method sepa direct debit' do
-      response = gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::SEPA_DIRECT_DEBIT, invoicenumber: "12345", return_url: "http://www.return.url/", account_iban: "NL13TEST0123456789", account_name: "J. Tester", mandate_reference: "00P12345", collect_date: Date.new(2016, 1, 1))
+      response = gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::SEPA_DIRECT_DEBIT, invoicenumber: "12345", return_url: "http://www.return.url/", consumer_iban: "NL13TEST0123456789", consumer_name: "J. Tester", mandate_reference: "00P12345", collect_date: Date.new(2016, 1, 1))
       expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse)
       expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
@@ -343,11 +343,11 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.timestamp).to be_an_instance_of(Time)
     end
 
-    it 'includes account iban, bic and name for an ideal response' do
+    it 'includes consumer iban, bic and name for an ideal response' do
       response = gateway.status(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
-      expect(response.account_iban).to eq("NL44RABO0123456789")
-      expect(response.account_bic).to eq("RABONL2U")
-      expect(response.account_name).to eq("J. de Tester")
+      expect(response.consumer_iban).to eq("NL44RABO0123456789")
+      expect(response.consumer_bic).to eq("RABONL2U")
+      expect(response.consumer_name).to eq("J. de Tester")
     end
 
     it 'raises an ApiException when API result Fail is returned' do
@@ -579,9 +579,9 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::IDEAL)
-        expect(response.account_iban).to eq("NL44RABO0123456789")
-        expect(response.account_bic).to eq("RABONL2U")
-        expect(response.account_name).to eq("J. de Tester")
+        expect(response.consumer_iban).to eq("NL44RABO0123456789")
+        expect(response.consumer_bic).to eq("RABONL2U")
+        expect(response.consumer_name).to eq("J. de Tester")
         expect(response.timestamp).to be_an_instance_of(Time)
       end
 
@@ -595,8 +595,8 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
         expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
         expect(response.invoicenumber).to eq("12345")
-        expect(response.account_iban).to eq("NL13TEST0123456789")
-        expect(response.account_name).to eq("J. Tester")
+        expect(response.consumer_iban).to eq("NL13TEST0123456789")
+        expect(response.consumer_name).to eq("J. Tester")
         expect(response.mandate_reference).to eq("012345")
         expect(response.collect_date).to eq(Date.new(2014, 11, 13))
         expect(response.timestamp).to be_an_instance_of(Time)

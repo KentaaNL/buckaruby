@@ -42,7 +42,7 @@ module Buckaruby
 
       validate_setup_transaction_params!(options)
 
-      normalize_account_iban!(options) if options[:payment_method] == PaymentMethod::SEPA_DIRECT_DEBIT
+      normalize_consumer_iban!(options) if options[:payment_method] == PaymentMethod::SEPA_DIRECT_DEBIT
 
       execute_request(:setup_transaction, options)
     end
@@ -159,7 +159,7 @@ module Buckaruby
       when PaymentMethod::IDEAL, PaymentMethod::IDEAL_PROCESSING
         required_params << :issuer
       when PaymentMethod::SEPA_DIRECT_DEBIT
-        required_params << [:account_iban, :account_name]
+        required_params << [:consumer_iban, :consumer_name]
       end
 
       validate_required_params!(options, required_params)
@@ -223,10 +223,10 @@ module Buckaruby
     end
 
     # Strip spaces from the IBAN.
-    def normalize_account_iban!(options)
-      iban = options[:account_iban].to_s.gsub(/\s/, "")
+    def normalize_consumer_iban!(options)
+      iban = options[:consumer_iban].to_s.gsub(/\s/, "")
 
-      options[:account_iban] = iban
+      options[:consumer_iban] = iban
     end
 
     # Build and execute a request.

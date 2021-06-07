@@ -79,7 +79,7 @@ module Buckaruby
 
   # Base for a transaction response.
   module TransactionResponse
-    def account_bic
+    def consumer_bic
       case payment_method
       when PaymentMethod::IDEAL
         params[:brq_service_ideal_consumerbic]
@@ -90,7 +90,7 @@ module Buckaruby
       end
     end
 
-    def account_iban
+    def consumer_iban
       case payment_method
       when PaymentMethod::IDEAL
         params[:brq_service_ideal_consumeriban]
@@ -101,7 +101,7 @@ module Buckaruby
       end
     end
 
-    def account_name
+    def consumer_name
       case payment_method
       when PaymentMethod::IDEAL
         params[:brq_service_ideal_consumername] || params[:brq_customer_name]
