@@ -19,6 +19,10 @@ RSpec.describe Buckaruby::Gateway do
   end
 
   describe '#issuers' do
+    before do
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionRequestSpecification").to_return(body: File.read("spec/fixtures/responses/specify_transaction_success.txt"))
+    end
+
     context 'when no or false parameters are passed' do
       it 'raises an ArgumentError' do
         expect { gateway.issuers }.to raise_error(ArgumentError)
@@ -29,13 +33,43 @@ RSpec.describe Buckaruby::Gateway do
     context 'when ideal is passed' do
       let(:issuers) { gateway.issuers(Buckaruby::PaymentMethod::IDEAL) }
 
-      it { expect(issuers.length).to eq 0 }
+      it 'returns the list with issuers' do
+        expect(issuers).to eq({
+                                "ABNANL2A" => "ABN AMRO",
+                                "ASNBNL21" => "ASN Bank",
+                                "BUNQNL2A" => "bunq",
+                                "FVLBNL22" => "Van Lanschot",
+                                "HANDNL2A" => "Handelsbanken",
+                                "INGBNL2A" => "ING",
+                                "KNABNL2H" => "Knab",
+                                "MOYONL21" => "Moneyou",
+                                "RABONL2U" => "Rabobank",
+                                "RBRBNL21" => "RegioBank",
+                                "SNSBNL2A" => "SNS",
+                                "TRIONL2U" => "Triodos Bank"
+                              })
+      end
     end
 
     context 'when ideal processing is passed' do
       let(:issuers) { gateway.issuers(Buckaruby::PaymentMethod::IDEAL_PROCESSING) }
 
-      it { expect(issuers.length).to eq 0 }
+      it 'returns the list with issuers' do
+        expect(issuers).to eq({
+                                "ABNANL2A" => "ABN AMRO",
+                                "ASNBNL21" => "ASN Bank",
+                                "BUNQNL2A" => "bunq",
+                                "FVLBNL22" => "Van Lanschot",
+                                "HANDNL2A" => "Handelsbanken",
+                                "INGBNL2A" => "ING",
+                                "KNABNL2H" => "Knab",
+                                "MOYONL21" => "Moneyou",
+                                "RABONL2U" => "Rabobank",
+                                "RBRBNL21" => "RegioBank",
+                                "SNSBNL2A" => "SNS",
+                                "TRIONL2U" => "Triodos Bank"
+                              })
+      end
     end
 
     context 'when a payment method other than ideal is passed' do

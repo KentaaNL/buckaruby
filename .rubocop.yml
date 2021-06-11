@@ -29,13 +29,16 @@ Metrics/ClassLength:
   Enabled: false
 
 Metrics/CyclomaticComplexity:
-  Max: 9
+  Max: 10
 
 Metrics/MethodLength:
   Enabled: false
 
 Metrics/ModuleLength:
   Enabled: false
+
+Metrics/PerceivedComplexity:
+  Max: 10
 
 
 RSpec/DescribedClass:

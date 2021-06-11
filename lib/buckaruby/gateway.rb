@@ -33,7 +33,14 @@ module Buckaruby
         raise ArgumentError, "Invalid payment method, only iDEAL is supported."
       end
 
-      {}
+      response = execute_request(:specify_transaction, payment_method: payment_method)
+
+      service = response.services.first
+      description = service[:actiondescription].find { |action| action[:description].casecmp(Action::PAY).zero? } if service
+      params = description[:requestparameters].find { |param| param[:name].casecmp("issuer").zero? } if description
+      items = params[:listitemdescription] if params
+
+      items&.map { |item| [item[:value], item[:description]] }.to_h
     end
 
     # Setup a new transaction.
