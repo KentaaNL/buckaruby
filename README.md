@@ -6,6 +6,25 @@
 
 The Buckaruby gem provides a Ruby library for communicating with the Buckaroo Payment Engine 3.0.
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Payment methods](#payment-methods)
+  - [Start transaction](#start-transaction)
+  - [Recurrent transaction](#recurrent-transaction)
+  - [Refund transaction](#refund-transaction)
+  - [Cancel transaction](#cancel-transaction)
+  - [Push response](#push-response)
+  - [Get status](#get-status)
+  - [Merchant variables](#merchant-variables)
+  - [Transaction request specification](#transaction-request-specification)
+  - [Error handling](#error-handling)
+- [Example](#example)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -240,6 +259,12 @@ All Buckaruby exceptions listed here inherit from the class `Buckaruby::Buckaroo
 ## Example
 
 For a complete and working example project check out [Buckaruby PoC](https://github.com/KentaaNL/buckaruby-poc).
+
+## Development
+
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+
+To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
 ## Contributing
 
