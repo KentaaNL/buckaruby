@@ -300,24 +300,24 @@ RSpec.describe Buckaruby::Gateway do
     end
   end
 
-  describe '#refundable?' do
+  describe '#refundable_transaction?' do
     it 'raises an exception when required parameters are missing' do
       expect {
-        gateway.refundable?
+        gateway.refundable_transaction?
       }.to raise_error(ArgumentError)
     end
 
     it 'returns true when the transaction is refundable' do
       stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_success.txt"))
 
-      response = gateway.refundable?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
+      response = gateway.refundable_transaction?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response).to be true
     end
 
     it 'returns false when the transaction was not found' do
       stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=RefundInfo").to_return(body: File.read("spec/fixtures/responses/refund_info_error.txt"))
 
-      response = gateway.refundable?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
+      response = gateway.refundable_transaction?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response).to be false
     end
   end

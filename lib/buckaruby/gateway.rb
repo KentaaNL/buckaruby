@@ -71,8 +71,8 @@ module Buckaruby
     end
 
     # Checks if a transaction is refundable.
-    def refundable?(options = {})
-      logger.debug("[refundable?] options=#{options.inspect}")
+    def refundable_transaction?(options = {})
+      logger.debug("[refundable_transaction?] options=#{options.inspect}")
 
       validate_required_params!(options, :transaction_id)
 

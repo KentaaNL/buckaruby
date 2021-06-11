@@ -123,7 +123,7 @@ For some transactions it's possible to do a refund: Buckaroo creates a new "reve
 First check if the transaction is refundable, with the parameter `transaction_id` set to the original transaction ID:
 
 ```ruby
-response = gateway.refundable?(transaction_id: "abcdefg")
+response = gateway.refundable_transaction?(transaction_id: "abcdefg")
 ```
 
 If the reponse is positive then you can refund the transaction with:
