@@ -148,12 +148,12 @@ module Buckaruby
       params[:brq_transactions]
     end
 
-    def transaction_type
-      TransactionType.parse(params[:brq_transaction_type], params[:brq_recurring])
-    end
-
     def transaction_status
       status
+    end
+
+    def transaction_type
+      TransactionType.parse(params[:brq_transaction_type], params[:brq_recurring])
     end
 
     private
@@ -198,11 +198,19 @@ module Buckaruby
   # Response when creating a recurrent transaction.
   class RecurrentTransactionResponse < ApiResponse
     include TransactionResponse
+
+    def transaction_type
+      TransactionType::PAYMENT_RECURRENT
+    end
   end
 
   # Response when creating a refund transaction.
   class RefundTransactionResponse < ApiResponse
     include TransactionResponse
+
+    def transaction_type
+      TransactionType::REFUND
+    end
   end
 
   # Response when retrieving the refund information.

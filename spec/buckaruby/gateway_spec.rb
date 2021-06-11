@@ -191,6 +191,7 @@ RSpec.describe Buckaruby::Gateway do
       expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse)
       expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
+      expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
       expect(response.redirect_url).not_to be nil
       expect(response.timestamp).to be_an_instance_of(Time)
     end
@@ -200,6 +201,7 @@ RSpec.describe Buckaruby::Gateway do
       expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse)
       expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
+      expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
       expect(response.redirect_url).not_to be nil
       expect(response.timestamp).to be_an_instance_of(Time)
     end
@@ -209,6 +211,7 @@ RSpec.describe Buckaruby::Gateway do
       expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse)
       expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
+      expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
       expect(response.redirect_url).not_to be nil
       expect(response.timestamp).to be_an_instance_of(Time)
     end
@@ -218,6 +221,7 @@ RSpec.describe Buckaruby::Gateway do
       expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse)
       expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
+      expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
       expect(response.timestamp).to be_an_instance_of(Time)
     end
 
@@ -226,6 +230,7 @@ RSpec.describe Buckaruby::Gateway do
       expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse)
       expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
+      expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
       expect(response.redirect_url).not_to be nil
       expect(response.timestamp).to be_an_instance_of(Time)
     end
@@ -235,6 +240,7 @@ RSpec.describe Buckaruby::Gateway do
       expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse)
       expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
+      expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
       expect(response.redirect_url).not_to be nil
       expect(response.timestamp).to be_an_instance_of(Time)
     end
@@ -294,6 +300,7 @@ RSpec.describe Buckaruby::Gateway do
       expect(response).to be_an_instance_of(Buckaruby::RecurrentTransactionResponse)
       expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
+      expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT_RECURRENT)
       expect(response.payment_method).to eq(Buckaruby::PaymentMethod::VISA)
       expect(response.invoicenumber).to eq("12345")
       expect(response.timestamp).to be_an_instance_of(Time)
@@ -344,7 +351,7 @@ RSpec.describe Buckaruby::Gateway do
       response = gateway.refund_transaction(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response).to be_an_instance_of(Buckaruby::RefundTransactionResponse)
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
-      expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
+      expect(response.transaction_type).to eq(Buckaruby::TransactionType::REFUND)
       expect(response.payment_method).to eq(Buckaruby::PaymentMethod::IDEAL)
       expect(response.transaction_id).to eq("8CCE4BB06339F28A506E1A328025D7DF13CCAD59")
       expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
@@ -382,6 +389,21 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.consumer_iban).to eq("NL44RABO0123456789")
       expect(response.consumer_bic).to eq("RABONL2U")
       expect(response.consumer_name).to eq("J. de Tester")
+    end
+
+    it 'returns the transaction status for a refund' do
+      stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_refund_success.txt"))
+
+      response = gateway.status(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
+      expect(response).to be_an_instance_of(Buckaruby::StatusResponse)
+      expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
+      expect(response.transaction_type).to eq(Buckaruby::TransactionType::REFUND)
+      expect(response.payment_method).to eq(Buckaruby::PaymentMethod::IDEAL)
+      expect(response.transaction_id).to eq("8CCE4BB06339F28A506E1A328025D7DF13CCAD59")
+      expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
+      expect(response.refund_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
+      expect(response.invoicenumber).to eq("12345")
+      expect(response.timestamp).to be_an_instance_of(Time)
     end
 
     it 'raises an ApiException when API result Fail is returned' do
