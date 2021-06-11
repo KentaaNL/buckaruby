@@ -136,10 +136,6 @@ module Buckaruby
       parse_payment_method(params[:brq_payment_method] || params[:brq_transaction_method])
     end
 
-    def redirect_url
-      params[:brq_redirecturl]
-    end
-
     def refund_transaction_id
       params[:brq_relatedtransaction_refund]
     end
@@ -193,6 +189,10 @@ module Buckaruby
   # Response when creating a new transaction.
   class SetupTransactionResponse < ApiResponse
     include TransactionResponse
+
+    def redirect_url
+      params[:brq_redirecturl]
+    end
   end
 
   # Response when creating a recurrent transaction.
