@@ -114,8 +114,8 @@ module Buckaruby
     end
 
     # Checks if a transaction is cancellable.
-    def cancellable?(options = {})
-      logger.debug("[cancellable?] options=#{options.inspect}")
+    def cancellable_transaction?(options = {})
+      logger.debug("[cancellable_transaction?] options=#{options.inspect}")
 
       validate_required_params!(options, :transaction_id)
 

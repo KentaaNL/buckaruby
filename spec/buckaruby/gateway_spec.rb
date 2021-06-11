@@ -409,24 +409,24 @@ RSpec.describe Buckaruby::Gateway do
     end
   end
 
-  describe '#cancellable?' do
+  describe '#cancellable_transaction?' do
     it 'raises an exception when required parameters are missing' do
       expect {
-        gateway.cancellable?
+        gateway.cancellable_transaction?
       }.to raise_error(ArgumentError)
     end
 
     it 'returns true when the transaction is cancellable' do
       stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_cancellable.txt"))
 
-      response = gateway.cancellable?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
+      response = gateway.cancellable_transaction?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response).to be true
     end
 
     it 'returns false when the transaction is not cancellable' do
       stub_request(:post, "https://checkout.buckaroo.nl/nvp/?op=TransactionStatus").to_return(body: File.read("spec/fixtures/responses/status_noncancellable.txt"))
 
-      response = gateway.cancellable?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
+      response = gateway.cancellable_transaction?(transaction_id: "41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response).to be false
     end
   end

@@ -142,10 +142,10 @@ See `Buckaruby::RefundTransactionResponse` for more details.
 
 Sometimes a transaction can be cancelled, for example a SEPA Direct Debit transaction before it has been offered to the bank.
 
-You can check if the transaction is cancellable, by using the method `cancellable?` with the parameter `transaction_id`:
+You can check if the transaction is cancellable, by using the method `cancellable_transaction?` with the parameter `transaction_id`:
 
 ```ruby
-response = gateway.cancellable?(transaction_id: "abcdefg")
+response = gateway.cancellable_transaction?(transaction_id: "abcdefg")
 ```
 
 If the response is positive then you can cancel the transaction with:
