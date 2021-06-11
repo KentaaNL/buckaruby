@@ -355,7 +355,7 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.payment_method).to eq(Buckaruby::PaymentMethod::IDEAL)
       expect(response.transaction_id).to eq("8CCE4BB06339F28A506E1A328025D7DF13CCAD59")
       expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
-      expect(response.refund_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
+      expect(response.refunded_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.invoicenumber).to eq("12345")
       expect(response.timestamp).to be_an_instance_of(Time)
     end
@@ -401,7 +401,7 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.payment_method).to eq(Buckaruby::PaymentMethod::IDEAL)
       expect(response.transaction_id).to eq("8CCE4BB06339F28A506E1A328025D7DF13CCAD59")
       expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
-      expect(response.refund_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
+      expect(response.refunded_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
       expect(response.invoicenumber).to eq("12345")
       expect(response.timestamp).to be_an_instance_of(Time)
     end
@@ -747,8 +747,8 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::IDEAL)
         expect(response.transaction_id).to eq("B51118F58785274E117EFE1BF99D4D50CCB96949")
         expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
+        expect(response.refunded_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
         expect(response.invoicenumber).to eq("12345")
-        expect(response.refund_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
         expect(response.timestamp).to be_an_instance_of(Time)
       end
 
@@ -761,8 +761,8 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::PAYPAL)
         expect(response.transaction_id).to eq("B51118F58785274E117EFE1BF99D4D50CCB96949")
         expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
+        expect(response.refunded_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
         expect(response.invoicenumber).to eq("12345")
-        expect(response.refund_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
         expect(response.timestamp).to be_an_instance_of(Time)
       end
 
@@ -775,8 +775,8 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::AMERICAN_EXPRESS)
         expect(response.transaction_id).to eq("B51118F58785274E117EFE1BF99D4D50CCB96949")
         expect(response.payment_id).to be nil
+        expect(response.refunded_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
         expect(response.invoicenumber).to eq("12345")
-        expect(response.refund_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
         expect(response.timestamp).to be_an_instance_of(Time)
       end
     end
@@ -791,8 +791,8 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::SEPA_DIRECT_DEBIT)
         expect(response.transaction_id).to eq("8CCE4BB06339F28A506E1A328025D7DF13CCAD59")
         expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
+        expect(response.reversed_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
         expect(response.invoicenumber).to eq("12345")
-        expect(response.reversal_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
         expect(response.timestamp).to be_an_instance_of(Time)
       end
 
@@ -805,8 +805,8 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::PAYPAL)
         expect(response.transaction_id).to eq("8CCE4BB06339F28A506E1A328025D7DF13CCAD59")
         expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
+        expect(response.reversed_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
         expect(response.invoicenumber).to eq("12345")
-        expect(response.reversal_transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
         expect(response.timestamp).to be_an_instance_of(Time)
       end
     end

@@ -136,14 +136,6 @@ module Buckaruby
       parse_payment_method(params[:brq_payment_method] || params[:brq_transaction_method])
     end
 
-    def refund_transaction_id
-      params[:brq_relatedtransaction_refund]
-    end
-
-    def reversal_transaction_id
-      params[:brq_relatedtransaction_reversal]
-    end
-
     def transaction_id
       params[:brq_transactions]
     end
@@ -208,6 +200,10 @@ module Buckaruby
   class RefundTransactionResponse < ApiResponse
     include TransactionResponse
 
+    def refunded_transaction_id
+      params[:brq_relatedtransaction_refund]
+    end
+
     def transaction_type
       TransactionType::REFUND
     end
@@ -243,6 +239,14 @@ module Buckaruby
     def cancellable?
       !params[:brq_transaction_cancelable].nil? && params[:brq_transaction_cancelable].casecmp("true").zero?
     end
+
+    def refunded_transaction_id
+      params[:brq_relatedtransaction_refund]
+    end
+
+    def reversed_transaction_id
+      params[:brq_relatedtransaction_reversal]
+    end
   end
 
   # Response when cancelling a transaction.
@@ -257,6 +261,14 @@ module Buckaruby
       super(body, config)
 
       Signature.verify!(config, response)
+    end
+
+    def refunded_transaction_id
+      params[:brq_relatedtransaction_refund]
+    end
+
+    def reversed_transaction_id
+      params[:brq_relatedtransaction_reversal]
     end
   end
 
