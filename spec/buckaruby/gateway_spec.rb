@@ -228,6 +228,16 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.to_h).to be_an_instance_of(Hash)
     end
 
+    it 'initiates a transaction for payment method giropay' do
+      response = subject.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::GIROPAY, invoicenumber: "12345", return_url: "http://www.return.url/")
+      expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse)
+      expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
+      expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
+      expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
+      expect(response.redirect_url).not_to be nil
+      expect(response.timestamp).to be_an_instance_of(Time)
+    end
+
     context 'with custom variables' do
       it 'sends the custom variables with the request' do
         response = subject.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, payment_issuer: "ABNANL2A", invoicenumber: "12345", return_url: "http://www.return.url/", custom: { foo: :bar, quux: "42" })
@@ -665,6 +675,19 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.invoicenumber).to eq("12345")
         expect(response.timestamp).to be_an_instance_of(Time)
         expect(response.to_h).to be_an_instance_of(Hash)
+      end
+
+      it 'sets the transaction type to payment and payment method to Giropay for giropay callback' do
+        params = File.read("spec/fixtures/responses/callback_payment_giropay.txt")
+
+        response = subject.callback(params)
+        expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
+        expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
+        expect(response.payment_method).to eq(Buckaruby::PaymentMethod::GIROPAY)
+        expect(response.transaction_id).to eq("41C48B55FA9164E123CC73B1157459E840BE5D24")
+        expect(response.payment_id).to eq("E86256B2787EE7FF0C33D0D4C6159CD922227B79")
+        expect(response.invoicenumber).to eq("12345")
+        expect(response.timestamp).to be_an_instance_of(Time)
       end
     end
 
