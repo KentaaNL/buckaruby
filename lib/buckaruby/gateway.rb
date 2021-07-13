@@ -176,7 +176,7 @@ module Buckaruby
       valid_payment_methods = [
         PaymentMethod::IDEAL, PaymentMethod::IDEAL_PROCESSING, PaymentMethod::VISA, PaymentMethod::MASTER_CARD,
         PaymentMethod::MAESTRO, PaymentMethod::AMERICAN_EXPRESS, PaymentMethod::SEPA_DIRECT_DEBIT,
-        PaymentMethod::PAYPAL, PaymentMethod::BANCONTACT, PaymentMethod::SOFORT
+        PaymentMethod::PAYPAL, PaymentMethod::BANCONTACT, PaymentMethod::SOFORT, PaymentMethod::GIROPAY
       ]
       validate_payment_method!(options, valid_payment_methods)
     end

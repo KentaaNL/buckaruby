@@ -9,6 +9,7 @@ module Buckaruby
     PAYPAL = "paypal"
     BANCONTACT = "bancontactmrcash"
     SOFORT = "sofortueberweisung"
+    GIROPAY = "giropay"
     TRANSFER = "transfer"
 
     # Credit cards

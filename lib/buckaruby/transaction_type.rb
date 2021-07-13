@@ -18,7 +18,8 @@ module Buckaruby
              'C002', 'C004', 'C005',                          # (SEPA) Direct Debit
              'V010', 'V014',                                  # PayPal
              'C090', 'V090',                                  # Bancontact
-             'N074', 'C075',                                  # Sofort
+             'C075', 'N074',                                  # Sofort
+             'C241', 'N031',                                  # Giropay
              'C001',                                          # Transfer
 
              'C044', 'C192', 'C283', 'C293', 'C318', 'C345',
@@ -46,7 +47,8 @@ module Buckaruby
              'C102', 'C500',                                  # (SEPA) Direct Debit
              'V110',                                          # PayPal
              'C092', 'V092',                                  # Bancontact
-             'N540', 'C543',                                  # Sofort
+             'C543', 'N540',                                  # Sofort
+             'C242', 'N541',                                  # Giropay
              'C101',                                          # Transfer
 
              'C080', 'C194', 'C281', 'C290', 'C315', 'C342',
