@@ -1,5 +1,9 @@
 # Buckaruby changelog
 
+## 1.7.0 (2021-07-16)
+
+- Add payment method Giropay.
+
 ## 1.6.0 (2021-04-15)
 
 - Add Revolut to the list of iDEAL issuers.

@@ -246,7 +246,7 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.custom[:quux]).to eq("42")
 
         expect(WebMock).to have_requested(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest")
-          .with(body: "brq_websitekey=12345678&brq_payment_method=ideal&brq_culture=nl-NL&brq_currency=EUR&brq_amount=10.0&brq_invoicenumber=12345&brq_service_ideal_action=Pay&brq_service_ideal_issuer=ABNANL2A&brq_service_ideal_version=2&brq_return=http%3A%2F%2Fwww.return.url%2F&cust_foo=bar&cust_quux=42&add_buckaruby=Buckaruby+#{Buckaruby::VERSION}&brq_signature=f2c060e624faf02aabf8958d2a1898e2cbcfeac7")
+          .with(body: "brq_websitekey=12345678&brq_payment_method=ideal&brq_culture=nl-NL&brq_currency=EUR&brq_amount=10.0&brq_invoicenumber=12345&brq_service_ideal_action=Pay&brq_service_ideal_issuer=ABNANL2A&brq_service_ideal_version=2&brq_return=http%3A%2F%2Fwww.return.url%2F&cust_foo=bar&cust_quux=42&add_buckaruby=Buckaruby+#{Buckaruby::VERSION}&brq_signature=979f64bc651c9e780844c0866380fa2554897131")
       end
     end
 
@@ -258,7 +258,7 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.additional[:myreference]).to eq("12345")
 
         expect(WebMock).to have_requested(:post, "https://testcheckout.buckaroo.nl/nvp/?op=TransactionRequest")
-          .with(body: "brq_websitekey=12345678&brq_payment_method=ideal&brq_culture=nl-NL&brq_currency=EUR&brq_amount=10.0&brq_invoicenumber=12345&brq_service_ideal_action=Pay&brq_service_ideal_issuer=ABNANL2A&brq_service_ideal_version=2&brq_return=http%3A%2F%2Fwww.return.url%2F&add_myreference=12345&add_buckaruby=Buckaruby+#{Buckaruby::VERSION}&brq_signature=d9f8aebb207f8694ce819b6a84b557839cdbc69f")
+          .with(body: "brq_websitekey=12345678&brq_payment_method=ideal&brq_culture=nl-NL&brq_currency=EUR&brq_amount=10.0&brq_invoicenumber=12345&brq_service_ideal_action=Pay&brq_service_ideal_issuer=ABNANL2A&brq_service_ideal_version=2&brq_return=http%3A%2F%2Fwww.return.url%2F&add_myreference=12345&add_buckaruby=Buckaruby+#{Buckaruby::VERSION}&brq_signature=b3b7db8c80ea3260f86aa916de1a057ffce3db78")
       end
     end
   end
