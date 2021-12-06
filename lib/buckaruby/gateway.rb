@@ -15,11 +15,7 @@ module Buckaruby
 
     # Returns the payment methods enabled by Buckaroo and supported by this library.
     def payment_methods
-      valid_payment_methods = [
-        PaymentMethod::IDEAL, PaymentMethod::IDEAL_PROCESSING, PaymentMethod::VISA, PaymentMethod::MASTER_CARD,
-        PaymentMethod::MAESTRO, PaymentMethod::AMERICAN_EXPRESS, PaymentMethod::SEPA_DIRECT_DEBIT,
-        PaymentMethod::PAYPAL, PaymentMethod::BANCONTACT, PaymentMethod::SOFORT
-      ]
+      valid_payment_methods = PaymentMethod.all - [PaymentMethod::TRANSFER]
 
       response = execute_request(:specify_transaction)
       services = response.services.map { |service| service[:name] }
@@ -173,11 +169,7 @@ module Buckaruby
 
       validate_amount!(options)
 
-      valid_payment_methods = [
-        PaymentMethod::IDEAL, PaymentMethod::IDEAL_PROCESSING, PaymentMethod::VISA, PaymentMethod::MASTER_CARD,
-        PaymentMethod::MAESTRO, PaymentMethod::AMERICAN_EXPRESS, PaymentMethod::SEPA_DIRECT_DEBIT,
-        PaymentMethod::PAYPAL, PaymentMethod::BANCONTACT, PaymentMethod::SOFORT, PaymentMethod::GIROPAY
-      ]
+      valid_payment_methods = PaymentMethod.all - [PaymentMethod::TRANSFER]
       validate_payment_method!(options, valid_payment_methods)
     end
 
