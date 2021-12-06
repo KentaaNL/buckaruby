@@ -78,6 +78,14 @@ To retrieve the payment methods enabled in Buckaroo and supported by this librar
 payment_methods = gateway.payment_methods
 ```
 
+### Get issuers
+
+When using iDEAL as payment method, it is mandatory to send the `issuer` parameter in the start transaction request. You can retrieve the list of available issuers with the method `issuers`. This will return a hash with the ID of the issuer (hash key) and the issuer name (hash value).
+
+```ruby
+issuers = gateway.issuers(Buckaruby::PaymentMethod::IDEAL)
+```
+
 ### Start transaction
 
 To start a new transaction, use the method `setup_transaction`:
