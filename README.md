@@ -11,6 +11,7 @@ The Buckaruby gem provides a Ruby library for communicating with the Buckaroo Pa
 - [Installation](#installation)
 - [Usage](#usage)
   - [Payment methods](#payment-methods)
+  - [Get issuers](#get-issuers)
   - [Start transaction](#start-transaction)
   - [Recurrent transaction](#recurrent-transaction)
   - [Refund transaction](#refund-transaction)
