@@ -12,13 +12,14 @@ module Buckaruby
     def initialize(params = {})
       @params = params
 
-      if status_message && status_code
-        message = "API request failed: #{status_message} (#{status_code})"
-      elsif error_message
-        message = "API request failed: #{error_message}"
-      else
-        message = 'API request failed'
-      end
+      message =
+        if status_message && status_code
+          "API request failed: #{status_message} (#{status_code})"
+        elsif error_message
+          "API request failed: #{error_message}"
+        else
+          'API request failed'
+        end
 
       super(message)
     end

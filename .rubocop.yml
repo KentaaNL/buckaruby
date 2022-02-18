@@ -59,9 +59,6 @@ Style/BlockDelimiters:
   Exclude:
     - 'spec/**/*.rb'
 
-Style/ConditionalAssignment:
-  Enabled: false
-
 Style/GuardClause:
   Enabled: false
 

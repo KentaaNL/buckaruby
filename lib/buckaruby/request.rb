@@ -182,11 +182,12 @@ module Buckaruby
       params = {}
 
       if options[:payment_method]
-        if options[:payment_method].respond_to?(:join)
-          params[:brq_services] = options[:payment_method].join(',')
-        else
-          params[:brq_services] = options[:payment_method]
-        end
+        params[:brq_services] =
+          if options[:payment_method].respond_to?(:join)
+            options[:payment_method].join(',')
+          else
+            options[:payment_method]
+          end
       end
 
       params[:brq_latestversiononly] = 'true'
