@@ -67,8 +67,5 @@ Style/GuardClause:
 Style/IfUnlessModifier:
   Enabled: false
 
-Style/SafeNavigation:
-  Enabled: false
-
 Style/SymbolArray:
   Enabled: false

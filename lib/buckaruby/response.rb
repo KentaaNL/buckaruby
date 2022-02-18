@@ -155,7 +155,7 @@ module Buckaruby
     end
 
     def parse_payment_method(method)
-      method.downcase if method
+      method&.downcase
     end
   end
 
