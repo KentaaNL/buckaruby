@@ -26,14 +26,14 @@ module Buckaruby
     # Get a list with payment issuers (currently only iDEAL).
     def issuers(payment_method)
       if payment_method != PaymentMethod::IDEAL && payment_method != PaymentMethod::IDEAL_PROCESSING
-        raise ArgumentError, "Invalid payment method, only iDEAL is supported."
+        raise ArgumentError, 'Invalid payment method, only iDEAL is supported.'
       end
 
       response = execute_request(:specify_transaction, payment_method: payment_method)
 
       service = response.services.first
       description = service[:actiondescription].find { |action| action[:description].casecmp(Action::PAY).zero? } if service
-      params = description[:requestparameters].find { |param| param[:name].casecmp("issuer").zero? } if description
+      params = description[:requestparameters].find { |param| param[:name].casecmp('issuer').zero? } if description
       items = params[:listitemdescription] if params
 
       items&.map { |item| [item[:value], item[:description]] }.to_h
@@ -136,7 +136,7 @@ module Buckaruby
     # Verify the response / callback.
     def callback(response = {})
       if response.empty?
-        raise ArgumentError, "No callback parameters found"
+        raise ArgumentError, 'No callback parameters found'
       end
 
       CallbackResponse.new(response, config)
@@ -206,7 +206,7 @@ module Buckaruby
     # Validate params for refund transaction.
     def validate_refund_transaction_params!(options)
       unless options[:transaction_id]
-        raise ArgumentError, "Missing required parameter: transaction_id"
+        raise ArgumentError, 'Missing required parameter: transaction_id'
       end
 
       if options[:amount]
@@ -217,13 +217,13 @@ module Buckaruby
     # Validate params for transaction status.
     def validate_status_params!(options)
       if !options[:transaction_id] && !options[:payment_id]
-        raise ArgumentError, "Missing parameters: transaction_id or payment_id should be present"
+        raise ArgumentError, 'Missing parameters: transaction_id or payment_id should be present'
       end
     end
 
     # Strip spaces from the IBAN.
     def normalize_consumer_iban!(options)
-      iban = options[:consumer_iban].to_s.gsub(/\s/, "")
+      iban = options[:consumer_iban].to_s.gsub(/\s/, '')
 
       options[:consumer_iban] = iban
     end

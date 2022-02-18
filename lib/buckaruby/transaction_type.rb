@@ -38,7 +38,7 @@ module Buckaruby
              'V003', 'V030', 'V036', 'V042'                   # American Express
 
           # Check the recurring flag to detect a normal or recurring transaction.
-          if brq_recurring && brq_recurring.casecmp("true").zero?
+          if brq_recurring && brq_recurring.casecmp('true').zero?
             TransactionType::PAYMENT_RECURRENT
           else
             TransactionType::PAYMENT

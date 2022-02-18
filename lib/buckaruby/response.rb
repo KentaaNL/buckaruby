@@ -34,7 +34,7 @@ module Buckaruby
         custom = Support::CaseInsensitiveHash.new
 
         params.each do |key, value|
-          next unless key.upcase.start_with?("CUST_")
+          next unless key.upcase.start_with?('CUST_')
 
           new_key = key.to_s[5..-1]
           custom[new_key] = value
@@ -49,7 +49,7 @@ module Buckaruby
         additional = Support::CaseInsensitiveHash.new
 
         params.each do |key, value|
-          next unless key.upcase.start_with?("ADD_")
+          next unless key.upcase.start_with?('ADD_')
 
           new_key = key.to_s[4..-1]
           additional[new_key] = value
@@ -164,7 +164,7 @@ module Buckaruby
     def initialize(body, config)
       super(body, config)
 
-      if api_result.nil? || api_result.casecmp("fail").zero?
+      if api_result.nil? || api_result.casecmp('fail').zero?
         raise ApiException, params
       end
 
@@ -216,7 +216,7 @@ module Buckaruby
     end
 
     def refundable?
-      !params[:brq_refundinfo_1_isrefundable].nil? && params[:brq_refundinfo_1_isrefundable].casecmp("true").zero?
+      !params[:brq_refundinfo_1_isrefundable].nil? && params[:brq_refundinfo_1_isrefundable].casecmp('true').zero?
     end
 
     def maximum_amount
@@ -237,7 +237,7 @@ module Buckaruby
     include TransactionResponse
 
     def cancellable?
-      !params[:brq_transaction_cancelable].nil? && params[:brq_transaction_cancelable].casecmp("true").zero?
+      !params[:brq_transaction_cancelable].nil? && params[:brq_transaction_cancelable].casecmp('true').zero?
     end
 
     def refunded_transaction_id

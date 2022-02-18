@@ -2,9 +2,9 @@
 
 module Buckaruby
   module Action
-    PAY = "Pay"
-    PAY_RECURRENT = "PayRecurrent"
-    REFUND = "Refund"
-    EXTRA_INFO = "ExtraInfo"
+    PAY = 'Pay'
+    PAY_RECURRENT = 'PayRecurrent'
+    REFUND = 'Refund'
+    EXTRA_INFO = 'ExtraInfo'
   end
 end

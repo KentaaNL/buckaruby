@@ -24,7 +24,7 @@ module Buckaruby
     end
 
     def generate_params_string(secret, params)
-      sign_params = params.select { |key, _value| key.to_s.upcase.start_with?("BRQ_", "ADD_", "CUST_") && key.to_s.casecmp("BRQ_SIGNATURE").nonzero? }
+      sign_params = params.select { |key, _value| key.to_s.upcase.start_with?('BRQ_', 'ADD_', 'CUST_') && key.to_s.casecmp('BRQ_SIGNATURE').nonzero? }
       sign_params = order_signature_params(sign_params)
 
       string = sign_params.map { |param| "#{param[0]}=#{param[1]}" }.join
@@ -38,7 +38,7 @@ module Buckaruby
     #   that is identical to the beginning of a longer string, comes before the longer string.
     #   Take for example the following, comma separated, list which has been sorted:
     #     a_a, a0, a0a, a1a, aaA, aab, aba, aCa
-    CHAR_ORDER = "_01234567890abcdefghijklmnopqrstuvwxyz"
+    CHAR_ORDER = '_01234567890abcdefghijklmnopqrstuvwxyz'
 
     def order_signature_params(params)
       params.sort_by do |key, _value|
@@ -48,7 +48,7 @@ module Buckaruby
 
     # Check the signature from the Buckaroo response with our generated signature.
     def verify!(config, params)
-      sent_signature = params.find { |key, _value| key.to_s.casecmp("BRQ_SIGNATURE").zero? }&.last
+      sent_signature = params.find { |key, _value| key.to_s.casecmp('BRQ_SIGNATURE').zero? }&.last
       generated_signature = Signature.generate(config, params)
 
       if sent_signature.nil? || generated_signature.nil? || !safe_equals?(sent_signature, generated_signature)

@@ -17,7 +17,7 @@ module Buckaruby
       elsif error_message
         message = "API request failed: #{error_message}"
       else
-        message = "API request failed"
+        message = 'API request failed'
       end
 
       super(message)

@@ -5,8 +5,8 @@ require 'logger'
 module Buckaruby
   # Configuration settings for the Buckaruby Gateway.
   class Configuration
-    TEST_URL = "https://testcheckout.buckaroo.nl/nvp/"
-    LIVE_URL = "https://checkout.buckaroo.nl/nvp/"
+    TEST_URL = 'https://testcheckout.buckaroo.nl/nvp/'
+    LIVE_URL = 'https://checkout.buckaroo.nl/nvp/'
 
     def initialize(options)
       @options = options
@@ -27,7 +27,7 @@ module Buckaruby
     def website
       @website ||= begin
         website = @options[:website]
-        raise ArgumentError, "Missing required parameter: website" if website.to_s.empty?
+        raise ArgumentError, 'Missing required parameter: website' if website.to_s.empty?
 
         website
       end
@@ -36,7 +36,7 @@ module Buckaruby
     def secret
       @secret ||= begin
         secret = @options[:secret]
-        raise ArgumentError, "Missing required parameter: secret" if secret.to_s.empty?
+        raise ArgumentError, 'Missing required parameter: secret' if secret.to_s.empty?
 
         secret
       end
@@ -45,7 +45,7 @@ module Buckaruby
     # Use the hash method from options or default (SHA-1).
     def hash_method
       @hash_method ||= begin
-        hash_method = (@options[:hash_method] || "SHA1").downcase.to_sym
+        hash_method = (@options[:hash_method] || 'SHA1').downcase.to_sym
 
         unless [:sha1, :sha256, :sha512].include?(hash_method)
           raise ArgumentError, "Invalid hash method provided: #{hash_method} (expected :sha1, :sha256 or :sha512)"

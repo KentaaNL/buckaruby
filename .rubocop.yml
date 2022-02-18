@@ -70,8 +70,5 @@ Style/IfUnlessModifier:
 Style/SafeNavigation:
   Enabled: false
 
-Style/StringLiterals:
-  Enabled: false
-
 Style/SymbolArray:
   Enabled: false

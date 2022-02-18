@@ -116,13 +116,13 @@ module Buckaruby
         params.merge!(
           brq_service_ideal_action: Action::PAY,
           brq_service_ideal_issuer: options[:issuer],
-          brq_service_ideal_version: "2"
+          brq_service_ideal_version: '2'
         )
       when PaymentMethod::IDEAL_PROCESSING
         params.merge!(
           brq_service_idealprocessing_action: Action::PAY,
           brq_service_idealprocessing_issuer: options[:issuer],
-          brq_service_idealprocessing_version: "2"
+          brq_service_idealprocessing_version: '2'
         )
       when PaymentMethod::SEPA_DIRECT_DEBIT
         params.merge!(
@@ -136,14 +136,14 @@ module Buckaruby
         end
 
         if options[:collect_date]
-          params[:brq_service_sepadirectdebit_collectdate] = options[:collect_date].strftime("%Y-%m-%d")
+          params[:brq_service_sepadirectdebit_collectdate] = options[:collect_date].strftime('%Y-%m-%d')
         end
 
         if options[:mandate_reference]
           params.merge!(
-            brq_service_sepadirectdebit_action: [Action::PAY, Action::EXTRA_INFO].join(","),
+            brq_service_sepadirectdebit_action: [Action::PAY, Action::EXTRA_INFO].join(','),
             brq_service_sepadirectdebit_mandatereference: options[:mandate_reference],
-            brq_service_sepadirectdebit_mandatedate: Date.today.strftime("%Y-%m-%d")
+            brq_service_sepadirectdebit_mandatedate: Date.today.strftime('%Y-%m-%d')
           )
         end
       end
