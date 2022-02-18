@@ -69,11 +69,11 @@ module Buckaruby
     end
 
     def build_custom_params(options)
-      options.map { |key, value| [:"cust_#{key}", value] }.to_h
+      options.transform_keys { |key| :"cust_#{key}" }
     end
 
     def build_additional_params(options)
-      options.map { |key, value| [:"add_#{key}", value] }.to_h
+      options.transform_keys { |key| :"add_#{key}" }
     end
   end
 
