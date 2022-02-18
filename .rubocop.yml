@@ -14,17 +14,11 @@ AllCops:
     - 'tmp/**/*'
     - 'vendor/**/*'
 
-
 Layout/LineLength:
   Enabled: false
 
-
 Metrics/AbcSize:
   Max: 27
-
-Metrics/BlockLength:
-  Exclude:
-    - 'spec/**/*.rb'
 
 Metrics/ClassLength:
   Enabled: false
@@ -40,24 +34,6 @@ Metrics/ModuleLength:
 
 Metrics/PerceivedComplexity:
   Max: 10
-
-
-RSpec/DescribedClass:
-  EnforcedStyle: explicit
-
-RSpec/ExampleLength:
-  Max: 17
-
-RSpec/MultipleExpectations:
-  Max: 12
-
-RSpec/NestedGroups:
-  Max: 4
-
-
-Style/BlockDelimiters:
-  Exclude:
-    - 'spec/**/*.rb'
 
 Style/GuardClause:
   Enabled: false

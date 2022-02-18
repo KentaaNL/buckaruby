@@ -1,0 +1,19 @@
+inherit_from: ../.rubocop.yml
+
+Metrics/BlockLength:
+  Enabled: false
+
+RSpec/DescribedClass:
+  EnforcedStyle: explicit
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Max: 12
+
+RSpec/NestedGroups:
+  Max: 4
+
+Style/BlockDelimiters:
+  Enabled: false
