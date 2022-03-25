@@ -166,7 +166,7 @@ RSpec.describe Buckaruby::Gateway do
 
         it { expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse) }
         it { expect(response.transaction_id).to eq('41C48B55FA9164E123CC73B1157459E840BE5D24') }
-        it { expect(response.redirect_url).not_to be nil }
+        it { expect(response.redirect_url).not_to be_nil }
       end
 
       context 'when amount is a decimal' do
@@ -174,7 +174,7 @@ RSpec.describe Buckaruby::Gateway do
 
         it { expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse) }
         it { expect(response.transaction_id).to eq('41C48B55FA9164E123CC73B1157459E840BE5D24') }
-        it { expect(response.redirect_url).not_to be nil }
+        it { expect(response.redirect_url).not_to be_nil }
       end
 
       context 'when amount is a string' do
@@ -182,7 +182,7 @@ RSpec.describe Buckaruby::Gateway do
 
         it { expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse) }
         it { expect(response.transaction_id).to eq('41C48B55FA9164E123CC73B1157459E840BE5D24') }
-        it { expect(response.redirect_url).not_to be nil }
+        it { expect(response.redirect_url).not_to be_nil }
       end
     end
 
@@ -192,7 +192,7 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.transaction_id).to eq('41C48B55FA9164E123CC73B1157459E840BE5D24')
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
       expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
-      expect(response.redirect_url).not_to be nil
+      expect(response.redirect_url).not_to be_nil
       expect(response.timestamp).to be_an_instance_of(Time)
     end
 
@@ -202,7 +202,7 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.transaction_id).to eq('41C48B55FA9164E123CC73B1157459E840BE5D24')
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
       expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
-      expect(response.redirect_url).not_to be nil
+      expect(response.redirect_url).not_to be_nil
       expect(response.timestamp).to be_an_instance_of(Time)
     end
 
@@ -212,7 +212,7 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.transaction_id).to eq('41C48B55FA9164E123CC73B1157459E840BE5D24')
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
       expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
-      expect(response.redirect_url).not_to be nil
+      expect(response.redirect_url).not_to be_nil
       expect(response.timestamp).to be_an_instance_of(Time)
     end
 
@@ -231,7 +231,7 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.transaction_id).to eq('41C48B55FA9164E123CC73B1157459E840BE5D24')
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
       expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
-      expect(response.redirect_url).not_to be nil
+      expect(response.redirect_url).not_to be_nil
       expect(response.timestamp).to be_an_instance_of(Time)
     end
 
@@ -241,7 +241,7 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.transaction_id).to eq('41C48B55FA9164E123CC73B1157459E840BE5D24')
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
       expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
-      expect(response.redirect_url).not_to be nil
+      expect(response.redirect_url).not_to be_nil
       expect(response.timestamp).to be_an_instance_of(Time)
     end
 
@@ -251,7 +251,7 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.transaction_id).to eq('41C48B55FA9164E123CC73B1157459E840BE5D24')
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
       expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
-      expect(response.redirect_url).not_to be nil
+      expect(response.redirect_url).not_to be_nil
       expect(response.timestamp).to be_an_instance_of(Time)
     end
 
@@ -797,7 +797,7 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::REFUND)
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::AMERICAN_EXPRESS)
         expect(response.transaction_id).to eq('B51118F58785274E117EFE1BF99D4D50CCB96949')
-        expect(response.payment_id).to be nil
+        expect(response.payment_id).to be_nil
         expect(response.refunded_transaction_id).to eq('41C48B55FA9164E123CC73B1157459E840BE5D24')
         expect(response.invoicenumber).to eq('12345')
         expect(response.timestamp).to be_an_instance_of(Time)
