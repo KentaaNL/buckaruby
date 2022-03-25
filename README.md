@@ -188,13 +188,15 @@ If you try to cancel a transaction that's not cancellable, then a `Buckaruby::No
 
 ### Push response
 
-Buckaroo can be configured to send push notifications for transactions. You can use the method `callback` to verify and parse the push response:
+Buckaroo can be configured to send push notifications for transactions. You can use the method `parse_push` to verify and parse the push response:
 
 ```ruby
-response = gateway.callback(params)
+response = gateway.parse_push(params)
 ```
 
-See `Buckaruby::CallbackResponse` for more details.
+This method can also be used to parse the post data on the return page.
+
+See `Buckaruby::PushResponse` for more details.
 
 ### Get status
 
@@ -237,7 +239,7 @@ In the response, you can retrieve the custom and additional variables with the m
 ```ruby
 puts response.custom[:foo]
 puts response.additional[:myreference]
-````
+```
 
 ### Transaction request specification
 

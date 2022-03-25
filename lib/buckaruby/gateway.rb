@@ -133,13 +133,13 @@ module Buckaruby
       execute_request(:cancel, options)
     end
 
-    # Verify the response / callback.
-    def callback(response = {})
-      if response.empty?
-        raise ArgumentError, 'No callback parameters found'
+    # Parse and verify the push response.
+    def parse_push(response)
+      if response.nil? || response.empty?
+        raise ArgumentError, 'No push parameters found'
       end
 
-      CallbackResponse.new(response, config)
+      PushResponse.new(response, config)
     end
 
     private

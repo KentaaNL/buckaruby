@@ -253,8 +253,8 @@ module Buckaruby
   class CancelResponse < ApiResponse
   end
 
-  # Response when verifying the Buckaroo callback.
-  class CallbackResponse < Response
+  # Response when verifying the push response.
+  class PushResponse < Response
     include TransactionResponse
 
     def initialize(body, config)

@@ -517,38 +517,38 @@ RSpec.describe Buckaruby::Gateway do
     end
   end
 
-  describe '#callback' do
-    it 'raises an exception when parameters are missing' do
+  describe '#parse_push' do
+    it 'raises an exception when parameter is nil' do
       expect {
-        gateway.callback
+        gateway.parse_push(nil)
       }.to raise_error(ArgumentError)
     end
 
     it 'raises an exception when parameter is an empty Hash' do
       expect {
-        gateway.callback({})
+        gateway.parse_push({})
       }.to raise_error(ArgumentError)
     end
 
     it 'raises an exception when parameter is an empty String' do
       expect {
-        gateway.callback('')
+        gateway.parse_push('')
       }.to raise_error(ArgumentError)
     end
 
     it 'raises a SignatureException when the signature is invalid' do
-      params = File.read('spec/fixtures/responses/callback_invalid_signature.txt')
+      params = File.read('spec/fixtures/responses/push_invalid_signature.txt')
 
       expect {
-        gateway.callback(params)
+        gateway.parse_push(params)
       }.to raise_error(Buckaruby::SignatureException, "Sent signature (abcdefgh1234567890abcdefgh1234567890) doesn't match generated signature (0a74bba15fccd8094f33678c001b44851643876d)")
     end
 
     it 'returns the status when the signature is valid' do
-      params = File.read('spec/fixtures/responses/callback_valid_signature.txt')
+      params = File.read('spec/fixtures/responses/push_valid_signature.txt')
 
-      response = gateway.callback(params)
-      expect(response).to be_an_instance_of(Buckaruby::CallbackResponse)
+      response = gateway.parse_push(params)
+      expect(response).to be_an_instance_of(Buckaruby::PushResponse)
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
       expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
       expect(response.payment_method).to eq(Buckaruby::PaymentMethod::IDEAL)
@@ -561,8 +561,8 @@ RSpec.describe Buckaruby::Gateway do
     it 'accepts a Hash as parameters' do
       params = { 'brq_amount' => '10.00', 'brq_currency' => 'EUR', 'brq_customer_name' => 'J. de Tester', 'brq_description' => 'Test', 'brq_invoicenumber' => '12345', 'brq_mutationtype' => 'Collecting', 'brq_payer_hash' => 'e02377112efcd30bb7420bb1b9855a3778864572', 'brq_payment' => 'E86256B2787EE7FF0C33D0D4C6159CD922227B79', 'brq_service_ideal_consumerbic' => 'RABONL2U', 'brq_service_ideal_consumeriban' => 'NL44RABO0123456789', 'brq_service_ideal_consumerissuer' => 'Rabobank', 'brq_service_ideal_consumername' => 'J. de Tester', 'brq_statuscode' => '190', 'brq_statuscode_detail' => 'S001', 'brq_statusmessage' => 'Transaction successfully processed', 'brq_test' => 'true', 'brq_timestamp' => '2014-11-05 13:10:42', 'brq_transaction_method' => 'ideal', 'brq_transaction_type' => 'C021', 'brq_transactions' => '41C48B55FA9164E123CC73B1157459E840BE5D24', 'brq_websitekey' => '12345678', 'brq_signature' => '0a74bba15fccd8094f33678c001b44851643876d' }
 
-      response = gateway.callback(params)
-      expect(response).to be_an_instance_of(Buckaruby::CallbackResponse)
+      response = gateway.parse_push(params)
+      expect(response).to be_an_instance_of(Buckaruby::PushResponse)
       expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
       expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
       expect(response.payment_method).to eq(Buckaruby::PaymentMethod::IDEAL)
@@ -572,11 +572,11 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.timestamp).to be_an_instance_of(Time)
     end
 
-    context 'when callback is a payment response' do
+    context 'when push is a payment response' do
       it 'sets the success status when payment status is success' do
-        params = File.read('spec/fixtures/responses/callback_payment_success.txt')
+        params = File.read('spec/fixtures/responses/push_payment_success.txt')
 
-        response = gateway.callback(params)
+        response = gateway.parse_push(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::IDEAL)
@@ -587,9 +587,9 @@ RSpec.describe Buckaruby::Gateway do
       end
 
       it 'sets the failed status when payment status is failed' do
-        params = File.read('spec/fixtures/responses/callback_payment_failed.txt')
+        params = File.read('spec/fixtures/responses/push_payment_failed.txt')
 
-        response = gateway.callback(params)
+        response = gateway.parse_push(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::FAILED)
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::IDEAL)
@@ -600,9 +600,9 @@ RSpec.describe Buckaruby::Gateway do
       end
 
       it 'sets the rejected status when payment status is rejected' do
-        params = File.read('spec/fixtures/responses/callback_payment_rejected.txt')
+        params = File.read('spec/fixtures/responses/push_payment_rejected.txt')
 
-        response = gateway.callback(params)
+        response = gateway.parse_push(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::REJECTED)
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::IDEAL)
@@ -613,9 +613,9 @@ RSpec.describe Buckaruby::Gateway do
       end
 
       it 'sets the cancelled status when payment status is cancelled' do
-        params = File.read('spec/fixtures/responses/callback_payment_cancelled.txt')
+        params = File.read('spec/fixtures/responses/push_payment_cancelled.txt')
 
-        response = gateway.callback(params)
+        response = gateway.parse_push(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::CANCELLED)
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::IDEAL)
@@ -626,9 +626,9 @@ RSpec.describe Buckaruby::Gateway do
       end
 
       it 'sets the pending status when payment status is pending' do
-        params = File.read('spec/fixtures/responses/callback_payment_pending.txt')
+        params = File.read('spec/fixtures/responses/push_payment_pending.txt')
 
-        response = gateway.callback(params)
+        response = gateway.parse_push(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::IDEAL)
@@ -639,9 +639,9 @@ RSpec.describe Buckaruby::Gateway do
       end
 
       it 'includes account iban, bic and name for an ideal response' do
-        params = File.read('spec/fixtures/responses/callback_payment_success.txt')
+        params = File.read('spec/fixtures/responses/push_payment_success.txt')
 
-        response = gateway.callback(params)
+        response = gateway.parse_push(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::IDEAL)
@@ -652,9 +652,9 @@ RSpec.describe Buckaruby::Gateway do
       end
 
       it 'includes account iban, name, mandate reference and collect date for a sepa direct debit response' do
-        params = File.read('spec/fixtures/responses/callback_payment_sepa.txt')
+        params = File.read('spec/fixtures/responses/push_payment_sepa.txt')
 
-        response = gateway.callback(params)
+        response = gateway.parse_push(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::SEPA_DIRECT_DEBIT)
@@ -669,9 +669,9 @@ RSpec.describe Buckaruby::Gateway do
       end
 
       it 'returns transaction type payment when cancelling a visa or mastercard transaction (empty transaction type)' do
-        params = File.read('spec/fixtures/responses/callback_payment_empty_transaction_type.txt')
+        params = File.read('spec/fixtures/responses/push_payment_empty_transaction_type.txt')
 
-        response = gateway.callback(params)
+        response = gateway.parse_push(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::CANCELLED)
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
         expect(response.transaction_id).to eq('41C48B55FA9164E123CC73B1157459E840BE5D24')
@@ -679,10 +679,10 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.timestamp).to be_an_instance_of(Time)
       end
 
-      it 'sets the transaction type to payment and payment method to VISA for visa callback' do
-        params = File.read('spec/fixtures/responses/callback_payment_visa.txt')
+      it 'sets the transaction type to payment and payment method to VISA for visa push' do
+        params = File.read('spec/fixtures/responses/push_payment_visa.txt')
 
-        response = gateway.callback(params)
+        response = gateway.parse_push(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::VISA)
@@ -692,10 +692,10 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.timestamp).to be_an_instance_of(Time)
       end
 
-      it 'sets the transaction type to payment and payment method to American Express for amex callback' do
-        params = File.read('spec/fixtures/responses/callback_payment_amex.txt')
+      it 'sets the transaction type to payment and payment method to American Express for amex push' do
+        params = File.read('spec/fixtures/responses/push_payment_amex.txt')
 
-        response = gateway.callback(params)
+        response = gateway.parse_push(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::AMERICAN_EXPRESS)
@@ -705,10 +705,10 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.timestamp).to be_an_instance_of(Time)
       end
 
-      it 'sets the transaction type to payment and payment method to Sofort for sofort callback' do
-        params = File.read('spec/fixtures/responses/callback_payment_sofort.txt')
+      it 'sets the transaction type to payment and payment method to Sofort for sofort push' do
+        params = File.read('spec/fixtures/responses/push_payment_sofort.txt')
 
-        response = gateway.callback(params)
+        response = gateway.parse_push(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::PENDING)
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::SOFORT)
@@ -718,10 +718,10 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.timestamp).to be_an_instance_of(Time)
       end
 
-      it 'sets the transaction type to payment and payment method to Giropay for giropay callback' do
-        params = File.read('spec/fixtures/responses/callback_payment_giropay.txt')
+      it 'sets the transaction type to payment and payment method to Giropay for giropay push' do
+        params = File.read('spec/fixtures/responses/push_payment_giropay.txt')
 
-        response = gateway.callback(params)
+        response = gateway.parse_push(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::GIROPAY)
@@ -732,11 +732,11 @@ RSpec.describe Buckaruby::Gateway do
       end
     end
 
-    context 'when callback is a payment recurrent response' do
+    context 'when push is a payment recurrent response' do
       it 'recognizes a visa payment recurrent response' do
-        params = File.read('spec/fixtures/responses/callback_recurrent_visa.txt')
+        params = File.read('spec/fixtures/responses/push_recurrent_visa.txt')
 
-        response = gateway.callback(params)
+        response = gateway.parse_push(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT_RECURRENT)
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::VISA)
@@ -747,9 +747,9 @@ RSpec.describe Buckaruby::Gateway do
       end
 
       it 'recognizes a sepa direct debit payment recurrent response' do
-        params = File.read('spec/fixtures/responses/callback_recurrent_sepa.txt')
+        params = File.read('spec/fixtures/responses/push_recurrent_sepa.txt')
 
-        response = gateway.callback(params)
+        response = gateway.parse_push(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT_RECURRENT)
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::SEPA_DIRECT_DEBIT)
@@ -760,11 +760,11 @@ RSpec.describe Buckaruby::Gateway do
       end
     end
 
-    context 'when callback is a refund response' do
+    context 'when push is a refund response' do
       it 'recognizes an ideal refund response' do
-        params = File.read('spec/fixtures/responses/callback_refund_ideal.txt')
+        params = File.read('spec/fixtures/responses/push_refund_ideal.txt')
 
-        response = gateway.callback(params)
+        response = gateway.parse_push(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::REFUND)
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::IDEAL)
@@ -776,9 +776,9 @@ RSpec.describe Buckaruby::Gateway do
       end
 
       it 'recognizes a paypal refund response' do
-        params = File.read('spec/fixtures/responses/callback_refund_paypal.txt')
+        params = File.read('spec/fixtures/responses/push_refund_paypal.txt')
 
-        response = gateway.callback(params)
+        response = gateway.parse_push(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::REFUND)
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::PAYPAL)
@@ -790,9 +790,9 @@ RSpec.describe Buckaruby::Gateway do
       end
 
       it 'recognizes an amex refund response' do
-        params = File.read('spec/fixtures/responses/callback_refund_amex.txt')
+        params = File.read('spec/fixtures/responses/push_refund_amex.txt')
 
-        response = gateway.callback(params)
+        response = gateway.parse_push(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::REFUND)
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::AMERICAN_EXPRESS)
@@ -804,11 +804,11 @@ RSpec.describe Buckaruby::Gateway do
       end
     end
 
-    context 'when callback is a reversal response' do
+    context 'when push is a reversal response' do
       it 'recognizes a sepa direct debit reversal response' do
-        params = File.read('spec/fixtures/responses/callback_reversal_sepa.txt')
+        params = File.read('spec/fixtures/responses/push_reversal_sepa.txt')
 
-        response = gateway.callback(params)
+        response = gateway.parse_push(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::REVERSAL)
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::SEPA_DIRECT_DEBIT)
@@ -820,9 +820,9 @@ RSpec.describe Buckaruby::Gateway do
       end
 
       it 'recognizes a paypal reversal response' do
-        params = File.read('spec/fixtures/responses/callback_reversal_paypal.txt')
+        params = File.read('spec/fixtures/responses/push_reversal_paypal.txt')
 
-        response = gateway.callback(params)
+        response = gateway.parse_push(params)
         expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
         expect(response.transaction_type).to eq(Buckaruby::TransactionType::REVERSAL)
         expect(response.payment_method).to eq(Buckaruby::PaymentMethod::PAYPAL)
