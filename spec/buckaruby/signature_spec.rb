@@ -99,7 +99,9 @@ RSpec.describe Buckaruby::Signature do
 
     it 'does not fail when the signature is valid' do
       params = { brq_test: 'abcdef', brq_test2: 'foobar', brq_signature: 'c864c2abad67580274b2df00fd2a53739952b924' }
-      Buckaruby::Signature.verify!(config, params)
+      expect {
+        Buckaruby::Signature.verify!(config, params)
+      }.not_to raise_error
     end
   end
 end
