@@ -159,8 +159,6 @@ module Buckaruby
       required_params << :return_url if options[:payment_method] != PaymentMethod::SEPA_DIRECT_DEBIT
 
       case options[:payment_method]
-      when PaymentMethod::IDEAL, PaymentMethod::IDEAL_PROCESSING
-        required_params << :issuer
       when PaymentMethod::SEPA_DIRECT_DEBIT
         required_params << [:consumer_iban, :consumer_name]
       end
