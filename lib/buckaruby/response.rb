@@ -162,7 +162,7 @@ module Buckaruby
   # Base class for a response via the API.
   class ApiResponse < Response
     def initialize(body, config)
-      super(body, config)
+      super
 
       if api_result.nil? || api_result.casecmp('fail').zero?
         raise ApiException, params
@@ -258,7 +258,7 @@ module Buckaruby
     include TransactionResponse
 
     def initialize(body, config)
-      super(body, config)
+      super
 
       Signature.verify!(config, response)
     end

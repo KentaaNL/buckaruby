@@ -10,7 +10,7 @@ module Buckaruby
           super()
           update(constructor)
         else
-          super(constructor)
+          super
         end
       end
 
