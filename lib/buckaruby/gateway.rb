@@ -36,7 +36,7 @@ module Buckaruby
       params = description[:requestparameters].find { |param| param[:name].casecmp('issuer').zero? } if description
       items = params[:listitemdescription] if params
 
-      items&.map { |item| [item[:value], item[:description]] }.to_h
+      items.to_h { |item| [item[:value], item[:description]] }
     end
 
     # Setup a new transaction.

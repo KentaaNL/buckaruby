@@ -36,7 +36,7 @@ module Buckaruby
         params.each do |key, value|
           next unless key.upcase.start_with?('CUST_')
 
-          new_key = key.to_s[5..-1]
+          new_key = key.to_s[5..]
           custom[new_key] = value
         end
 
@@ -51,7 +51,7 @@ module Buckaruby
         params.each do |key, value|
           next unless key.upcase.start_with?('ADD_')
 
-          new_key = key.to_s[4..-1]
+          new_key = key.to_s[4..]
           additional[new_key] = value
         end
 
