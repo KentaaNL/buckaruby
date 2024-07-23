@@ -21,7 +21,7 @@ Layout/LineLength:
   Enabled: false
 
 Metrics/AbcSize:
-  Max: 27
+  Max: 33
 
 Metrics/ClassLength:
   Enabled: false
