@@ -11,7 +11,6 @@ The Buckaruby gem provides a Ruby library for communicating with the Buckaroo Pa
 - [Installation](#installation)
 - [Usage](#usage)
   - [Payment methods](#payment-methods)
-  - [Get issuers](#get-issuers)
   - [Start transaction](#start-transaction)
   - [Recurrent transaction](#recurrent-transaction)
   - [Refund transaction](#refund-transaction)
@@ -79,14 +78,6 @@ To retrieve the payment methods enabled in Buckaroo and supported by this librar
 payment_methods = gateway.payment_methods
 ```
 
-### Get issuers
-
-When using iDEAL as payment method, it is mandatory to send the `issuer` parameter in the start transaction request. You can retrieve the list of available issuers with the method `issuers`. This will return a hash with the ID of the issuer (hash key) and the issuer name (hash value).
-
-```ruby
-issuers = gateway.issuers(Buckaruby::PaymentMethod::IDEAL)
-```
-
 ### Start transaction
 
 To start a new transaction, use the method `setup_transaction`:
@@ -95,7 +86,6 @@ To start a new transaction, use the method `setup_transaction`:
 options = {
   amount: 10,
   payment_method: Buckaruby::PaymentMethod::IDEAL,
-  issuer: "INGBNL2A",
   invoicenumber: "12345",
   return_url: "http://www.return.url/"
 }
@@ -219,7 +209,6 @@ For example:
 options = {
   amount: 10,
   payment_method: Buckaruby::PaymentMethod::IDEAL,
-  issuer: "INGBNL2A",
   invoicenumber: "12345",
   return_url: "http://www.return.url/",
   custom: {
