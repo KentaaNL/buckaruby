@@ -259,7 +259,7 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.custom[:quux]).to eq('42')
 
         expect(WebMock).to have_requested(:post, 'https://checkout.buckaroo.nl/nvp/?op=TransactionRequest')
-          .with(body: "brq_websitekey=12345678&brq_payment_method=ideal&brq_culture=nl-NL&brq_currency=EUR&brq_amount=10.00&brq_invoicenumber=12345&brq_service_ideal_action=Pay&brq_service_ideal_version=2&brq_return=http%3A%2F%2Fwww.return.url%2F&cust_foo=bar&cust_quux=42&add_buckaruby=Buckaruby+#{Buckaruby::VERSION}&brq_signature=e3af7b5ef509a723cda6d701a5ca5928bd928b73")
+          .with(body: "brq_websitekey=12345678&brq_payment_method=ideal&brq_culture=nl-NL&brq_currency=EUR&brq_amount=10.00&brq_invoicenumber=12345&brq_service_ideal_action=Pay&brq_service_ideal_version=2&brq_return=http%3A%2F%2Fwww.return.url%2F&cust_foo=bar&cust_quux=42&add_buckaruby=Buckaruby+#{Buckaruby::VERSION}&brq_signature=4f74ec6c16fb8183f528f30f8b5a34beaea93844")
       end
     end
 
@@ -271,7 +271,7 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.additional[:myreference]).to eq('12345')
 
         expect(WebMock).to have_requested(:post, 'https://checkout.buckaroo.nl/nvp/?op=TransactionRequest')
-          .with(body: "brq_websitekey=12345678&brq_payment_method=ideal&brq_culture=nl-NL&brq_currency=EUR&brq_amount=10.00&brq_invoicenumber=12345&brq_service_ideal_action=Pay&brq_service_ideal_version=2&brq_return=http%3A%2F%2Fwww.return.url%2F&add_myreference=12345&add_buckaruby=Buckaruby+#{Buckaruby::VERSION}&brq_signature=b34e71d217d8c6adb74b06f1b82644e562b1edcf")
+          .with(body: "brq_websitekey=12345678&brq_payment_method=ideal&brq_culture=nl-NL&brq_currency=EUR&brq_amount=10.00&brq_invoicenumber=12345&brq_service_ideal_action=Pay&brq_service_ideal_version=2&brq_return=http%3A%2F%2Fwww.return.url%2F&add_myreference=12345&add_buckaruby=Buckaruby+#{Buckaruby::VERSION}&brq_signature=b81f1379c6f7d16f580585a24c92db39d535841b")
       end
     end
   end
