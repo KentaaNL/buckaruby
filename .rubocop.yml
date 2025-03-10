@@ -1,6 +1,6 @@
 # Buckaruby RuboCop configuration
 
-require:
+plugins:
   - rubocop-performance
   - rubocop-rake
   - rubocop-rspec
