@@ -10,7 +10,7 @@ module Buckaruby
 
     module_function
 
-    # See https://docs.buckaroo.io/v1/docs/en/transaction-type-overview
+    # See https://docs.buckaroo.io/docs/integration-transaction-type-overview
     def parse(brq_transaction_type, brq_recurring)
       if brq_transaction_type && !brq_transaction_type.empty?
         case brq_transaction_type
@@ -37,7 +37,7 @@ module Buckaruby
              'C812', 'C872', 'C972', 'V034', 'V040', 'V046',
              'V094', 'V245', 'V288', 'V308', 'V333', 'V705',  # Maestro
 
-             'V003', 'V030', 'V036', 'V042'                   # American Express
+             'V003', 'V030', 'V036', 'V042', 'C990'           # American Express
 
           # Check the recurring flag to detect a normal or recurring transaction.
           if brq_recurring&.casecmp('true')&.zero?
@@ -67,7 +67,7 @@ module Buckaruby
              'C873', 'C970', 'V070', 'V076', 'V082', 'V246',
              'V286', 'V305', 'V330', 'V703',                  # Maestro
 
-             'V066', 'V072', 'V078', 'V103'                   # American Express
+             'V066', 'V072', 'V078', 'V103', 'C992'           # American Express
           TransactionType::REFUND
         when 'C501', 'C502', 'C562',                          # (SEPA) Direct Debit
              'V111',                                          # PayPal
@@ -82,7 +82,7 @@ module Buckaruby
              'C546', 'C551', 'C814', 'C874', 'V134', 'V140',
              'V146', 'V545', 'V546',                          # Maestro
 
-             'V130', 'V136', 'V142'                           # American Express
+             'V130', 'V136', 'V142', 'C993'                   # American Express
           TransactionType::REVERSAL
         end
       else
