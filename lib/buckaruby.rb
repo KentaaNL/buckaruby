@@ -18,3 +18,33 @@ require_relative 'buckaruby/response'
 require_relative 'buckaruby/signature'
 
 require_relative 'buckaruby/version'
+
+require 'logger'
+
+# :nodoc:
+module Buckaruby
+  # Holds the global Buckaruby configuration.
+  class Config
+    attr_accessor :logger, :open_timeout, :read_timeout
+
+    def initialize
+      @logger = defined?(Rails) ? Rails.logger : Logger.new($stdout)
+      @open_timeout = 30
+      @read_timeout = 30
+    end
+  end
+
+  @config = Config.new
+
+  class << self
+    attr_reader :config
+
+    def configure
+      yield(@config)
+    end
+
+    def reset!
+      @config = Config.new
+    end
+  end
+end

@@ -38,6 +38,9 @@ module Buckaruby
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER
       end
 
+      http.open_timeout = @config.open_timeout
+      http.read_timeout = @config.read_timeout
+
       raw_response = http.post(uri.request_uri, URI.encode_www_form(params))
 
       unless raw_response.is_a?(Net::HTTPSuccess)
