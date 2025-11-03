@@ -25,11 +25,11 @@ RSpec.describe Buckaruby::Amount do
 
   describe '#to_d' do
     it 'returns the decimal value of an Integer' do
-      expect(Buckaruby::Amount.new(42).to_d).to eq(BigDecimal('42'))
+      expect(Buckaruby::Amount.new(42).to_d).to eq(BigDecimal(42))
     end
 
     it 'returns the decimal value of a String' do
-      expect(Buckaruby::Amount.new('42').to_d).to eq(BigDecimal('42'))
+      expect(Buckaruby::Amount.new('42').to_d).to eq(BigDecimal(42))
     end
 
     it 'returns the decimal value of a String with decimals' do
