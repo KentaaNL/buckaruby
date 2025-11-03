@@ -39,6 +39,21 @@ Or install it yourself as:
 
     $ gem install buckaruby
 
+## Configuration
+
+Buckaruby provides a global configuration object that allows you to customize logger output and HTTP timeouts. You can set these options via the `Buckaruby.configure` block:
+
+```ruby
+Buckaruby.configure do |config|
+  # Set a global logger for Buckaruby output
+  config.logger = Logger.new($stdout)
+
+  # Set Net::HTTP timeout values (in seconds)
+  config.open_timeout = 30
+  config.read_timeout = 30
+end
+```
+
 ## Usage
 
 Create the gateway and configure it using your Buckaroo website key and secret key:

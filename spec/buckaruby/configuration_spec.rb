@@ -99,4 +99,52 @@ RSpec.describe Buckaruby::Configuration do
       expect(config.api_url).to eq('https://checkout.buckaroo.nl/nvp/')
     end
   end
+
+  describe '#logger' do
+    it 'uses the default logger' do
+      config = Buckaruby::Configuration.new(website: '12345678', secret: '7C222FB2927D828AF22F592134E8932480637C0D')
+      expect(config.logger).to be_a(Logger)
+    end
+
+    it 'uses the logger from the global config' do
+      logger = Logger.new($stdout)
+
+      Buckaruby.configure do |c|
+        c.logger = logger
+      end
+
+      config = Buckaruby::Configuration.new(website: '12345678', secret: '7C222FB2927D828AF22F592134E8932480637C0D')
+      expect(config.logger).to eq(logger)
+    end
+
+    it 'uses the logger from the options' do
+      logger = Logger.new($stdout)
+      config = Buckaruby::Configuration.new(website: '12345678', secret: '7C222FB2927D828AF22F592134E8932480637C0D', logger: logger)
+      expect(config.logger).to eq(logger)
+    end
+  end
+
+  describe '#open_timeout' do
+    it 'returns the default open timeout' do
+      config = Buckaruby::Configuration.new(website: '12345678', secret: '7C222FB2927D828AF22F592134E8932480637C0D')
+      expect(config.open_timeout).to eq(30)
+    end
+
+    it 'returns the open timeout from configuration' do
+      config = Buckaruby::Configuration.new(website: '12345678', secret: '7C222FB2927D828AF22F592134E8932480637C0D', open_timeout: 60)
+      expect(config.open_timeout).to eq(60)
+    end
+  end
+
+  describe '#read_timeout' do
+    it 'returns the default read timeout' do
+      config = Buckaruby::Configuration.new(website: '12345678', secret: '7C222FB2927D828AF22F592134E8932480637C0D')
+      expect(config.read_timeout).to eq(30)
+    end
+
+    it 'returns the read timeout from configuration' do
+      config = Buckaruby::Configuration.new(website: '12345678', secret: '7C222FB2927D828AF22F592134E8932480637C0D', read_timeout: 60)
+      expect(config.read_timeout).to eq(60)
+    end
+  end
 end

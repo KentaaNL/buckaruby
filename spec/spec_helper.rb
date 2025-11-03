@@ -15,4 +15,9 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+
+  config.before do
+    # Reset Buckaruby config to defaults before each example.
+    Buckaruby.reset!
+  end
 end

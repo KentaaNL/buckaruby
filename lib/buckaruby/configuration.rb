@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'logger'
-
 module Buckaruby
   # Configuration settings for the Buckaruby Gateway.
   class Configuration
@@ -55,14 +53,19 @@ module Buckaruby
       end
     end
 
-    # Use the logger from options, to Rails or to stdout.
+    # Use the logger from either the options or the global config.
     def logger
-      @logger ||= begin
-        logger   = @options[:logger]
-        logger ||= Rails.logger if defined?(Rails)
-        logger ||= Logger.new($stdout)
-        logger
-      end
+      @options.fetch(:logger) { Buckaruby.config.logger }
+    end
+
+    # Returns the Net::HTTP open timeout value, fallback to global config.
+    def open_timeout
+      @options.fetch(:open_timeout) { Buckaruby.config.open_timeout }
+    end
+
+    # Returns the Net::HTTP read timeout value, fallback to global config.
+    def read_timeout
+      @options.fetch(:read_timeout) { Buckaruby.config.read_timeout }
     end
   end
 end
