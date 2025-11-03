@@ -2,7 +2,7 @@
 
 [![Gem Version](https://badge.fury.io/rb/buckaruby.svg)](https://badge.fury.io/rb/buckaruby)
 [![Build Status](https://github.com/KentaaNL/buckaruby/actions/workflows/test.yml/badge.svg)](https://github.com/KentaaNL/buckaruby/actions)
-[![Code Climate](https://codeclimate.com/github/KentaaNL/buckaruby/badges/gpa.svg)](https://codeclimate.com/github/KentaaNL/buckaruby)
+[![CodeQL](https://github.com/KentaaNL/buckaruby/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/KentaaNL/buckaruby/actions/workflows/github-code-scanning/codeql)
 
 The Buckaruby gem provides a Ruby library for communicating with the Buckaroo Payment Engine 3.0.
 
