@@ -9,6 +9,7 @@ The Buckaruby gem provides a Ruby library for communicating with the Buckaroo Pa
 ## Table of Contents
 
 - [Installation](#installation)
+- [Configuration](#configuration)
 - [Usage](#usage)
   - [Payment methods](#payment-methods)
   - [Start transaction](#start-transaction)
