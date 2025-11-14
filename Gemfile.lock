@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    buckaruby (2.1.1)
+    buckaruby (2.2.0)
       bigdecimal
       logger
 
