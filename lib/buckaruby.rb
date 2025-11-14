@@ -34,13 +34,13 @@ module Buckaruby
     end
   end
 
-  @config = Config.new
-
   class << self
-    attr_reader :config
+    def config
+      @config ||= Config.new
+    end
 
     def configure
-      yield(@config)
+      yield(config)
     end
 
     def reset!
