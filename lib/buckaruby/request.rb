@@ -41,7 +41,9 @@ module Buckaruby
       http.open_timeout = @config.open_timeout
       http.read_timeout = @config.read_timeout
 
-      raw_response = http.post(uri.request_uri, URI.encode_www_form(params))
+      request = Net::HTTP::Post.new(uri)
+      request.set_form_data(params)
+      raw_response = http.request(request)
 
       unless raw_response.is_a?(Net::HTTPSuccess)
         raise InvalidResponseException, raw_response
