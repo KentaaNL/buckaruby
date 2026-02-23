@@ -2,8 +2,8 @@
 
 require_relative 'support/case_insensitive_hash'
 
-require 'cgi'
 require 'date'
+require 'uri'
 
 module Buckaruby
   # Base class for any response.
@@ -63,13 +63,10 @@ module Buckaruby
 
     def parse_response(body)
       if body.is_a?(Hash)
-        response = body
+        body
       else
-        response = CGI.parse(body)
-        response.each { |key, value| response[key] = value.first }
+        URI.decode_www_form(body).to_h
       end
-
-      response
     end
 
     def parse_time(time)
