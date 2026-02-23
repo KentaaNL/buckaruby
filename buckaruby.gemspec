@@ -5,8 +5,9 @@ require_relative 'lib/buckaruby/version'
 Gem::Specification.new do |spec|
   spec.name          = 'buckaruby'
   spec.version       = Buckaruby::VERSION
-  spec.authors       = ['Kentaa']
-  spec.email         = ['developers@kentaa.nl']
+  spec.authors       = %w[Kentaa iRaiser]
+  spec.email         = ['tech-arnhem@iraiser.eu']
+
   spec.summary       = 'Ruby library for communicating with the Buckaroo Payment Engine 3.0.'
   spec.description   = 'The Buckaruby gem provides a Ruby library for communicating with the Buckaroo Payment Engine 3.0.'
   spec.homepage      = 'https://github.com/KentaaNL/buckaruby'
