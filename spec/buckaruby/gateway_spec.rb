@@ -252,6 +252,8 @@ RSpec.describe Buckaruby::Gateway do
     end
 
     context 'with custom variables' do
+      let(:signature) { '1965d9f07654a1d29627aec8787be6906d164f12' }
+
       it 'sends the custom variables with the request' do
         response = gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, invoicenumber: '12345', return_url: 'http://www.return.url/', custom: { foo: :bar, quux: '42' })
         expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse)
@@ -259,11 +261,13 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.custom[:quux]).to eq('42')
 
         expect(WebMock).to have_requested(:post, 'https://checkout.buckaroo.nl/nvp/?op=TransactionRequest')
-          .with(body: "brq_websitekey=12345678&brq_payment_method=ideal&brq_culture=nl-NL&brq_currency=EUR&brq_amount=10.00&brq_invoicenumber=12345&brq_service_ideal_action=Pay&brq_service_ideal_version=2&brq_return=http%3A%2F%2Fwww.return.url%2F&cust_foo=bar&cust_quux=42&add_buckaruby=Buckaruby+#{Buckaruby::VERSION}&brq_signature=0b95d13a7c103243dbe900348fbff3acb67713ef")
+          .with(body: "brq_websitekey=12345678&brq_payment_method=ideal&brq_culture=nl-NL&brq_currency=EUR&brq_amount=10.00&brq_invoicenumber=12345&brq_service_ideal_action=Pay&brq_service_ideal_version=2&brq_return=http%3A%2F%2Fwww.return.url%2F&cust_foo=bar&cust_quux=42&add_buckaruby=Buckaruby+#{Buckaruby::VERSION}&brq_signature=#{signature}")
       end
     end
 
     context 'with additional variables' do
+      let(:signature) { '38158d635a90442e053a982abaed64be7463b3df' }
+
       it 'sends the additional variables with the request' do
         response = gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, invoicenumber: '12345', return_url: 'http://www.return.url/', additional: { myreference: '12345' })
         expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse)
@@ -271,7 +275,7 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.additional[:myreference]).to eq('12345')
 
         expect(WebMock).to have_requested(:post, 'https://checkout.buckaroo.nl/nvp/?op=TransactionRequest')
-          .with(body: "brq_websitekey=12345678&brq_payment_method=ideal&brq_culture=nl-NL&brq_currency=EUR&brq_amount=10.00&brq_invoicenumber=12345&brq_service_ideal_action=Pay&brq_service_ideal_version=2&brq_return=http%3A%2F%2Fwww.return.url%2F&add_myreference=12345&add_buckaruby=Buckaruby+#{Buckaruby::VERSION}&brq_signature=434f4f488c826475a0601b13815d8d43d3669f7a")
+          .with(body: "brq_websitekey=12345678&brq_payment_method=ideal&brq_culture=nl-NL&brq_currency=EUR&brq_amount=10.00&brq_invoicenumber=12345&brq_service_ideal_action=Pay&brq_service_ideal_version=2&brq_return=http%3A%2F%2Fwww.return.url%2F&add_myreference=12345&add_buckaruby=Buckaruby+#{Buckaruby::VERSION}&brq_signature=#{signature}")
       end
     end
   end
