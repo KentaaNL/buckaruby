@@ -17,7 +17,7 @@ module Buckaruby
         when 'C021', 'V021',                                  # iDEAL
              'C002', 'C004', 'C005',                          # (SEPA) Direct Debit
              'V010', 'V014',                                  # PayPal
-             'C090', 'V090',                                  # Bancontact
+             'C090', 'V090', 'C093', 'C094',                  # Bancontact
              'C075', 'N074',                                  # Sofort
              'C241', 'N031',                                  # Giropay
              'C001',                                          # Transfer
