@@ -16,7 +16,7 @@ module Buckaruby
         case brq_transaction_type
         when 'C021', 'V021',                                  # iDEAL
              'C002', 'C004', 'C005',                          # (SEPA) Direct Debit
-             'V010', 'V014',                                  # PayPal
+             'V010', 'V014', 'C265', 'C266',                  # PayPal
              'C090', 'V090', 'C093', 'C094',                  # Bancontact
              'C075', 'N074',                                  # Sofort
              'C241', 'N031',                                  # Giropay
@@ -47,7 +47,7 @@ module Buckaruby
           end
         when 'C121',                                          # iDEAL
              'C102', 'C500',                                  # (SEPA) Direct Debit
-             'V110',                                          # PayPal
+             'V110', 'C267',                                  # PayPal
              'C092', 'V092',                                  # Bancontact
              'C543', 'N540',                                  # Sofort
              'C242', 'N541',                                  # Giropay
@@ -70,7 +70,7 @@ module Buckaruby
              'V066', 'V072', 'V078', 'V103', 'C992'           # American Express
           TransactionType::REFUND
         when 'C501', 'C502', 'C562',                          # (SEPA) Direct Debit
-             'V111',                                          # PayPal
+             'V111', 'C268',                                  # PayPal
              'C544',                                          # Sofort
 
              'C554', 'C593', 'C804', 'C882', 'V132', 'V138',
