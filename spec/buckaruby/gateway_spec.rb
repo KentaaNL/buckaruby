@@ -252,7 +252,7 @@ RSpec.describe Buckaruby::Gateway do
     end
 
     context 'with custom variables' do
-      let(:signature) { '1965d9f07654a1d29627aec8787be6906d164f12' }
+      let(:signature) { '3e028b0e24da0cefdae5f9a0f0b39fcda92b541d' }
 
       it 'sends the custom variables with the request' do
         response = gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, invoicenumber: '12345', return_url: 'http://www.return.url/', custom: { foo: :bar, quux: '42' })
@@ -266,7 +266,7 @@ RSpec.describe Buckaruby::Gateway do
     end
 
     context 'with additional variables' do
-      let(:signature) { '38158d635a90442e053a982abaed64be7463b3df' }
+      let(:signature) { '5c59b816f59dfa04672572a5ff076d69a7660926' }
 
       it 'sends the additional variables with the request' do
         response = gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, invoicenumber: '12345', return_url: 'http://www.return.url/', additional: { myreference: '12345' })
