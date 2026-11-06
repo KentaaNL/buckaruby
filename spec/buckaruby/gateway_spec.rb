@@ -221,6 +221,13 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.timestamp).to be_an_instance_of(Time)
     end
 
+    it 'does not modify the options passed in' do
+      options = { amount: 10, payment_method: Buckaruby::PaymentMethod::SEPA_DIRECT_DEBIT, invoicenumber: '12345', consumer_iban: 'NL13 TEST 0123 4567 89', consumer_name: 'J. Tester' }.freeze
+      gateway.setup_transaction(options)
+      expect(options[:consumer_iban]).to eq('NL13 TEST 0123 4567 89')
+      expect(WebMock).to have_requested(:post, 'https://checkout.buckaroo.nl/nvp/?op=TransactionRequest').with(body: hash_including('brq_service_sepadirectdebit_customeriban' => 'NL13TEST0123456789'))
+    end
+
     it 'initiates a transaction for payment method paypal' do
       response = gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::PAYPAL, invoicenumber: '12345', return_url: 'http://www.return.url/')
       expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse)
@@ -368,6 +375,15 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.refunded_transaction_id).to eq('41C48B55FA9164E123CC73B1157459E840BE5D24')
       expect(response.invoicenumber).to eq('12345')
       expect(response.timestamp).to be_an_instance_of(Time)
+    end
+
+    it 'does not modify the options passed in' do
+      stub_request(:post, 'https://checkout.buckaroo.nl/nvp/?op=RefundInfo').to_return(body: File.read('spec/fixtures/responses/refund_info_success.txt'))
+      stub_request(:post, 'https://checkout.buckaroo.nl/nvp/?op=TransactionRequest').to_return(body: File.read('spec/fixtures/responses/refund_transaction_success.txt'))
+
+      options = { transaction_id: '41C48B55FA9164E123CC73B1157459E840BE5D24' }.freeze
+      gateway.refund_transaction(options)
+      expect(options).to eq(transaction_id: '41C48B55FA9164E123CC73B1157459E840BE5D24')
     end
   end
 

@@ -45,7 +45,7 @@ module Buckaruby
 
       validate_setup_transaction_params!(options)
 
-      normalize_consumer_iban!(options) if options[:payment_method] == PaymentMethod::SEPA_DIRECT_DEBIT
+      options = normalize_consumer_iban(options) if options[:payment_method] == PaymentMethod::SEPA_DIRECT_DEBIT
 
       execute_request(:setup_transaction, options)
     end
@@ -88,10 +88,11 @@ module Buckaruby
       end
 
       # Pick maximum refundable amount if amount is not supplied.
-      options[:amount] = response.maximum_amount unless options[:amount]
+      amount = options[:amount] || response.maximum_amount
 
       # Fill required parameters with data from refund info request.
-      options.merge!(
+      options = options.merge(
+        amount: amount,
         payment_method: response.payment_method,
         invoicenumber: response.invoicenumber,
         currency: response.currency
@@ -220,10 +221,9 @@ module Buckaruby
     end
 
     # Strip spaces from the IBAN.
-    def normalize_consumer_iban!(options)
-      iban = options[:consumer_iban].to_s.gsub(/\s/, '')
-
-      options[:consumer_iban] = iban
+    def normalize_consumer_iban(options)
+      consumer_iban = options[:consumer_iban].to_s.gsub(/\s+/, '')
+      options.merge(consumer_iban: consumer_iban)
     end
 
     # Build and execute a request.
