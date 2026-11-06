@@ -132,6 +132,14 @@ RSpec.describe Buckaruby::Gateway do
       }.to raise_error(Buckaruby::ConnectionException)
     end
 
+    it 'raises a ConnectionException on Errno::ENETUNREACH' do
+      stub_request(:post, 'https://checkout.buckaroo.nl/nvp/?op=TransactionRequest').to_raise(Errno::ENETUNREACH)
+
+      expect {
+        gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, invoicenumber: '12345', return_url: 'http://www.return.url/')
+      }.to raise_error(Buckaruby::ConnectionException)
+    end
+
     it 'raises an InvalidResponseException when Buckaroo returns an invalid response' do
       stub_request(:post, 'https://checkout.buckaroo.nl/nvp/?op=TransactionRequest').to_return(status: 500)
 

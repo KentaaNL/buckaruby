@@ -53,8 +53,8 @@ module Buckaruby
 
     # Try to catch some common exceptions Net::HTTP might raise
     rescue Errno::ETIMEDOUT, Errno::EINVAL, Errno::ECONNRESET, Errno::ECONNREFUSED, Errno::EHOSTUNREACH,
-           IOError, SocketError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::OpenTimeout,
-           Net::ProtocolError, Net::ReadTimeout, OpenSSL::SSL::SSLError => e
+           Errno::ENETUNREACH, Errno::EPIPE, IOError, SocketError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError,
+           Net::OpenTimeout, Net::ProtocolError, Net::ReadTimeout, Net::WriteTimeout, OpenSSL::SSL::SSLError => e
       raise ConnectionException, e
     end
 
