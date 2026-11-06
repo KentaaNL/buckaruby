@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'digest'
+require 'openssl'
 
 module Buckaruby
   # Calculate a signature based on the parameters of the payment request or response.
@@ -51,16 +52,9 @@ module Buckaruby
       sent_signature = params.find { |key, _value| key.to_s.casecmp('BRQ_SIGNATURE').zero? }&.last
       generated_signature = Signature.generate(config, params)
 
-      if sent_signature.nil? || generated_signature.nil? || !safe_equals?(sent_signature, generated_signature)
+      if sent_signature.nil? || generated_signature.nil? || !OpenSSL.secure_compare(sent_signature, generated_signature)
         raise SignatureException.new(sent_signature, generated_signature)
       end
-    end
-
-    # Constant time string comparison.
-    def safe_equals?(signature, other_signature)
-      check = signature.bytesize ^ other_signature.bytesize
-      signature.bytes.zip(other_signature.bytes) { |x, y| check |= x ^ y.to_i }
-      check.zero?
     end
   end
 end
