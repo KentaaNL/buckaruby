@@ -3,6 +3,7 @@
 require_relative 'support/case_insensitive_hash'
 
 require 'date'
+require 'time'
 require 'uri'
 
 module Buckaruby
