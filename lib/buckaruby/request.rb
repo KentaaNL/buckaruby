@@ -114,42 +114,63 @@ module Buckaruby
   # Request for a creating a new transaction.
   class SetupTransactionRequest < TransactionRequest
     def build_transaction_request_params(options)
-      params = {}
-
-      case options[:payment_method]
-      when PaymentMethod::IDEAL
-        params[:brq_service_ideal_action] = Action::PAY
-        params[:brq_service_ideal_issuer] = options[:issuer] if options[:issuer]
-        params[:brq_service_ideal_version] = '2'
-      when PaymentMethod::IDEAL_PROCESSING
-        params[:brq_service_idealprocessing_action] = Action::PAY
-        params[:brq_service_idealprocessing_issuer] = options[:issuer] if options[:issuer]
-        params[:brq_service_idealprocessing_version] = '2'
-      when PaymentMethod::SEPA_DIRECT_DEBIT
-        params.merge!(
-          brq_service_sepadirectdebit_action: Action::PAY,
-          brq_service_sepadirectdebit_customeriban: options[:consumer_iban],
-          brq_service_sepadirectdebit_customeraccountname: options[:consumer_name]
-        )
-
-        if options[:consumer_bic]
-          params[:brq_service_sepadirectdebit_customerbic] = options[:consumer_bic]
+      params =
+        case options[:payment_method]
+        when PaymentMethod::IDEAL, PaymentMethod::IDEAL_PROCESSING
+          build_ideal_params(options)
+        when PaymentMethod::PAY_BY_BANK
+          build_pay_by_bank_params(options)
+        when PaymentMethod::SEPA_DIRECT_DEBIT
+          build_sepa_direct_debit_params(options)
+        else
+          {}
         end
-
-        if options[:collect_date]
-          params[:brq_service_sepadirectdebit_collectdate] = options[:collect_date].strftime('%Y-%m-%d')
-        end
-
-        if options[:mandate_reference]
-          params.merge!(
-            brq_service_sepadirectdebit_action: [Action::PAY, Action::EXTRA_INFO].join(','),
-            brq_service_sepadirectdebit_mandatereference: options[:mandate_reference],
-            brq_service_sepadirectdebit_mandatedate: Date.today.strftime('%Y-%m-%d')
-          )
-        end
-      end
 
       params[:brq_startrecurrent] = options[:recurring] if options[:recurring]
+
+      params
+    end
+
+    private
+
+    def build_ideal_params(options)
+      service = options[:payment_method]
+
+      params = { "brq_service_#{service}_action": Action::PAY }
+      params[:"brq_service_#{service}_issuer"] = options[:issuer] if options[:issuer]
+      params[:"brq_service_#{service}_version"] = '2'
+      params
+    end
+
+    def build_pay_by_bank_params(options)
+      params = { brq_service_paybybank_action: Action::PAY }
+      params[:brq_service_paybybank_issuer] = options[:issuer] if options[:issuer]
+      params[:brq_service_paybybank_countrycode] = options[:country_code] if options[:country_code]
+      params
+    end
+
+    def build_sepa_direct_debit_params(options)
+      params = {
+        brq_service_sepadirectdebit_action: Action::PAY,
+        brq_service_sepadirectdebit_customeriban: options[:consumer_iban],
+        brq_service_sepadirectdebit_customeraccountname: options[:consumer_name]
+      }
+
+      if options[:consumer_bic]
+        params[:brq_service_sepadirectdebit_customerbic] = options[:consumer_bic]
+      end
+
+      if options[:collect_date]
+        params[:brq_service_sepadirectdebit_collectdate] = options[:collect_date].strftime('%Y-%m-%d')
+      end
+
+      if options[:mandate_reference]
+        params.merge!(
+          brq_service_sepadirectdebit_action: [Action::PAY, Action::EXTRA_INFO].join(','),
+          brq_service_sepadirectdebit_mandatereference: options[:mandate_reference],
+          brq_service_sepadirectdebit_mandatedate: Date.today.strftime('%Y-%m-%d')
+        )
+      end
 
       params
     end

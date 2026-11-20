@@ -25,28 +25,47 @@ RSpec.describe Buckaruby::Gateway do
 
     context 'when an unsupported payment method is passed' do
       it 'raises an ArgumentError' do
-        expect { gateway.issuers(Buckaruby::PaymentMethod::VISA) }.to raise_error(ArgumentError, 'Invalid payment method, only iDEAL is supported.')
+        unsupported = Buckaruby::PaymentMethod.all - [Buckaruby::PaymentMethod::IDEAL, Buckaruby::PaymentMethod::IDEAL_PROCESSING, Buckaruby::PaymentMethod::PAY_BY_BANK]
+
+        unsupported.each do |payment_method|
+          expect { gateway.issuers(payment_method) }.to raise_error(ArgumentError, 'Invalid payment method, only iDEAL and PayByBank are supported.')
+        end
       end
     end
 
     context 'when ideal is passed' do
       let(:issuers) { gateway.issuers(Buckaruby::PaymentMethod::IDEAL) }
 
+      before do
+        stub_request(:post, 'https://checkout.buckaroo.nl/nvp/?op=TransactionRequestSpecification').to_return(body: File.read('spec/fixtures/responses/specify_transaction_ideal.txt'))
+      end
+
       it 'returns the list with issuers' do
         expect(issuers).to eq({
                                 'ABNANL2A' => 'ABN AMRO',
+                                'ADYBNL2A' => 'Adyen',
                                 'ASNBNL21' => 'ASN Bank',
+                                'BITSNL2A' => 'Yoursafe',
                                 'BUNQNL2A' => 'bunq',
-                                'FVLBNL22' => 'Van Lanschot',
-                                'HANDNL2A' => 'Handelsbanken',
+                                'FNOMNL22' => 'FINOM Payments',
+                                'FVLBNL22' => 'Van Lanschot Kempen',
                                 'INGBNL2A' => 'ING',
                                 'KNABNL2H' => 'Knab',
-                                'MOYONL21' => 'Moneyou',
+                                'MLLENL2A' => 'Mollie',
+                                'NNBANL2G' => 'Nationale-Nederlanden',
+                                'NTSBDEB1' => 'N26',
                                 'RABONL2U' => 'Rabobank',
                                 'RBRBNL21' => 'RegioBank',
+                                'REVOLT21' => 'Revolut',
                                 'SNSBNL2A' => 'SNS',
                                 'TRIONL2U' => 'Triodos Bank'
                               })
+      end
+
+      it 'raises an ArgumentError when a country code is passed' do
+        expect {
+          gateway.issuers(Buckaruby::PaymentMethod::IDEAL, country_code: 'NL')
+        }.to raise_error(ArgumentError, 'Filtering issuers by country code is only supported for PayByBank.')
       end
     end
 
@@ -71,15 +90,69 @@ RSpec.describe Buckaruby::Gateway do
       end
     end
 
-    context 'when a payment method other than ideal is passed' do
-      it 'raises an ArgumentError' do
-        expect { gateway.issuers(Buckaruby::PaymentMethod::VISA) }.to raise_error(ArgumentError)
-        expect { gateway.issuers(Buckaruby::PaymentMethod::MASTER_CARD) }.to raise_error(ArgumentError)
-        expect { gateway.issuers(Buckaruby::PaymentMethod::MAESTRO) }.to raise_error(ArgumentError)
-        expect { gateway.issuers(Buckaruby::PaymentMethod::AMERICAN_EXPRESS) }.to raise_error(ArgumentError)
-        expect { gateway.issuers(Buckaruby::PaymentMethod::SEPA_DIRECT_DEBIT) }.to raise_error(ArgumentError)
-        expect { gateway.issuers(Buckaruby::PaymentMethod::BANCONTACT) }.to raise_error(ArgumentError)
-        expect { gateway.issuers(Buckaruby::PaymentMethod::PAYPAL) }.to raise_error(ArgumentError)
+    context 'when paybybank is passed' do
+      let(:issuers) { gateway.issuers(Buckaruby::PaymentMethod::PAY_BY_BANK) }
+
+      before do
+        stub_request(:post, 'https://checkout.buckaroo.nl/nvp/?op=TransactionRequestSpecification').to_return(body: File.read('spec/fixtures/responses/specify_transaction_paybybank.txt'))
+      end
+
+      it 'returns the list with issuers' do
+        expect(issuers).to eq({
+                                'ABNANL2A' => "ABN\u00A0AMRO",
+                                'ASNBNL21' => "ASN\u00A0Bank",
+                                'BBRUBEBB' => 'ING',
+                                'CREGBEBBNBB' => 'CBC',
+                                'GEBABEBB' => 'BNP Paribas Fortis',
+                                'GKCCBEBB' => 'Belfius',
+                                'INGBNL2A' => 'ING',
+                                'KNABNL2H' => 'Knab',
+                                'KREDBEBB100' => 'KBC',
+                                'KREDBEBB387' => 'KBC Brussels',
+                                'NTSBDEB1' => 'N26',
+                                'RABONL2U' => 'Rabobank',
+                                'RBRBNL21' => 'RegioBank',
+                                'SNSBNL2A' => "SNS\u00A0Bank"
+                              })
+      end
+
+      it 'requests the specification for paybybank' do
+        issuers
+
+        expect(WebMock).to have_requested(:post, 'https://checkout.buckaroo.nl/nvp/?op=TransactionRequestSpecification')
+          .with(body: hash_including('brq_services' => 'paybybank'))
+      end
+
+      it 'returns only the Dutch issuers when filtering by country code NL' do
+        issuers = gateway.issuers(Buckaruby::PaymentMethod::PAY_BY_BANK, country_code: 'NL')
+
+        expect(issuers).to eq({
+                                'ABNANL2A' => "ABN\u00A0AMRO",
+                                'ASNBNL21' => "ASN\u00A0Bank",
+                                'INGBNL2A' => 'ING',
+                                'KNABNL2H' => 'Knab',
+                                'NTSBDEB1' => 'N26',
+                                'RABONL2U' => 'Rabobank',
+                                'RBRBNL21' => 'RegioBank',
+                                'SNSBNL2A' => "SNS\u00A0Bank"
+                              })
+      end
+
+      it 'returns only the Belgian issuers when filtering by country code BE (case insensitive)' do
+        issuers = gateway.issuers(Buckaruby::PaymentMethod::PAY_BY_BANK, country_code: 'be')
+
+        expect(issuers).to eq({
+                                'BBRUBEBB' => 'ING',
+                                'CREGBEBBNBB' => 'CBC',
+                                'GEBABEBB' => 'BNP Paribas Fortis',
+                                'GKCCBEBB' => 'Belfius',
+                                'KREDBEBB100' => 'KBC',
+                                'KREDBEBB387' => 'KBC Brussels'
+                              })
+      end
+
+      it 'returns no issuers for a country without banks' do
+        expect(gateway.issuers(Buckaruby::PaymentMethod::PAY_BY_BANK, country_code: 'DE')).to eq({})
       end
     end
   end
@@ -233,6 +306,30 @@ RSpec.describe Buckaruby::Gateway do
       gateway.setup_transaction(options)
       expect(options[:consumer_iban]).to eq('NL13 TEST 0123 4567 89')
       expect(WebMock).to have_requested(:post, 'https://checkout.buckaroo.nl/nvp/?op=TransactionRequest').with(body: hash_including('brq_service_sepadirectdebit_customeriban' => 'NL13TEST0123456789'))
+    end
+
+    it 'initiates a transaction for payment method paybybank with issuer' do
+      response = gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::PAY_BY_BANK, issuer: 'RABONL2U', invoicenumber: '12345', return_url: 'http://www.return.url/')
+      expect(response).to be_an_instance_of(Buckaruby::SetupTransactionResponse)
+
+      expect(WebMock).to have_requested(:post, 'https://checkout.buckaroo.nl/nvp/?op=TransactionRequest')
+        .with(body: hash_including('brq_payment_method' => 'paybybank', 'brq_service_paybybank_action' => 'Pay', 'brq_service_paybybank_issuer' => 'RABONL2U'))
+    end
+
+    it 'initiates a transaction for payment method paybybank with country code' do
+      gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::PAY_BY_BANK, country_code: 'BE', invoicenumber: '12345', return_url: 'http://www.return.url/')
+
+      expect(WebMock).to have_requested(:post, 'https://checkout.buckaroo.nl/nvp/?op=TransactionRequest')
+        .with(body: hash_including('brq_service_paybybank_action' => 'Pay', 'brq_service_paybybank_countrycode' => 'BE'))
+    end
+
+    it 'does not send issuer or country code for paybybank when not given' do
+      gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::PAY_BY_BANK, invoicenumber: '12345', return_url: 'http://www.return.url/')
+
+      expect(WebMock).to(have_requested(:post, 'https://checkout.buckaroo.nl/nvp/?op=TransactionRequest').with { |request|
+        params = URI.decode_www_form(request.body).to_h
+        params['brq_service_paybybank_action'] == 'Pay' && !params.key?('brq_service_paybybank_issuer') && !params.key?('brq_service_paybybank_countrycode')
+      })
     end
 
     it 'initiates a transaction for payment method paypal' do

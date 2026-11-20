@@ -15,6 +15,8 @@ module Buckaruby
 
     # Returns the payment methods enabled by Buckaroo and supported by this library.
     def payment_methods
+      logger.debug('[payment_methods]')
+
       valid_payment_methods = PaymentMethod.all - [PaymentMethod::TRANSFER]
 
       response = execute_request(:specify_transaction)
@@ -23,18 +25,21 @@ module Buckaruby
       services & valid_payment_methods
     end
 
-    # Get a list with payment issuers (currently only iDEAL).
-    def issuers(payment_method)
-      if payment_method != PaymentMethod::IDEAL && payment_method != PaymentMethod::IDEAL_PROCESSING
-        raise ArgumentError, 'Invalid payment method, only iDEAL is supported.'
-      end
+    # Get a list with payment issuers (iDEAL and PayByBank).
+    def issuers(payment_method, options = {})
+      logger.debug("[issuers] payment_method=#{payment_method.inspect} options=#{options.inspect}")
+
+      validate_issuers_params!(payment_method, options)
 
       response = execute_request(:specify_transaction, payment_method: payment_method)
 
       service = response.services.first
-      description = service[:actiondescription].find { |action| action[:description].casecmp(Action::PAY).zero? } if service
-      params = description[:requestparameters].find { |param| param[:name].casecmp('issuer').zero? } if description
-      items = params[:listitemdescription] if params
+      description = service[:actiondescription].find { |action| action[:description].casecmp?(Action::PAY) } if service
+      params = description[:requestparameters].find { |param| param[:name].casecmp?('issuer') } if description
+      items = (params && params[:listitemdescription]) || []
+
+      country_code = options[:country_code]
+      items = items.select { |item| item[:groupname].to_s.casecmp?(country_code.to_s) } if country_code
 
       items.to_h { |item| [item[:value], item[:description]] }
     end
@@ -144,6 +149,17 @@ module Buckaruby
     end
 
     private
+
+    # Validate params for retrieving issuers.
+    def validate_issuers_params!(payment_method, options)
+      unless [PaymentMethod::IDEAL, PaymentMethod::IDEAL_PROCESSING, PaymentMethod::PAY_BY_BANK].include?(payment_method)
+        raise ArgumentError, 'Invalid payment method, only iDEAL and PayByBank are supported.'
+      end
+
+      if options[:country_code] && payment_method != PaymentMethod::PAY_BY_BANK
+        raise ArgumentError, 'Filtering issuers by country code is only supported for PayByBank.'
+      end
+    end
 
     # Validate required parameters.
     def validate_required_params!(params, *required)
