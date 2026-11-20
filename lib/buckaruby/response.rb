@@ -168,7 +168,7 @@ module Buckaruby
     def initialize(body, config)
       super
 
-      if api_result.nil? || api_result.casecmp('fail').zero?
+      if api_result.nil? || api_result.casecmp?('fail')
         raise ApiException, params
       end
 
@@ -220,7 +220,7 @@ module Buckaruby
     end
 
     def refundable?
-      !params[:brq_refundinfo_1_isrefundable].nil? && params[:brq_refundinfo_1_isrefundable].casecmp('true').zero?
+      params[:brq_refundinfo_1_isrefundable].to_s.casecmp?('true')
     end
 
     def maximum_amount
@@ -241,7 +241,7 @@ module Buckaruby
     include TransactionResponse
 
     def cancellable?
-      !params[:brq_transaction_cancelable].nil? && params[:brq_transaction_cancelable].casecmp('true').zero?
+      params[:brq_transaction_cancelable].to_s.casecmp?('true')
     end
 
     def refunded_transaction_id
