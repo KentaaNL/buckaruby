@@ -23,10 +23,9 @@ RSpec.describe Buckaruby::Gateway do
       stub_request(:post, 'https://checkout.buckaroo.nl/nvp/?op=TransactionRequestSpecification').to_return(body: File.read('spec/fixtures/responses/specify_transaction_success.txt'))
     end
 
-    context 'when no or false parameters are passed' do
+    context 'when an unsupported payment method is passed' do
       it 'raises an ArgumentError' do
-        expect { gateway.issuers }.to raise_error(ArgumentError)
-        expect { gateway.issuers(:wrong) }.to raise_error(ArgumentError)
+        expect { gateway.issuers(Buckaruby::PaymentMethod::VISA) }.to raise_error(ArgumentError, 'Invalid payment method, only iDEAL is supported.')
       end
     end
 
@@ -361,6 +360,16 @@ RSpec.describe Buckaruby::Gateway do
       }.to raise_error(ArgumentError)
     end
 
+    it 'raises an exception when refunding a transaction with invalid amount' do
+      expect {
+        gateway.refund_transaction(transaction_id: '41C48B55FA9164E123CC73B1157459E840BE5D24', amount: 0)
+      }.to raise_error(ArgumentError, 'Invalid amount: 0 (must be greater than 0)')
+
+      expect {
+        gateway.refund_transaction(transaction_id: '41C48B55FA9164E123CC73B1157459E840BE5D24', amount: -1)
+      }.to raise_error(ArgumentError, 'Invalid amount: -1 (must be greater than 0)')
+    end
+
     it 'raises an exception when the transaction is not refundable' do
       stub_request(:post, 'https://checkout.buckaroo.nl/nvp/?op=RefundInfo').to_return(body: File.read('spec/fixtures/responses/refund_info_error.txt'))
 
@@ -436,6 +445,21 @@ RSpec.describe Buckaruby::Gateway do
       expect(response.transaction_id).to eq('8CCE4BB06339F28A506E1A328025D7DF13CCAD59')
       expect(response.payment_id).to eq('E86256B2787EE7FF0C33D0D4C6159CD922227B79')
       expect(response.refunded_transaction_id).to eq('41C48B55FA9164E123CC73B1157459E840BE5D24')
+      expect(response.invoicenumber).to eq('12345')
+      expect(response.timestamp).to be_an_instance_of(Time)
+    end
+
+    it 'returns the transaction status for a reversal' do
+      stub_request(:post, 'https://checkout.buckaroo.nl/nvp/?op=TransactionStatus').to_return(body: File.read('spec/fixtures/responses/status_reversal_success.txt'))
+
+      response = gateway.status(transaction_id: '8CCE4BB06339F28A506E1A328025D7DF13CCAD59')
+      expect(response).to be_an_instance_of(Buckaruby::StatusResponse)
+      expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
+      expect(response.transaction_type).to eq(Buckaruby::TransactionType::REVERSAL)
+      expect(response.payment_method).to eq(Buckaruby::PaymentMethod::SEPA_DIRECT_DEBIT)
+      expect(response.transaction_id).to eq('8CCE4BB06339F28A506E1A328025D7DF13CCAD59')
+      expect(response.payment_id).to eq('E86256B2787EE7FF0C33D0D4C6159CD922227B79')
+      expect(response.reversed_transaction_id).to eq('41C48B55FA9164E123CC73B1157459E840BE5D24')
       expect(response.invoicenumber).to eq('12345')
       expect(response.timestamp).to be_an_instance_of(Time)
     end
@@ -538,6 +562,20 @@ RSpec.describe Buckaruby::Gateway do
       expect(currency).to be_an_instance_of(Buckaruby::Support::CaseInsensitiveHash)
       expect(currency[:name]).to eq('US Dollar')
       expect(currency[:code]).to eq(Buckaruby::Currency::US_DOLLAR)
+    end
+
+    it 'sends a single payment method as service' do
+      gateway.specify_transaction(payment_method: Buckaruby::PaymentMethod::IDEAL)
+
+      expect(WebMock).to have_requested(:post, 'https://checkout.buckaroo.nl/nvp/?op=TransactionRequestSpecification')
+        .with(body: hash_including('brq_services' => 'ideal'))
+    end
+
+    it 'sends multiple payment methods as comma separated services' do
+      gateway.specify_transaction(payment_method: [Buckaruby::PaymentMethod::IDEAL, Buckaruby::PaymentMethod::VISA])
+
+      expect(WebMock).to have_requested(:post, 'https://checkout.buckaroo.nl/nvp/?op=TransactionRequestSpecification')
+        .with(body: hash_including('brq_services' => 'ideal,visa'))
     end
   end
 

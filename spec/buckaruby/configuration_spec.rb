@@ -11,7 +11,7 @@ RSpec.describe Buckaruby::Configuration do
 
     it 'raises an exception when website is missing' do
       config = Buckaruby::Configuration.new(secret: '7C222FB2927D828AF22F592134E8932480637C0D')
-      expect { config.website }.to raise_error(ArgumentError)
+      expect { config.website }.to raise_error(ArgumentError, 'Missing required parameter: website')
     end
   end
 
@@ -23,14 +23,14 @@ RSpec.describe Buckaruby::Configuration do
 
     it 'raises an exception when secret is missing' do
       config = Buckaruby::Configuration.new(website: '12345678')
-      expect { config.secret }.to raise_error(ArgumentError)
+      expect { config.secret }.to raise_error(ArgumentError, 'Missing required parameter: secret')
     end
   end
 
   describe '#hash_method' do
     it 'raises an exception when an invalid hash method is passed' do
       config = Buckaruby::Configuration.new(website: '12345678', secret: '7C222FB2927D828AF22F592134E8932480637C0D', hash_method: :invalid)
-      expect { config.hash_method }.to raise_error(ArgumentError)
+      expect { config.hash_method }.to raise_error(ArgumentError, 'Invalid hash method provided: invalid (expected :sha1, :sha256 or :sha512)')
     end
 
     it 'accepts SHA-1 as hash method' do

@@ -42,7 +42,7 @@ RSpec.describe Buckaruby::Signature do
   end
 
   describe '.generate' do
-    let(:config) { Buckaruby::Configuration.new(website: '12345678', secret: 'secret', hash_method: hash_method) }
+    let(:config) { instance_double(Buckaruby::Configuration, website: '12345678', secret: 'secret', hash_method: hash_method) }
 
     context 'with invalid hash method' do
       let(:hash_method) { :invalid }
@@ -51,7 +51,7 @@ RSpec.describe Buckaruby::Signature do
         expect {
           params = { brq_test: 'abcdef', brq_test2: 'foobar' }
           Buckaruby::Signature.generate(config, params)
-        }.to raise_error(ArgumentError)
+        }.to raise_error(ArgumentError, 'Invalid hash method provided: invalid')
       end
     end
 
