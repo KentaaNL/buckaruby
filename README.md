@@ -160,10 +160,16 @@ First check if the transaction is refundable, with the parameter `transaction_id
 response = gateway.refundable_transaction?(transaction_id: "abcdefg")
 ```
 
-If the reponse is positive then you can refund the transaction with:
+If the response is positive then you can refund the transaction with:
 
 ```ruby
 response = gateway.refund_transaction(transaction_id: "abcdefg")
+```
+
+This refunds the maximum refundable amount. To do a partial refund, add the parameter `amount`:
+
+```ruby
+response = gateway.refund_transaction(transaction_id: "abcdefg", amount: 5)
 ```
 
 The response includes a `status` to check if the refund was successful.
@@ -218,7 +224,7 @@ See `Buckaruby::StatusResponse` for more details.
 
 You can send custom variables and additional variables with each request.
 
-Use the parameter `custom` to build a hash with custom variables and `additional` for building a hash with additional variabeles.
+Use the parameter `custom` to build a hash with custom variables and `additional` for building a hash with additional variables.
 For example:
 
 ```ruby
