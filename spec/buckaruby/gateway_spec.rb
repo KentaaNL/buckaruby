@@ -363,7 +363,10 @@ RSpec.describe Buckaruby::Gateway do
     end
 
     context 'with custom variables' do
-      let(:signature) { '3e028b0e24da0cefdae5f9a0f0b39fcda92b541d' }
+      let(:signature) { '66d3b46f8851555d9a7e55e00905896e284e91c2' }
+
+      # The gem version is part of the signed request (add_buckaruby), so pin it to keep the signature stable.
+      before { stub_const('Buckaruby::VERSION', '42.0.0') }
 
       it 'sends the custom variables with the request' do
         response = gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, invoicenumber: '12345', return_url: 'http://www.return.url/', custom: { foo: :bar, quux: '42' })
@@ -377,7 +380,10 @@ RSpec.describe Buckaruby::Gateway do
     end
 
     context 'with additional variables' do
-      let(:signature) { '5c59b816f59dfa04672572a5ff076d69a7660926' }
+      let(:signature) { 'f40845bf46658529c7795a29d5dc90c8539a6b8c' }
+
+      # The gem version is part of the signed request (add_buckaruby), so pin it to keep the signature stable.
+      before { stub_const('Buckaruby::VERSION', '42.0.0') }
 
       it 'sends the additional variables with the request' do
         response = gateway.setup_transaction(amount: 10, payment_method: Buckaruby::PaymentMethod::IDEAL, invoicenumber: '12345', return_url: 'http://www.return.url/', additional: { myreference: '12345' })
