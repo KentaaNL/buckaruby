@@ -12,6 +12,7 @@ The Buckaruby gem provides a Ruby library for communicating with the Buckaroo Pa
 - [Configuration](#configuration)
 - [Usage](#usage)
   - [Payment methods](#payment-methods)
+  - [Issuers](#issuers)
   - [Start transaction](#start-transaction)
   - [Recurrent transaction](#recurrent-transaction)
   - [Refund transaction](#refund-transaction)
@@ -93,6 +94,17 @@ To retrieve the payment methods enabled in Buckaroo and supported by this librar
 ```ruby
 payment_methods = gateway.payment_methods
 ```
+
+### Issuers
+
+For Pay by Bank, you can let the consumer select their bank in your application. Use the method `issuers` to retrieve the banks (BIC code and name), optionally filtered by country (`NL` or `BE`):
+
+```ruby
+issuers = gateway.issuers(Buckaruby::PaymentMethod::PAY_BY_BANK, country_code: "NL")
+# => { "ABNANL2A" => "ABN AMRO", "INGBNL2A" => "ING", ... }
+```
+
+Pass the selected bank as `issuer` to `setup_transaction`, with the matching `country_code`. Both are optional: without an `issuer`, the consumer selects their bank after being redirected.
 
 ### Start transaction
 
