@@ -97,7 +97,7 @@ payment_methods = gateway.payment_methods
 
 ### Issuers
 
-For Pay by Bank, you can let the consumer select their bank in your application. Use the method `issuers` to retrieve the banks (BIC code and name), optionally filtered by country (`NL` or `BE`):
+For Pay by Bank, you can let the consumer select their bank in your application. Use the method `issuers` to retrieve the banks (BIC code and name), optionally filtered by country code (for example `NL`):
 
 ```ruby
 issuers = gateway.issuers(Buckaruby::PaymentMethod::PAY_BY_BANK, country_code: "NL")
