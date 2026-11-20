@@ -3,22 +3,26 @@
 module Buckaruby
   # Supported payment methods.
   module PaymentMethod
+    # Bank Payments
     IDEAL = 'ideal' # iDEAL collecting
     IDEAL_PROCESSING = 'idealprocessing' # iDEAL processing
-
-    SEPA_DIRECT_DEBIT = 'sepadirectdebit'
-    PAYPAL = 'paypal'
-    BANCONTACT = 'bancontactmrcash'
+    PAY_BY_BANK = 'paybybank'
     SOFORT = 'sofortueberweisung'
     GIROPAY = 'giropay'
     TRANSFER = 'transfer'
-    PAY_BY_BANK = 'paybybank'
 
-    # Credit cards
-    VISA = 'visa'
-    MASTER_CARD = 'mastercard'
-    MAESTRO = 'maestro'
+    # Direct Debit
+    SEPA_DIRECT_DEBIT = 'sepadirectdebit'
+
+    # Cards
     AMERICAN_EXPRESS = 'amex'
+    BANCONTACT = 'bancontactmrcash'
+    MAESTRO = 'maestro'
+    MASTER_CARD = 'mastercard'
+    VISA = 'visa'
+
+    # Wallets
+    PAYPAL = 'paypal'
 
     # Returns an array of all payment method values.
     def all
