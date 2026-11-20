@@ -754,6 +754,22 @@ RSpec.describe Buckaruby::Gateway do
         expect(response.invoicenumber).to eq('12345')
         expect(response.timestamp).to be_an_instance_of(Time)
       end
+
+      it 'sets the transaction type to payment and payment method to PayByBank for paybybank push' do
+        params = File.read('spec/fixtures/responses/push_payment_paybybank.txt')
+
+        response = gateway.parse_push(params)
+        expect(response.transaction_status).to eq(Buckaruby::TransactionStatus::SUCCESS)
+        expect(response.transaction_type).to eq(Buckaruby::TransactionType::PAYMENT)
+        expect(response.payment_method).to eq(Buckaruby::PaymentMethod::PAY_BY_BANK)
+        expect(response.transaction_id).to eq('41C48B55FA9164E123CC73B1157459E840BE5D24')
+        expect(response.payment_id).to eq('E86256B2787EE7FF0C33D0D4C6159CD922227B79')
+        expect(response.invoicenumber).to eq('12345')
+        expect(response.consumer_bic).to eq('RABONL2U')
+        expect(response.consumer_iban).to eq('NL44RABO0123456789')
+        expect(response.consumer_name).to eq('J. de Tester')
+        expect(response.timestamp).to be_an_instance_of(Time)
+      end
     end
 
     context 'when push is a payment recurrent response' do

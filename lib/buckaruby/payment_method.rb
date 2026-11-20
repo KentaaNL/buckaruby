@@ -12,6 +12,7 @@ module Buckaruby
     SOFORT = 'sofortueberweisung'
     GIROPAY = 'giropay'
     TRANSFER = 'transfer'
+    PAY_BY_BANK = 'paybybank'
 
     # Credit cards
     VISA = 'visa'
